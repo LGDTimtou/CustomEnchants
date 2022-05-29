@@ -28,9 +28,8 @@ public enum CustomEnchant {
     CustomEnchant(String name, int maxLvl, CustomEnchantListener listener){
         this.name = Util.title(name);
         this.enchantment = new EnchantmentWrapper(name, Util.title(name), maxLvl);
-        Util.registerEvent(listener);
+        Main.getMain().getServer().getPluginManager().registerEvents(listener, Main.getMain());
     }
-
 
     public Enchantment getEnchantment() {
         return enchantment;
@@ -44,10 +43,6 @@ public enum CustomEnchant {
         return Util.title(name.replaceAll("_", " "));
     }
 
-
-
-
-
     //Registering
     public static void register(){
         List<Enchantment> enchantments = Arrays.stream(Enchantment.values()).collect(Collectors.toList());
@@ -56,11 +51,9 @@ public enum CustomEnchant {
                 registerEnchantment(enchantment);
     }
 
-
     private static Set<Enchantment> getCustomEnchantments() {
         return Arrays.stream(CustomEnchant.values()).map(CustomEnchant::getEnchantment).collect(Collectors.toSet());
     }
-
 
     private static void registerEnchantment(Enchantment enchantment){
         try {
@@ -78,8 +71,4 @@ public enum CustomEnchant {
             return "error";
         return roman[level - 1];
     }
-
-
-
-
 }
