@@ -1,0 +1,7 @@
+Prefix: "&4&l[&6&lCustomEnchants&4&l]&r "
+EnchantCommandUsage: "&7Usage: /ce <enchantment> [level(number)]"
+NonExistingEnchant: "&cSpecified enchantment is not included in this plugin"
+EmptyHand: "&cYou must be holding an item to enchant"
+AlreadyHasEnchant: "&cThis item is already enchanted with %enchant%"
+MaxLevelExceeded: "&cThe max level for %enchant% is: %level%"
+LevelNegative: "&cLevel cannot be negative"

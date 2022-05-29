@@ -1,0 +1,11 @@
+name: Replenish
+version: '${project.version}'
+main: com.lgdtimtou.replenish.Main
+api-version: 1.18
+authors: [ Timtou ]
+description: A simple enchantment that replenishes seeds of seeds that have been harvested
+
+commands:
+  customenchant:
+    permission: customenchants.command.enchant
+    aliases: [ce, cenchant, custome]
