@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
 
 public final class Util {
 
-    public static void registerEvent(Listener listener){
-        Main.getMain().getServer().getPluginManager().registerEvents(listener, Main.getMain());
-    }
-
     public static void log(String message){
         Bukkit.getLogger().info(message);
     }

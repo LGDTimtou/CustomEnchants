@@ -15,17 +15,14 @@ public final class Main extends JavaPlugin {
 
     private static Main plugin;
 
-
     @Override
     public void onEnable() {
         plugin = this;
         CustomEnchant.register();
         Files.register();
 
-        PluginCommand command = this.getCommand("customenchant");
-        assert(command != null);
-        command.setExecutor(new EnchantCommand());
-        command.setTabCompleter(new EnchantCommandTab());
+        this.getCommand("customenchant").setExecutor(new EnchantCommand());
+        this.getCommand("customenchant").setTabCompleter(new EnchantCommandTab());
 
         Util.log(ChatColor.GREEN + "Successfully enabled Timtou's plugin");
     }
@@ -35,11 +32,7 @@ public final class Main extends JavaPlugin {
         Util.log(ChatColor.GREEN + "Successfully disabled Timtou's plugin");
     }
 
-
     public static Main getMain(){
         return plugin;
     }
-
-
-
 }
