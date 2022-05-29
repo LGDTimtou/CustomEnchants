@@ -61,11 +61,4 @@ public enum Files {
                 Main.getMain().saveResource(yamlFile.path, false);
         }
     }
-
-
-
-
-
-
-
 }
