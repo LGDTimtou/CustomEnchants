@@ -1,12 +1,10 @@
-package com.lgdtimtou.replenish.enchantments;
+package com.lgdtimtou.customenchants.enchantments;
 
 
-import com.lgdtimtou.replenish.CustomEnchant;
-import com.lgdtimtou.replenish.Main;
-import com.lgdtimtou.replenish.Util;
+import com.lgdtimtou.customenchants.CustomEnchant;
+import com.lgdtimtou.customenchants.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -44,6 +42,9 @@ public class Replenish implements CustomEnchantListener {
         if (seed == null)
             return;
         if (!inv.contains(seed))
+            return;
+        Material relative = b.getRelative(BlockFace.DOWN).getType();
+        if (relative != Material.FARMLAND && relative != Material.SAND && relative != Material.SOUL_SAND)
             return;
 
         //Removing seed from inventory

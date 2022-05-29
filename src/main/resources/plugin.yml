@@ -1,9 +1,9 @@
-name: Replenish
+name: CustomEnchants
 version: '${project.version}'
-main: com.lgdtimtou.replenish.Main
+main: com.lgdtimtou.customenchants.Main
 api-version: 1.18
 authors: [ Timtou ]
-description: A simple enchantment that replenishes seeds of seeds that have been harvested
+description: A MineCraft plugin that adds new handy and fun enchantments to your server!
 
 commands:
   customenchant:

@@ -1,6 +1,6 @@
-package com.lgdtimtou.replenish.command;
+package com.lgdtimtou.customenchants.command;
 
-import com.lgdtimtou.replenish.CustomEnchant;
+import com.lgdtimtou.customenchants.CustomEnchant;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -23,7 +23,7 @@ public class EnchantCommandTab implements TabCompleter {
             case 1 -> {
                 Stream<CustomEnchant> filtered = Arrays.stream(CustomEnchant.values())
                         .filter(ce -> ce.getName().toLowerCase().contains(args[0].toLowerCase()));
-                yield filtered.map(CustomEnchant::getName).collect(Collectors.toList());
+                yield filtered.map(ce -> ce.getName().toLowerCase()).collect(Collectors.toList());
             }
             //Checks if the given enchant at place 0 exists if so
             // it'll return a list of all possible levels for that enchant else -1

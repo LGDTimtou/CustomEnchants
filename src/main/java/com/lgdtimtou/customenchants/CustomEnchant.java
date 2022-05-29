@@ -1,10 +1,10 @@
-package com.lgdtimtou.replenish;
+package com.lgdtimtou.customenchants;
 
-import com.lgdtimtou.replenish.enchantments.CustomEnchantListener;
-import com.lgdtimtou.replenish.enchantments.Replenish;
-import com.lgdtimtou.replenish.enchantments.Telekinesis;
+import com.lgdtimtou.customenchants.enchantments.CustomEnchantListener;
+import com.lgdtimtou.customenchants.enchantments.HeadHunter;
+import com.lgdtimtou.customenchants.enchantments.Replenish;
+import com.lgdtimtou.customenchants.enchantments.Telekinesis;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentTarget;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ public enum CustomEnchant {
     //Enchantments
     REPLENISH("replenish", 1, new Replenish()),
     TELEKINESIS("telekinesis", 1, new Telekinesis()),
-    TEST("test", 5, new Replenish());
+    HEAD_HUNTER("head_hunter", 3, new HeadHunter());
 
     private static final String[] roman = new String[]{"I", "II", "III", "IV", "V", "VI"};
 
@@ -38,6 +38,10 @@ public enum CustomEnchant {
 
     public String getName() {
         return name;
+    }
+
+    public String getLoreName() {
+        return Util.title(name.replaceAll("_", " "));
     }
 
 

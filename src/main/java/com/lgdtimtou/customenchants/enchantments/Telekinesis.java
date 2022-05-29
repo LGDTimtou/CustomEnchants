@@ -1,6 +1,6 @@
-package com.lgdtimtou.replenish.enchantments;
+package com.lgdtimtou.customenchants.enchantments;
 
-import com.lgdtimtou.replenish.CustomEnchant;
+import com.lgdtimtou.customenchants.CustomEnchant;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

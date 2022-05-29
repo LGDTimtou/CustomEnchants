@@ -1,14 +1,14 @@
-package com.lgdtimtou.replenish;
+package com.lgdtimtou.customenchants;
 
-import com.lgdtimtou.replenish.command.EnchantCommand;
-import com.lgdtimtou.replenish.command.EnchantCommandTab;
+import com.lgdtimtou.customenchants.command.EnchantCommand;
+import com.lgdtimtou.customenchants.command.EnchantCommandTab;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-//TODO can enchant with same enchant if level is different
+//TODO KillCounter enchant
+//TODO extend command to /ce add|remove enchant level
 
 
 public final class Main extends JavaPlugin {

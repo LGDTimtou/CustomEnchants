@@ -1,4 +1,4 @@
-package com.lgdtimtou.replenish;
+package com.lgdtimtou.customenchants;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;

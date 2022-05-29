@@ -1,7 +1,7 @@
-package com.lgdtimtou.replenish.command;
+package com.lgdtimtou.customenchants.command;
 
-import com.lgdtimtou.replenish.CustomEnchant;
-import com.lgdtimtou.replenish.Util;
+import com.lgdtimtou.customenchants.CustomEnchant;
+import com.lgdtimtou.customenchants.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -56,8 +56,9 @@ public class EnchantCommand implements CommandExecutor {
         ItemMeta meta = item.getItemMeta();
         CustomEnchant enchantment = CustomEnchant.valueOf(enchantName);
 
-        if (meta != null && meta.hasEnchant(enchantment.getEnchantment())){
-            player.sendMessage(Util.getMessage("AlreadyHasEnchant").replace("%enchant%", enchantment.getName()));
+        if (meta != null && meta.hasEnchant(enchantment.getEnchantment()) && level == meta.getEnchantLevel(enchantment.getEnchantment())){
+            player.sendMessage(Util.getMessage("AlreadyHasEnchant").replace("%enchant%", enchantment.getName())
+                    .replace("%level%", CustomEnchant.getLevelRoman(level)));
             return false;
         }
         if (level < 0) {
@@ -71,13 +72,22 @@ public class EnchantCommand implements CommandExecutor {
         }
 
 
-        //Adding enchantment lore
-        String enchantLore = ChatColor.GRAY + enchantment.getName() + " " + CustomEnchant.getLevelRoman(level);
+        //Adding or replacing enchantment lore
+        String enchantLore = ChatColor.GRAY + enchantment.getLoreName() + " " + CustomEnchant.getLevelRoman(level);
         List<String> lore = meta.getLore();
         if (lore == null)
             lore = List.of(enchantLore);
-        else
-            lore.add(0, enchantLore);
+        else {
+            boolean replaced = false;
+            for (int i = 0; i < lore.size(); i++) {
+                if (lore.get(i).contains(enchantment.getLoreName())){
+                    lore.set(i, enchantLore);
+                    replaced = true;
+                }
+            }
+            if (!replaced)
+                lore.add(0, enchantLore);
+        }
         meta.setLore(lore);
 
 

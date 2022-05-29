@@ -1,10 +1,14 @@
-package com.lgdtimtou.replenish;
+package com.lgdtimtou.customenchants;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class Util {
@@ -33,4 +37,12 @@ public final class Util {
         return ChatColor.translateAlternateColorCodes('&', str);
     }
 
+    public static ItemStack getPlayerHead(UUID uuid){
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+        item.setItemMeta(meta);
+        return item;
+    }
 }

@@ -1,4 +1,4 @@
-package com.lgdtimtou.replenish;
+package com.lgdtimtou.customenchants;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
