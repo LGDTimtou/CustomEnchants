@@ -21,7 +21,6 @@ public enum CustomEnchant {
 
     private static final String[] roman = new String[]{"I", "II", "III", "IV", "V", "VI"};
 
-
     private final String name;
     private final Enchantment enchantment;
 
