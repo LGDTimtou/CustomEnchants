@@ -11,7 +11,8 @@ import java.io.InputStreamReader;
 
 public enum Files {
 
-    MESSAGES("messages.yml");
+    MESSAGES("messages.yml"),
+    ENCHANTMENTS("enchantments.yml");
 
     private final String path;
 

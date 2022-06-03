@@ -1,9 +1,10 @@
-package com.lgdtimtou.customenchants;
+package com.lgdtimtou.customenchants.enchantments;
 
-import com.lgdtimtou.customenchants.enchantments.CustomEnchantListener;
-import com.lgdtimtou.customenchants.enchantments.HeadHunter;
-import com.lgdtimtou.customenchants.enchantments.Replenish;
-import com.lgdtimtou.customenchants.enchantments.Telekinesis;
+import com.lgdtimtou.customenchants.Util;
+import com.lgdtimtou.customenchants.enchantments.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchants.enchantments.listeners.HeadHunter;
+import com.lgdtimtou.customenchants.enchantments.listeners.Replenish;
+import com.lgdtimtou.customenchants.enchantments.listeners.Telekinesis;
 import org.bukkit.enchantments.Enchantment;
 
 import java.lang.reflect.Field;

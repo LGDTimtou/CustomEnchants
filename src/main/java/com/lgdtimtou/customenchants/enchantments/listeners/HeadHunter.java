@@ -1,7 +1,7 @@
-package com.lgdtimtou.customenchants.enchantments;
+package com.lgdtimtou.customenchants.enchantments.listeners;
 
-import com.lgdtimtou.customenchants.CustomEnchant;
 import com.lgdtimtou.customenchants.Util;
+import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;

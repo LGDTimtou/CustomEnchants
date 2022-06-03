@@ -1,8 +1,8 @@
-package com.lgdtimtou.customenchants.enchantments;
+package com.lgdtimtou.customenchants.enchantments.listeners;
 
 
-import com.lgdtimtou.customenchants.CustomEnchant;
 import com.lgdtimtou.customenchants.Main;
+import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
