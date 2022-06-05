@@ -1,6 +1,6 @@
 package com.lgdtimtou.customenchants.command.enchant;
 
-import com.lgdtimtou.customenchants.Util;
+import com.lgdtimtou.customenchants.other.Util;
 import com.lgdtimtou.customenchants.command.Command;
 import com.lgdtimtou.customenchants.command.enchant.subcommands.EnchantSubCommand;
 import com.lgdtimtou.customenchants.command.enchant.subcommands.SubCommandAdd;

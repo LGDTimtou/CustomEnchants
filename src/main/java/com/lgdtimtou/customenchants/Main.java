@@ -3,12 +3,15 @@ package com.lgdtimtou.customenchants;
 import com.lgdtimtou.customenchants.command.enchant.EnchantCommand;
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
+import com.lgdtimtou.customenchants.other.Files;
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 //TODO KillCounter enchant
-//TODO extend command to /ce add|remove enchant level
+//TODO make it possible for an enchantment to have multiple triggers
+//TODO make the enchantments work on books
 
 
 public final class Main extends JavaPlugin {

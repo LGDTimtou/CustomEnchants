@@ -1,14 +1,13 @@
 package com.lgdtimtou.customenchants.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchants.Util;
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,10 +19,9 @@ public class SubCommandRemove extends EnchantSubCommand{
 
     @Override
     public List<String> getTabValues(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Player player))
             return null;
 
-        Player player = (Player) sender;
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR)
             return null;
 

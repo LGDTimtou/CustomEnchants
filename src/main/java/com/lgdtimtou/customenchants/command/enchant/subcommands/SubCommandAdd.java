@@ -1,7 +1,7 @@
 package com.lgdtimtou.customenchants.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchants.Util;
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,10 +22,9 @@ public class SubCommandAdd extends EnchantSubCommand {
 
     @Override
     public List<String> getTabValues(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Player player))
             return null;
 
-        Player player = (Player) sender;
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR)
             return null;
 
@@ -45,7 +43,7 @@ public class SubCommandAdd extends EnchantSubCommand {
             //Checks if the given enchant at place 1 exists if so
             // it'll return a list of all possible levels for that enchant else -1
             case 3 -> {
-                String enchant = args[1].toUpperCase();
+                String enchant = args[1].toLowerCase();
                 if (CustomEnchant.getCustomEnchantSet().stream().anyMatch(v -> v.getName().equals(enchant))){
                     int maxLvl = CustomEnchant.get(enchant).getEnchantment().getMaxLevel();
                     yield IntStream.range(1, maxLvl + 1).mapToObj(Integer::toString).collect(Collectors.toList());

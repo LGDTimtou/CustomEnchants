@@ -1,7 +1,8 @@
 package com.lgdtimtou.customenchants.enchantments.created;
 
-import com.lgdtimtou.customenchants.Files;
-import com.lgdtimtou.customenchants.Util;
+import com.lgdtimtou.customenchants.other.FileFunction;
+import com.lgdtimtou.customenchants.other.Files;
+import com.lgdtimtou.customenchants.other.Util;
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import org.bukkit.ChatColor;
@@ -85,20 +86,24 @@ public class CustomEnchantBuilder {
         private final int level;
         private boolean enabled;
 
-        private final int chance;
+        private final double chance;
         private final boolean cancelEvent;
-        private final int inheritCommandsFrom;
         private final List<String> commands;
+
+        private int inheritCommandsFrom;
 
         public CustomEnchantLevelInfo(String name, int level){
             this.level = level;
             FileConfiguration config = Files.ENCHANTMENTS.getConfig();
             enabled = true;
-            chance = config.getInt(name + ".levels." + level + ".chance");
+            chance = config.getDouble(name + ".levels." + level + ".chance");
             if (chance > 100 || chance <= 0) enabled = false;
             cancelEvent = config.getBoolean(name + ".levels." + level + ".cancel_event");
-            inheritCommandsFrom = config.getInt(name + ".levels." + level + ".inherit_commands_from");
             commands = config.getStringList(name + ".levels." + level + ".commands");
+
+            inheritCommandsFrom = config.getInt(name + ".levels." + level + ".inherit_commands_from");
+            if (commands.isEmpty() && inheritCommandsFrom == 0)
+                inheritCommandsFrom = 1;
         }
 
         public int getLevel() {
@@ -109,7 +114,7 @@ public class CustomEnchantBuilder {
             return enabled;
         }
 
-        public int getChance() {
+        public double getChance() {
             return chance;
         }
 

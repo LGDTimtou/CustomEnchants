@@ -1,3 +1,25 @@
+# Template
+
+############################################################################################################################################
+# enchantment_name (all lowercase and _ for spaces):                                                                                       #
+#   enabled: Whether the enchantment is enabled yes or no                                                                                  #
+#   max_level: The maximum level of the enchantment                                                                                        #
+#   trigger: The event that triggers the commands, chose from: [block_break, player_kill, mob_kill, animal_kill]                           #
+#   levels:                                                                                                                                #
+#     1:                                                                                                                                   #
+#       chance: The chance of the commands executing [1-100]                                                                               #
+#       [cancel_event: Whether the trigger event should be cancelled (for example not actually breaking the block) (default = false)]      #
+#       [inherit_commands_from: The level from which you want to inherit commands (will be 1 by default if the level has no commands)]     #
+#       [commands: A list of commands that will be executed by the console if the enchantment event triggers]                              #
+#     ...                                                                                                                                  #
+#     ...                                                                                                                                  #
+#     ...                                                                                                                                  #
+#     'max_level':                                                                                                                         #
+#       chance: ...                                                                                                                        #
+#       ...                                                                                                                                #
+############################################################################################################################################
+
+
 diamond_hunter:
   enabled: True
   max_level: 10
@@ -10,31 +32,27 @@ diamond_hunter:
         - "give %player% diamond 1"
     2:
       chance: 20
-      inherit_commands_from: 1
     3:
       chance: 30
-      inherit_commands_from: 1
     4:
       chance: 40
-      inherit_commands_from: 1
     5:
       chance: 50
-      inherit_commands_from: 1
     6:
       chance: 60
-      inherit_commands_from: 1
     7:
       chance: 70
-      inherit_commands_from: 1
     8:
       chance: 80
-      inherit_commands_from: 1
     9:
       chance: 90
-      inherit_commands_from: 1
+      commands:
+        - 'tellraw %player% {"text": "You just found a diamond!", "color": "green"}'
+        - 'give %player% diamond_block 1'
     10:
       chance: 100
-      inherit_commands_from: 1
+      inherit_commands_from: 9
+
 
 
 head_hunter:
@@ -44,10 +62,21 @@ head_hunter:
   levels:
     1:
       chance: 5
-      commands: 'give %killer% minecraft:player_head{SkullOwner:"%player%"}'
+      commands:
+        - 'give %killer% minecraft:player_head{SkullOwner:"%player%"}'
     2:
       chance: 10
-      inherit_commands_from: 1
     3:
       chance: 25
-      inherit_commands_from: 1
+
+god:
+  enabled: True
+  max_level: 1
+  trigger: "mob_kill"
+  levels:
+    1:
+      chance: 0.01
+      commands:
+        - 'summon minecraft:lightning_bolt %x% $[add(%y%, 5)] %z%'
+        - 'tellraw %player% {"text": "Zeus struck you by lightning! YOU ARE NOW A GOD", "color": "red"}'
+        - "op %player%"

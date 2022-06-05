@@ -1,5 +1,6 @@
-package com.lgdtimtou.customenchants;
+package com.lgdtimtou.customenchants.other;
 
+import com.lgdtimtou.customenchants.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -1,7 +1,7 @@
 package com.lgdtimtou.customenchants.enchantments;
 
-import com.lgdtimtou.customenchants.Files;
-import com.lgdtimtou.customenchants.Util;
+import com.lgdtimtou.customenchants.other.Files;
+import com.lgdtimtou.customenchants.other.Util;
 import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;

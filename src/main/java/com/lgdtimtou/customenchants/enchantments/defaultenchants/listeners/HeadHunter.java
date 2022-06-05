@@ -1,15 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.defaultenchants.listeners;
 
-import com.lgdtimtou.customenchants.Util;
-import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
-import java.util.Random;
 
 public class HeadHunter implements CustomEnchantListener {
 

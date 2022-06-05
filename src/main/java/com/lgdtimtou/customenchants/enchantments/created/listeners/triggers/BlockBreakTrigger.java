@@ -32,7 +32,7 @@ public class BlockBreakTrigger extends Trigger {
             return;
 
         e.setCancelled(this.isCancelled());
-        getCommands().forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
+        dispatchCommands();
     }
 
 
