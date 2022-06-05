@@ -1,17 +1,15 @@
 package com.lgdtimtou.customenchants.command.enchant;
 
-import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchants.Util;
 import com.lgdtimtou.customenchants.command.Command;
 import com.lgdtimtou.customenchants.command.enchant.subcommands.EnchantSubCommand;
 import com.lgdtimtou.customenchants.command.enchant.subcommands.SubCommandAdd;
 import com.lgdtimtou.customenchants.command.enchant.subcommands.SubCommandRemove;
+import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Arrays;
 
 public class EnchantCommand extends Command {
 
@@ -21,7 +19,7 @@ public class EnchantCommand extends Command {
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        if (!(sender instanceof Player)){
+        if (!(sender instanceof Player player)){
             sender.sendMessage(Util.getMessage("OnlyPlayers"));
             return false;
         }
@@ -36,8 +34,7 @@ public class EnchantCommand extends Command {
             return false;
         }
 
-        Player player = (Player) sender;
-        String enchantName = args[1].toUpperCase();
+        String enchantName = args[1].toLowerCase();
         int level = 1;
         if (args.length > 2 && args[0].equalsIgnoreCase("add")){
             try {
@@ -50,7 +47,7 @@ public class EnchantCommand extends Command {
 
 
         //Enchant bestaat niet
-        if (Arrays.stream(CustomEnchant.values()).noneMatch(v -> v.name().equals(enchantName))){
+        if (CustomEnchant.getCustomEnchantSet().stream().noneMatch(v -> v.getName().equals(enchantName))){
             player.sendMessage(Util.getMessage("NonExistingEnchant"));
             return false;
         }
@@ -61,7 +58,7 @@ public class EnchantCommand extends Command {
         }
 
         ItemStack item = player.getInventory().getItemInMainHand();
-        CustomEnchant enchantment = CustomEnchant.valueOf(enchantName);
+        CustomEnchant enchantment = CustomEnchant.get(enchantName);
 
 
         subCommand.execute(player, item, enchantment, level);

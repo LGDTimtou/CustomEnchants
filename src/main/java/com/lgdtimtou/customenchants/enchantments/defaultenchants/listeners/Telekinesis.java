@@ -1,6 +1,7 @@
-package com.lgdtimtou.customenchants.enchantments.listeners;
+package com.lgdtimtou.customenchants.enchantments.defaultenchants.listeners.listeners;
 
-import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,7 +20,7 @@ public class Telekinesis implements CustomEnchantListener {
         PlayerInventory inv = e.getPlayer().getInventory();
         if (inv.getItemInMainHand().getItemMeta() == null)
             return;
-        if (!inv.getItemInMainHand().containsEnchantment(CustomEnchant.TELEKINESIS.getEnchantment()))
+        if (!inv.getItemInMainHand().containsEnchantment(DefaultCustomEnchant.TELEKINESIS.getEnchantment()))
             return;
         if (e.getPlayer().getGameMode() != GameMode.SURVIVAL)
             return;
@@ -43,7 +44,7 @@ public class Telekinesis implements CustomEnchantListener {
         PlayerInventory inv = killer.getInventory();
         if (inv.getItemInMainHand().getItemMeta() == null)
             return;
-        if (!inv.getItemInMainHand().containsEnchantment(CustomEnchant.TELEKINESIS.getEnchantment()))
+        if (!inv.getItemInMainHand().containsEnchantment(DefaultCustomEnchant.TELEKINESIS.getEnchantment()))
             return;
         if (killer.getGameMode() != GameMode.SURVIVAL)
             return;

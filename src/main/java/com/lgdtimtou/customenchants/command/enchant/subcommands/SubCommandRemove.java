@@ -32,7 +32,7 @@ public class SubCommandRemove extends EnchantSubCommand{
             return null;
 
         if (args.length == 2){
-            Stream<CustomEnchant> filtered = Arrays.stream(CustomEnchant.values())
+            Stream<CustomEnchant> filtered = CustomEnchant.getCustomEnchantSet().stream()
                     .filter(ce -> ce.getName().toLowerCase().startsWith(args[1].toLowerCase()))
                     .filter(ce -> item.getItemMeta().getEnchants().containsKey(ce.getEnchantment()));
             return filtered.map(ce -> ce.getName().toLowerCase()).collect(Collectors.toList());

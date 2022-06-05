@@ -37,7 +37,7 @@ public class SubCommandAdd extends EnchantSubCommand {
         return switch(args.length){
             //Returns the names of all the custom enchants
             case 2 -> {
-                Stream<CustomEnchant> filtered = Arrays.stream(CustomEnchant.values())
+                Stream<CustomEnchant> filtered = CustomEnchant.getCustomEnchantSet().stream()
                         .filter(ce -> ce.getName().toLowerCase().startsWith(args[1].toLowerCase()))
                         .filter(ce -> !item.getEnchantments().containsKey(ce.getEnchantment()));
                 yield filtered.map(ce -> ce.getName().toLowerCase()).collect(Collectors.toList());
@@ -46,8 +46,8 @@ public class SubCommandAdd extends EnchantSubCommand {
             // it'll return a list of all possible levels for that enchant else -1
             case 3 -> {
                 String enchant = args[1].toUpperCase();
-                if (Arrays.stream(CustomEnchant.values()).anyMatch(v -> v.name().equals(enchant))){
-                    int maxLvl = CustomEnchant.valueOf(enchant).getEnchantment().getMaxLevel();
+                if (CustomEnchant.getCustomEnchantSet().stream().anyMatch(v -> v.getName().equals(enchant))){
+                    int maxLvl = CustomEnchant.get(enchant).getEnchantment().getMaxLevel();
                     yield IntStream.range(1, maxLvl + 1).mapToObj(Integer::toString).collect(Collectors.toList());
                 } else {
                     yield List.of("-1");

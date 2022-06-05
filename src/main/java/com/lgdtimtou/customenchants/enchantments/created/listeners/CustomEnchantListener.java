@@ -1,4 +1,4 @@
-package com.lgdtimtou.customenchants.enchantments.listeners;
+package com.lgdtimtou.customenchants.enchantments.created.listeners;
 
 import org.bukkit.event.Listener;
 

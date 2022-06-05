@@ -1,0 +1,53 @@
+diamond_hunter:
+  enabled: True
+  max_level: 10
+  trigger: "block_break"
+  levels:
+    1:
+      chance: 10
+      commands:
+        - 'tellraw %player% {"text": "You just found a diamond!", "color": "green"}'
+        - "give %player% diamond 1"
+    2:
+      chance: 20
+      inherit_commands_from: 1
+    3:
+      chance: 30
+      inherit_commands_from: 1
+    4:
+      chance: 40
+      inherit_commands_from: 1
+    5:
+      chance: 50
+      inherit_commands_from: 1
+    6:
+      chance: 60
+      inherit_commands_from: 1
+    7:
+      chance: 70
+      inherit_commands_from: 1
+    8:
+      chance: 80
+      inherit_commands_from: 1
+    9:
+      chance: 90
+      inherit_commands_from: 1
+    10:
+      chance: 100
+      inherit_commands_from: 1
+
+
+head_hunter:
+  enabled: True
+  max_level: 3
+  trigger: "player_kill"
+  levels:
+    1:
+      chance: 5
+      commands: 'give %killer% minecraft:player_head{SkullOwner:"%player%"}'
+    2:
+      chance: 10
+      inherit_commands_from: 1
+    3:
+      chance: 25
+      inherit_commands_from: 1

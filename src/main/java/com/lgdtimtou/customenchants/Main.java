@@ -1,9 +1,8 @@
 package com.lgdtimtou.customenchants;
 
-import com.lgdtimtou.customenchants.command.Command;
 import com.lgdtimtou.customenchants.command.enchant.EnchantCommand;
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchants.enchantments.listeners.Replenish;
+import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,11 +19,13 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        CustomEnchant.register();
         Files.register();
+        CustomEnchant.register();
 
 
-        Command enchantCommand = new EnchantCommand();
+        new EnchantCommand();
+        new CustomEnchantBuilder("test");
+
 
         Util.log(ChatColor.GREEN + "Successfully enabled Timtou's plugin");
     }

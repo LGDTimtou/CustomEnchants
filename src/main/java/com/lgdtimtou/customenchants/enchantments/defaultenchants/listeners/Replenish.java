@@ -1,8 +1,9 @@
-package com.lgdtimtou.customenchants.enchantments.listeners;
+package com.lgdtimtou.customenchants.enchantments.defaultenchants.listeners.listeners;
 
 
 import com.lgdtimtou.customenchants.Main;
-import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -31,7 +32,7 @@ public class Replenish implements CustomEnchantListener {
 
     @EventHandler
     public void blockBreak(BlockBreakEvent e){
-        if (!e.getPlayer().getInventory().getItemInMainHand().containsEnchantment(CustomEnchant.REPLENISH.getEnchantment()))
+        if (!e.getPlayer().getInventory().getItemInMainHand().containsEnchantment(DefaultCustomEnchant.REPLENISH.getEnchantment()))
             return;
 
 

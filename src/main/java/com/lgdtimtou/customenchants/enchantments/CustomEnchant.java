@@ -1,34 +1,40 @@
 package com.lgdtimtou.customenchants.enchantments;
 
+import com.lgdtimtou.customenchants.Files;
 import com.lgdtimtou.customenchants.Util;
-import com.lgdtimtou.customenchants.enchantments.listeners.CustomEnchantListener;
-import com.lgdtimtou.customenchants.enchantments.listeners.HeadHunter;
-import com.lgdtimtou.customenchants.enchantments.listeners.Replenish;
-import com.lgdtimtou.customenchants.enchantments.listeners.Telekinesis;
+import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
+import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
+import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public enum CustomEnchant {
+public class CustomEnchant {
 
-    //Enchantments
-    REPLENISH("replenish", 1, new Replenish()),
-    TELEKINESIS("telekinesis", 1, new Telekinesis()),
-    HEAD_HUNTER("head_hunter", 3, new HeadHunter());
+    private static final String[] roman = new String[]{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 
-    private static final String[] roman = new String[]{"I", "II", "III", "IV", "V", "VI"};
-
+    private static final Map<String, CustomEnchant> enchantments = new HashMap<>();
 
     private final String name;
     private final Enchantment enchantment;
 
-    CustomEnchant(String name, int maxLvl, CustomEnchantListener listener){
-        this.name = Util.title(name);
+    public CustomEnchant(String name, int maxLvl, CustomEnchantListener listener){
+        this.name = name;
         this.enchantment = new EnchantmentWrapper(name, Util.title(name), maxLvl);
+        enchantments.put(name, this);
+        Util.registerEvent(listener);
+    }
+
+    public CustomEnchant(String name, int maxLvl, EnchantTriggerType type, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
+        this.name = name;
+        this.enchantment = new EnchantmentWrapper(name, Util.title(name), maxLvl);
+        enchantments.put(name, this);
+
+        CustomEnchantListener listener = type.getTrigger(enchantment, levels);
         Util.registerEvent(listener);
     }
 
@@ -45,21 +51,39 @@ public enum CustomEnchant {
         return Util.title(name.replaceAll("_", " "));
     }
 
-
+    public static CustomEnchant get(String name){
+        if (!enchantments.containsKey(name))
+            throw new IllegalArgumentException(name + " enchantment does not exist");
+        return enchantments.get(name);
+    }
 
 
 
     //Registering
     public static void register(){
-        List<Enchantment> enchantments = Arrays.stream(Enchantment.values()).collect(Collectors.toList());
+        //Build CustomEnchantments from enchantments.yml
+        for (String enchant : Files.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
+            new CustomEnchantBuilder(enchant).build();
+        //Load default CustomEnchantments
+        DefaultCustomEnchant.load();
+
+
+        //Register all enchantments
+        List<Enchantment> enchantments = Arrays.stream(Enchantment.values()).toList();
         for (Enchantment enchantment : getCustomEnchantments())
             if (!enchantments.contains(enchantment))
                 registerEnchantment(enchantment);
+
+        Util.log(ChatColor.GREEN + "Successfully registered these enchantments: " + getCustomEnchantSet().stream().map(CustomEnchant::getName).toList());
+    }
+
+    public static Set<CustomEnchant> getCustomEnchantSet(){
+        return new HashSet<>(enchantments.values());
     }
 
 
     private static Set<Enchantment> getCustomEnchantments() {
-        return Arrays.stream(CustomEnchant.values()).map(CustomEnchant::getEnchantment).collect(Collectors.toSet());
+        return enchantments.values().stream().map(CustomEnchant::getEnchantment).collect(Collectors.toSet());
     }
 
 
