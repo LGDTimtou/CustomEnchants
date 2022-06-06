@@ -9,6 +9,7 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
     - Name
     - Max level
     - Events that trigger the enchantment
+    - Cooldowns specific for each level
     - Commands that are executed by the console when the enchantment triggers (Customizable for each level)
       - These commands can contain parameters 
       - These commands can contain built-in functions
@@ -36,10 +37,21 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
 - **break_block**
   - Triggers when a block is broken
 
+- **damage_entity**
+  - Triggers when an entity is damaged by the player
+  - Overrides: damage_player, damage_animal, damage_mob
+
 - **damage_player**
   - Triggers when a player is damaged by the player
   - Parameters
     - %damaged%: The person who got damaged
+
+- **damage_mob**
+  - Triggers when a mob is damaged by the player
+
+- **kill_entity**
+  - Triggers when an entity is killed by the player
+  - Overrides: kill_player, kill_mob, kill_animal 
   
 - **kill_player**
   - Triggers when a player is killed by the player
