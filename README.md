@@ -3,7 +3,7 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
 
 # Features
 - Default Custom Enchantments (Replenish, Telekenesis, ...)
-- Command to add/remove custom enchantments from items (working on enchanted books)
+- Command to add/remove custom enchantments from items (enchanted books coming soon)
 - Ability to create fully custom enchantments via a yaml file (GUI coming soon)
   - Customizable:
     - Name
