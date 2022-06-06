@@ -29,13 +29,12 @@ public class CustomEnchant {
         Util.registerEvent(listener);
     }
 
-    public CustomEnchant(String name, int maxLvl, EnchantTriggerType type, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
+    public CustomEnchant(String name, int maxLvl, List<EnchantTriggerType> types, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
         this.name = name;
         this.enchantment = new EnchantmentWrapper(name, Util.title(name), maxLvl);
         enchantments.put(name, this);
 
-        CustomEnchantListener listener = type.getTrigger(enchantment, levels);
-        Util.registerEvent(listener);
+        types.forEach(type -> Util.registerEvent(type.getTrigger(enchantment, levels)));
     }
 
 

@@ -56,7 +56,7 @@ class Trigger implements CustomEnchantListener {
 
         int level = inv.getItemInMainHand().getEnchantmentLevel(this.enchantment);
         double chance = chanceArr[level - 1];
-        if (RG.nextInt(10001) >= (chance * 100))
+        if (RG.nextInt(10001) > (chance * 100))
             return false;
 
         cancelled = cancelledArr[level - 1];

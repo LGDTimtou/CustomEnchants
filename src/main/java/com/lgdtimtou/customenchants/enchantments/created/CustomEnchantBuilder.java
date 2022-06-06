@@ -10,7 +10,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 //Loads a custom enchant from the enchantments.yml file with the given name
@@ -21,7 +23,7 @@ public class CustomEnchantBuilder {
     private final String name;
     private final boolean enabled;
     private int maxLvl;
-    private EnchantTriggerType triggerType;
+    private List<EnchantTriggerType> triggerTypes;
     private final List<CustomEnchantLevelInfo> levels = new ArrayList<>();
 
 
@@ -44,12 +46,15 @@ public class CustomEnchantBuilder {
             error = true;
             return;
         }
+        triggerTypes = Arrays.stream(trigger.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*]"))
+                .filter(tr -> Arrays.stream(EnchantTriggerType.values()).anyMatch(v -> v.name().equals(tr.toUpperCase())))
+                .map(tr -> EnchantTriggerType.valueOf(tr.toUpperCase())).collect(Collectors.toList());
 
-        if (Arrays.stream(EnchantTriggerType.values()).noneMatch(v -> v.name().equals(trigger.toUpperCase()))){
+
+        if (triggerTypes.isEmpty()){
             error = true;
             return;
         }
-        triggerType = EnchantTriggerType.valueOf(trigger.toUpperCase());
 
         for (int i = 1; i <= maxLvl; i++)
             levels.add(new CustomEnchantLevelInfo(name, i));
@@ -75,7 +80,7 @@ public class CustomEnchantBuilder {
         if (error)
             Util.log(Util.getMessage(ChatColor.RED + "Cannot Build " + name + ", check enchantments.yml for any syntax errors"));
         else if (enabled)
-            new CustomEnchant(name, maxLvl, triggerType, levels);
+            new CustomEnchant(name, maxLvl, triggerTypes, levels);
     }
 
 
@@ -99,7 +104,12 @@ public class CustomEnchantBuilder {
             chance = config.getDouble(name + ".levels." + level + ".chance");
             if (chance > 100 || chance <= 0) enabled = false;
             cancelEvent = config.getBoolean(name + ".levels." + level + ".cancel_event");
-            commands = config.getStringList(name + ".levels." + level + ".commands");
+            String str = config.getString(name + ".levels." + level + ".commands");
+            if (str != null)
+                commands = Arrays.stream(str.replaceAll("^\\[", "").replaceAll("]$", "").split(", "))
+                        .collect(Collectors.toList());
+            else
+                commands = Collections.emptyList();
 
             inheritCommandsFrom = config.getInt(name + ".levels." + level + ".inherit_commands_from");
             if (commands.isEmpty() && inheritCommandsFrom == 0)
