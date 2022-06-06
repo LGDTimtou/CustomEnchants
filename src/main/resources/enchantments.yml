@@ -7,15 +7,16 @@
 #   trigger: The event that triggers the commands, chose from: [block_break, player_kill, mob_kill, animal_kill]                           #
 #   levels:                                                                                                                                #
 #     1:                                                                                                                                   #
-#       chance: The chance of the commands executing [1-100]                                                                               #
-#       [cancel_event: Whether the trigger event should be cancelled (for example not actually breaking the block) (default = false)]      #
-#       [inherit_commands_from: The level from which you want to inherit commands (will be 1 by default if the level has no commands)]     #
-#       [commands: A list of commands that will be executed by the console if the enchantment event triggers]                              #
+#       cooldown: The time in seconds before the commands have their chance of executing again (0 by default)                              #
+#       chance: The chance of the commands executing [0.01-100] (100 by default)                                                           #
+#       cancel_event: Whether the trigger event should be cancelled (for example not actually breaking the block) (false by default)       #
+#       inherit_commands_from: The level from which you want to inherit commands (will be 1 by default if the level has no commands)       #
+#       commands: A list of commands that will be executed by the console if the enchantment event triggers                                #
 #     ...                                                                                                                                  #
 #     ...                                                                                                                                  #
 #     ...                                                                                                                                  #
 #     'max_level':                                                                                                                         #
-#       chance: ...                                                                                                                        #
+#       cooldown: ...                                                                                                                        #
 #       ...                                                                                                                                #
 ############################################################################################################################################
 
@@ -23,7 +24,7 @@
 diamond_hunter:
   enabled: True
   max_level: 10
-  triggers: "block_break"
+  triggers: "break_block"
   levels:
     1:
       chance: 10
@@ -45,11 +46,13 @@ diamond_hunter:
     8:
       chance: 80
     9:
+      cooldown: 5
       chance: 90
       commands:
         - 'tellraw %player% {"text": "You just found a diamond!", "color": "green"}'
         - 'give %player% diamond_block 1'
     10:
+      cooldown: 5
       chance: 100
       inherit_commands_from: 9
 
@@ -58,7 +61,7 @@ diamond_hunter:
 head_hunter:
   enabled: True
   max_level: 3
-  triggers: "player_kill"
+  triggers: "kill_player"
   levels:
     1:
       chance: 5
@@ -69,10 +72,38 @@ head_hunter:
     3:
       chance: 25
 
+stun:
+  enabled: true
+  max_level: 3
+  triggers: damage_player
+  levels:
+    1:
+      cooldown: 60
+      commands:
+        - 'tellraw %damaged% {"text": "You got stunned for 2 seconds!", "color": "red"}'
+        - "effect give %damaged% minecraft:slowness 2 100 false"
+        - "effect give %damaged% minecraft:jump_boost 2 240 false"
+        - "effect give %damaged% minecraft:blindness 2 1 false"
+    2:
+      cooldown: 60
+      commands:
+        - 'tellraw %damaged% {"text": "You got stunned for 3 seconds!", "color": "red"}'
+        - "effect give %damaged% minecraft:slowness 3 100 false"
+        - "effect give %damaged% minecraft:jump_boost 3 240 false"
+        - "effect give %damaged% minecraft:blindness 3 1 false"
+    3:
+      cooldown: 60
+      commands:
+        - 'tellraw %damaged% {"text": "You got stunned for 4 seconds!", "color": "red"}'
+        - "effect give %damaged% minecraft:slowness 4 100 false"
+        - "effect give %damaged% minecraft:jump_boost 4 240 false"
+        - "effect give %damaged% minecraft:blindness 4 1 false"
+
+
 god:
-  enabled: True
+  enabled: False
   max_level: 1
-  triggers: [mob_kill, animal_kill]
+  triggers: [kill_entity]
   levels:
     1:
       chance: 0.01

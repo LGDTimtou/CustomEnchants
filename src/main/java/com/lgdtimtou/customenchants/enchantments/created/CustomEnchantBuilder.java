@@ -23,7 +23,7 @@ public class CustomEnchantBuilder {
     private final String name;
     private final boolean enabled;
     private int maxLvl;
-    private List<EnchantTriggerType> triggerTypes;
+    private ArrayList<EnchantTriggerType> triggerTypes;
     private final List<CustomEnchantLevelInfo> levels = new ArrayList<>();
 
 
@@ -49,8 +49,8 @@ public class CustomEnchantBuilder {
 
         triggerTypes = Arrays.stream(trigger.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"))
                 .filter(tr -> Arrays.stream(EnchantTriggerType.values()).anyMatch(v -> v.name().equals(tr.toUpperCase())))
-                .map(tr -> EnchantTriggerType.valueOf(tr.toUpperCase())).collect(Collectors.toList());
-
+                .map(tr -> EnchantTriggerType.valueOf(tr.toUpperCase())).collect(Collectors.toCollection(ArrayList::new));
+        EnchantTriggerType.fixOverrides(triggerTypes);
 
         if (triggerTypes.isEmpty()){
             error = true;
@@ -91,9 +91,10 @@ public class CustomEnchantBuilder {
     public static class CustomEnchantLevelInfo {
 
         private final int level;
-        private boolean enabled;
+        private final boolean enabled;
 
-        private final double chance;
+        private final int cooldown;
+        private double chance;
         private final boolean cancelEvent;
         private final List<String> commands;
 
@@ -103,8 +104,11 @@ public class CustomEnchantBuilder {
             this.level = level;
             FileConfiguration config = Files.ENCHANTMENTS.getConfig();
             enabled = true;
+
+            cooldown = config.getInt(name + ".levels." + level + ".cooldown");
+
             chance = config.getDouble(name + ".levels." + level + ".chance");
-            if (chance > 100 || chance <= 0) enabled = false;
+            if (chance > 100 || chance <= 0) chance = 100;
             cancelEvent = config.getBoolean(name + ".levels." + level + ".cancel_event");
             commands = config.getStringList(name + ".levels." + level + ".commands");
 
@@ -119,6 +123,10 @@ public class CustomEnchantBuilder {
 
         private boolean isEnabled(){
             return enabled;
+        }
+
+        public int getCooldown() {
+            return cooldown;
         }
 
         public double getChance() {

@@ -7,6 +7,10 @@ import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 
 //TODO KillCounter enchant
 //TODO make the enchantments work on books

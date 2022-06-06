@@ -7,10 +7,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.List;
+import java.util.Map;
 
-public class MobKillTrigger extends Trigger{
+public class KillMobTrigger extends Trigger{
 
-    public MobKillTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
+    public KillMobTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
         super(enchantment, levels);
     }
 
@@ -21,7 +22,8 @@ public class MobKillTrigger extends Trigger{
             return;
         if (!defaultChecks(e.getEntity().getKiller()))
             return;
-        dispatchCommands();
+
+        dispatchCommands(e.getEntity().getKiller(), Map.of());
     }
 
 }

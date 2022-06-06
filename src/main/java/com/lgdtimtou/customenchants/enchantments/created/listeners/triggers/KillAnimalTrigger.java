@@ -7,9 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.List;
+import java.util.Map;
 
-public class AnimalKillTrigger extends Trigger{
-    public AnimalKillTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
+public class KillAnimalTrigger extends Trigger{
+    public KillAnimalTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
         super(enchantment, levels);
     }
 
@@ -19,6 +20,7 @@ public class AnimalKillTrigger extends Trigger{
             return;
         if (!defaultChecks(e.getEntity().getKiller()))
             return;
-        dispatchCommands();
+
+        dispatchCommands(e.getEntity().getKiller(), Map.of());
     }
 }
