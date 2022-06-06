@@ -23,7 +23,7 @@
 diamond_hunter:
   enabled: True
   max_level: 10
-  trigger: "block_break"
+  triggers: "block_break"
   levels:
     1:
       chance: 10
@@ -58,7 +58,7 @@ diamond_hunter:
 head_hunter:
   enabled: True
   max_level: 3
-  trigger: "player_kill"
+  triggers: "player_kill"
   levels:
     1:
       chance: 5
@@ -72,7 +72,7 @@ head_hunter:
 god:
   enabled: True
   max_level: 1
-  trigger: "mob_kill"
+  triggers: [mob_kill, animal_kill]
   levels:
     1:
       chance: 0.01

@@ -81,6 +81,7 @@ class Trigger implements CustomEnchantListener {
     }
 
     protected void dispatchCommands(){
+        getCommands().forEach(System.out::println);
         getCommands().forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
     }
 

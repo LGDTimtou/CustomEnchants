@@ -41,12 +41,13 @@ public class CustomEnchantBuilder {
             return;
         }
 
-        String trigger = config.getString(name + ".trigger");
+        String trigger = config.getString(name + ".triggers");
         if (trigger == null) {
             error = true;
             return;
         }
-        triggerTypes = Arrays.stream(trigger.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*]"))
+
+        triggerTypes = Arrays.stream(trigger.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"))
                 .filter(tr -> Arrays.stream(EnchantTriggerType.values()).anyMatch(v -> v.name().equals(tr.toUpperCase())))
                 .map(tr -> EnchantTriggerType.valueOf(tr.toUpperCase())).collect(Collectors.toList());
 
@@ -58,6 +59,7 @@ public class CustomEnchantBuilder {
 
         for (int i = 1; i <= maxLvl; i++)
             levels.add(new CustomEnchantLevelInfo(name, i));
+
 
         if (levels.stream().anyMatch(level -> !level.isEnabled())){
             error = true;
@@ -78,7 +80,7 @@ public class CustomEnchantBuilder {
 
     public void build(){
         if (error)
-            Util.log(Util.getMessage(ChatColor.RED + "Cannot Build " + name + ", check enchantments.yml for any syntax errors"));
+            Util.log(ChatColor.RED + "Cannot Build " + name + ", check enchantments.yml for any syntax errors");
         else if (enabled)
             new CustomEnchant(name, maxLvl, triggerTypes, levels);
     }
@@ -104,12 +106,7 @@ public class CustomEnchantBuilder {
             chance = config.getDouble(name + ".levels." + level + ".chance");
             if (chance > 100 || chance <= 0) enabled = false;
             cancelEvent = config.getBoolean(name + ".levels." + level + ".cancel_event");
-            String str = config.getString(name + ".levels." + level + ".commands");
-            if (str != null)
-                commands = Arrays.stream(str.replaceAll("^\\[", "").replaceAll("]$", "").split(", "))
-                        .collect(Collectors.toList());
-            else
-                commands = Collections.emptyList();
+            commands = config.getStringList(name + ".levels." + level + ".commands");
 
             inheritCommandsFrom = config.getInt(name + ".levels." + level + ".inherit_commands_from");
             if (commands.isEmpty() && inheritCommandsFrom == 0)
