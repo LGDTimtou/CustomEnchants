@@ -15,8 +15,7 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
     - The chance of these commands executing
     - Whether the event that triggers the enchantment should be cancelled
 
-#Default Custom Enchants
-
+# Default Custom Enchants
 - **Replenish**
   - Will replenish plants that have been harvested if the corresponding seed is in the player's inventory
   - Max level: 1
@@ -26,15 +25,14 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
   - Max level: 1
 
    
-#Global Command Parameters
+# Global Command Parameters
 - **%player%**: The player that triggered the enchantment
 - **%x%**: The x coordinate of the player
 - **%y%**: The y coordinate of the player
 - **%z%**: The z coordinate of the player
 
 
-#Triggers
-
+# Triggers
 - **break_block**
   - Triggers when a block is broken
 
@@ -55,7 +53,7 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
   - Triggers when an animal is killed by the player
 
 
-#Built-in functions
+# Built-in functions
 
 **Syntax:** **$[function(v1, v2, ...)]**
 
