@@ -8,7 +8,7 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
   - Customizable:
     - Name
     - Max level
-    - Event that triggers the enchantment (breaking a block, killing a mob, etc...)
+    - Events that triggers the enchantment (breaking a block, killing a mob, etc...)
     - Commands that are executed by the console when the enchantment triggers (Customizable for each level)
       - These commands can contain parameters (%x%, %y%, %z%, %player%, %killer%, etc...)
       - These commands can contain built in functions, Syntax: $[function(v1, v2, ...)] (add, subtract, multiply, ...)
