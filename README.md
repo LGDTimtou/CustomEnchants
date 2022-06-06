@@ -70,8 +70,8 @@ A MineCraft plugin that allows you to create and use custom enchants on your ser
 **Syntax:** **$[function(v1, v2, ...)]**
 
 - **add**
-  - Adds multiple numbers together
+  - Adds numbers together
 - **sub**
-  - Subtracts multiple numbers from each other
+  - Subtracts numbers from each other
 - **mul**
-  - Multiplies multiple numbers with each other
+  - Multiplies numbers with each other
