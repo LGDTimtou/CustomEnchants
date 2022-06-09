@@ -2,7 +2,6 @@ package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
 import com.lgdtimtou.customenchants.Main;
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchants.other.FileFunction;
 import com.lgdtimtou.customenchants.other.Util;
@@ -35,28 +34,26 @@ class Trigger implements CustomEnchantListener {
         this.enchantment = CustomEnchant.get(enchantment.getKey().getKey());
     }
 
-    protected boolean defaultChecks(Event e, Player player){
+    protected void executeCommands(Event e, Player player, Map<String, String> parameters){
         if (player == null)
-            return false;
+            return;
         PlayerInventory inv = player.getInventory();
         Location location = player.getLocation();
-        if (inv.getItemInMainHand().getItemMeta() == null)
-            return false;
 
-        if (!Util.containsEnchant(inv.getItemInMainHand(), this.enchantment.getEnchantment()))
-            return false;
+        if (!Util.containsEnchant(inv, this.enchantment.getEnchantment()))
+            return;
 
         //Check if this enchantment is still in cooldown for the player
         pendingCooldown.computeIfAbsent(player, v -> new HashSet<>());
         if (pendingCooldown.get(player).contains(this.enchantment.getEnchantment()))
-            return false;
+            return;
 
         //Get the level of the enchantment
-        level = Util.getLevel(inv.getItemInMainHand(), this.enchantment.getEnchantment());
+        level = Util.getLevel(inv, this.enchantment.getEnchantment());
 
         //Return if chance didn't trigger
         if (RG.nextInt(10001) > enchantment.getChance(level))
-            return false;
+            return;
 
         //Cancel event if specified to do so
         if (e instanceof Cancellable event)
@@ -73,13 +70,13 @@ class Trigger implements CustomEnchantListener {
         try {
             commands = FileFunction.parse(commands);
         } catch (NumberFormatException exception){
-            return false;
+            return;
         }
 
-        return true;
+        dispatchCommands(player, parameters);
     }
 
-    protected void dispatchCommands(Player player, Map<String, String> parameters){
+    private void dispatchCommands(Player player, Map<String, String> parameters){
         replaceParameters(parameters);
         commands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
         if (enchantment.getCooldown(level) > 0){

@@ -17,7 +17,11 @@ public enum EnchantTriggerType {
     DAMAGE_ENTITY,
     DAMAGE_MOB(DAMAGE_ENTITY),
     DAMAGE_ANIMAL(DAMAGE_ENTITY),
-    DAMAGE_PLAYER(DAMAGE_ENTITY);
+    DAMAGE_PLAYER(DAMAGE_ENTITY),
+    TAKE_DAMAGE_FROM_NONENTITY(),
+    TAKE_DAMAGE_FROM_ENTITY(),
+    TAKE_DAMAGE_FROM_PLAYER(TAKE_DAMAGE_FROM_ENTITY),
+    TAKE_DAMAGE_FROM_MOB(TAKE_DAMAGE_FROM_ENTITY);
 
     private final Set<EnchantTriggerType> overriddenBy;
 
@@ -27,17 +31,21 @@ public enum EnchantTriggerType {
 
     
 
-    public CustomEnchantListener getTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
+    public CustomEnchantListener getTrigger(Enchantment enchantment){
         return switch(this){
-            case BREAK_BLOCK -> new BreakBlockTrigger(enchantment, levels);
-            case KILL_ENTITY -> new KillEntityTrigger(enchantment, levels);
-            case KILL_MOB -> new KillMobTrigger(enchantment, levels);
-            case KILL_ANIMAL -> new KillAnimalTrigger(enchantment, levels);
-            case KILL_PLAYER -> new KillPlayerTrigger(enchantment, levels);
-            case DAMAGE_ENTITY -> new DamageEntityTrigger(enchantment, levels);
-            case DAMAGE_MOB -> new DamageMobTrigger(enchantment, levels);
-            case DAMAGE_ANIMAL -> new DamageAnimalTrigger(enchantment, levels);
-            case DAMAGE_PLAYER -> new DamagePlayerTrigger(enchantment, levels);
+            case BREAK_BLOCK -> new BreakBlockTrigger(enchantment);
+            case KILL_ENTITY -> new KillEntityTrigger(enchantment);
+            case KILL_MOB -> new KillMobTrigger(enchantment);
+            case KILL_ANIMAL -> new KillAnimalTrigger(enchantment);
+            case KILL_PLAYER -> new KillPlayerTrigger(enchantment);
+            case DAMAGE_ENTITY -> new DamageEntityTrigger(enchantment);
+            case DAMAGE_MOB -> new DamageMobTrigger(enchantment);
+            case DAMAGE_ANIMAL -> new DamageAnimalTrigger(enchantment);
+            case DAMAGE_PLAYER -> new DamagePlayerTrigger(enchantment);
+            case TAKE_DAMAGE_FROM_NONENTITY -> new TakeDamageFromNonEntityTrigger(enchantment);
+            case TAKE_DAMAGE_FROM_ENTITY -> new TakeDamageFromEntityTrigger(enchantment);
+            case TAKE_DAMAGE_FROM_MOB -> new TakeDamageFromMobTrigger(enchantment);
+            case TAKE_DAMAGE_FROM_PLAYER -> new TakeDamageFromPlayerTrigger(enchantment);
         };
     }
 

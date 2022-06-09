@@ -1,17 +1,15 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
-import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.List;
 import java.util.Map;
 
 public class DamageAnimalTrigger extends Trigger{
-    public DamageAnimalTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
+    public DamageAnimalTrigger(Enchantment enchantment) {
         super(enchantment);
     }
 
@@ -21,9 +19,6 @@ public class DamageAnimalTrigger extends Trigger{
             return;
         if (!(e.getDamager() instanceof Player player))
             return;
-        if (!defaultChecks(e, player))
-            return;
-
-        dispatchCommands(player, Map.of());
+        executeCommands(e, player, Map.of());
     }
 }

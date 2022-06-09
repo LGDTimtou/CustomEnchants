@@ -104,9 +104,64 @@ stun:
         - "effect give %damaged% minecraft:jump_boost 4 240 false"
         - "effect give %damaged% minecraft:blindness 4 1 false"
 
+rage:
+  enabled: true
+  max_level: 5
+  triggers: [take_damage_from_entity]
+  targets: [armor_torso]
+  levels:
+    1:
+      cooldown: 60
+      chance: 10
+      commands:
+        - 'tellraw %player% {"text": "You have been enraged with strength I", "color": "green"}'
+        - 'effect give %player% minecraft:strength 5'
+    2:
+      cooldown: 60
+      chance: 20
+    3:
+      cooldown: 60
+      chance: 30
+    4:
+      cooldown: 60
+      chance: 40
+      commands:
+        - 'tellraw %player% {"text": "You have been enraged with strength II", "color": "green"}'
+        - 'effect give %player% minecraft:strength 5 1'
+    5:
+      cooldown: 60
+      chance: 50
+      commands:
+        - 'tellraw %player% {"text": "You have been enraged with strength III", "color": "green"}'
+        - 'effect give %player% minecraft:strength 5 2'
+
+
+
+absorb:
+  enabled: true
+  max_level: 3
+  triggers: [take_damage_from_nonentity, take_damage_from_entity]
+  targets: [armor_legs]
+  levels:
+    1:
+      cancel_event: true
+      cooldown: 10
+      chance: 5
+      commands:
+        - 'tellraw %player% {"text": "Your damage has been absorbed!", "color": "green"}'
+    2:
+      cancel_event: true
+      cooldown: 10
+      chance: 8
+    3:
+      cancel_event: true
+      cooldown: 8
+      chance: 10
+
+
 
 god:
-  enabled: true
+  enabled: false
   max_level: 1
   triggers: [kill_entity]
   levels:
@@ -114,5 +169,5 @@ god:
       chance: 0.01
       commands:
         - 'summon minecraft:lightning_bolt %x% $[add(%y%, 5)] %z%'
-        - 'tellraw %player% {"text": "Zeus struck you by lightning! YOU ARE NOW A GOD", "color": "red"}'
+        - 'tellraw %player% {"text": "Zeus struck you with lightning! YOU ARE NOW A GOD", "color": "red"}'
         - "op %player%"

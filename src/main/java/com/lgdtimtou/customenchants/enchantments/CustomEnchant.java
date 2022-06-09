@@ -42,7 +42,7 @@ public class CustomEnchant {
         this.levels = levels;
         enchantments.put(name, this);
 
-        types.forEach(type -> Util.registerEvent(type.getTrigger(enchantment, levels)));
+        types.forEach(type -> Util.registerEvent(type.getTrigger(enchantment)));
     }
 
 

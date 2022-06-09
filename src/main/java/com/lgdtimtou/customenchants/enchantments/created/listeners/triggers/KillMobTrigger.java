@@ -1,17 +1,15 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
-import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-import java.util.List;
 import java.util.Map;
 
 public class KillMobTrigger extends Trigger{
 
-    public KillMobTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
+    public KillMobTrigger(Enchantment enchantment) {
         super(enchantment);
     }
 
@@ -20,10 +18,7 @@ public class KillMobTrigger extends Trigger{
     public void onMobKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Monster))
             return;
-        if (!defaultChecks(e, e.getEntity().getKiller()))
-            return;
-
-        dispatchCommands(e.getEntity().getKiller(), Map.of());
+        executeCommands(e, e.getEntity().getKiller(), Map.of());
     }
 
 }

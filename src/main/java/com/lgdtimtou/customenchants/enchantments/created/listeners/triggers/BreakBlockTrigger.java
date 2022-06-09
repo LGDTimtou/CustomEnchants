@@ -1,11 +1,9 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
-import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.List;
 import java.util.Map;
 
 public class BreakBlockTrigger extends Trigger {
@@ -19,7 +17,7 @@ public class BreakBlockTrigger extends Trigger {
      -
      */
 
-    public BreakBlockTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
+    public BreakBlockTrigger(Enchantment enchantment){
         super(enchantment);
     }
 
@@ -28,10 +26,7 @@ public class BreakBlockTrigger extends Trigger {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e){
-        if (!defaultChecks(e, e.getPlayer()))
-            return;
-
-        dispatchCommands(e.getPlayer(), Map.of());
+        executeCommands(e, e.getPlayer(), Map.of());
     }
 
 

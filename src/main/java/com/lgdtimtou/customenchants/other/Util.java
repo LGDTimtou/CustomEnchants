@@ -7,8 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
@@ -55,11 +58,27 @@ public final class Util {
         return item;
     }
 
-    public static boolean containsEnchant(ItemStack item, Enchantment enchantment){
+    public static boolean containsEnchant(PlayerInventory inventory, Enchantment enchantment){
+        return Arrays.stream(EquipmentSlot.values()).anyMatch(equipmentSlot -> inventory.getItem(equipmentSlot) != null && containsEnchant(inventory.getItem(equipmentSlot), enchantment));
+    }
+
+    private static boolean containsEnchant(ItemStack item, Enchantment enchantment){
         return item.getEnchantments().keySet().stream().anyMatch(en -> en.getKey().equals(enchantment.getKey()));
     }
 
-    public static int getLevel(ItemStack item, Enchantment enchantment){
+    public static int getLevel(PlayerInventory inventory, Enchantment enchantment){
+        int level = -1;
+        int index = 0;
+        while (level == -1 && index < EquipmentSlot.values().length){
+            level = getLevel(inventory.getItem(EquipmentSlot.values()[index]), enchantment);
+            index ++;
+        }
+        return level;
+    }
+
+    private static int getLevel(ItemStack item, Enchantment enchantment){
+        if (item == null)
+            return -1;
         for (Map.Entry<Enchantment, Integer> entry : item.getEnchantments().entrySet())
             if (entry.getKey().getKey().equals(enchantment.getKey()))
                 return entry.getValue();
