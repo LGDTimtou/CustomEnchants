@@ -26,7 +26,7 @@ public class BreakBlockTrigger extends Trigger {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e){
-        executeCommands(e, e.getPlayer(), Map.of());
+        executeCommands(e, e.getPlayer(), null, Map.of());
     }
 
 

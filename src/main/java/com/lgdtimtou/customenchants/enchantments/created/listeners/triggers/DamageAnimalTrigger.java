@@ -19,6 +19,6 @@ public class DamageAnimalTrigger extends Trigger{
             return;
         if (!(e.getDamager() instanceof Player player))
             return;
-        executeCommands(e, player, Map.of());
+        executeCommands(e, player, null, Map.of());
     }
 }

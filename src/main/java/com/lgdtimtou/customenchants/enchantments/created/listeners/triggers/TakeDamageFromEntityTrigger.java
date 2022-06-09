@@ -16,6 +16,6 @@ public class TakeDamageFromEntityTrigger extends Trigger{
     public void onDamageFromEntity(EntityDamageByEntityEvent e){
         if (!(e.getEntity() instanceof Player player))
             return;
-        executeCommands(e, player, Map.of());
+        executeCommands(e, player, null, Map.of());
     }
 }

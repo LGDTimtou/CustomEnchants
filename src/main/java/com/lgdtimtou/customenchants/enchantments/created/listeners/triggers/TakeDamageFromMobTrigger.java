@@ -19,6 +19,6 @@ public class TakeDamageFromMobTrigger extends Trigger{
             return;
         if (!(e.getDamager() instanceof Monster))
             return;
-        executeCommands(e, player, Map.of());
+        executeCommands(e, player, null, Map.of());
     }
 }

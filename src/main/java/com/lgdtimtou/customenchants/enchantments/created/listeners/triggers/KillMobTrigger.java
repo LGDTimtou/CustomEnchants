@@ -18,7 +18,7 @@ public class KillMobTrigger extends Trigger{
     public void onMobKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Monster))
             return;
-        executeCommands(e, e.getEntity().getKiller(), Map.of());
+        executeCommands(e, e.getEntity().getKiller(), null, Map.of());
     }
 
 }

@@ -11,6 +11,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.*;
@@ -34,13 +35,15 @@ class Trigger implements CustomEnchantListener {
         this.enchantment = CustomEnchant.get(enchantment.getKey().getKey());
     }
 
-    protected void executeCommands(Event e, Player player, Map<String, String> parameters){
+
+    protected void executeCommands(Event e, Player player, ItemStack item, Map<String, String> parameters){
         if (player == null)
             return;
         PlayerInventory inv = player.getInventory();
         Location location = player.getLocation();
 
-        if (!Util.containsEnchant(inv, this.enchantment.getEnchantment()))
+        ItemStack enchantedItem = Util.containsEnchant(inv, this.enchantment.getEnchantment());
+        if (enchantedItem == null || (item != null && item != enchantedItem))
             return;
 
         //Check if this enchantment is still in cooldown for the player
@@ -49,7 +52,7 @@ class Trigger implements CustomEnchantListener {
             return;
 
         //Get the level of the enchantment
-        level = Util.getLevel(inv, this.enchantment.getEnchantment());
+        level = Util.getLevel(enchantedItem, this.enchantment.getEnchantment());
 
         //Return if chance didn't trigger
         if (RG.nextInt(10001) > enchantment.getChance(level))

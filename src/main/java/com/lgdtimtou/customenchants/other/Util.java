@@ -1,13 +1,10 @@
 package com.lgdtimtou.customenchants.other;
 
 import com.lgdtimtou.customenchants.Main;
-import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -58,25 +55,18 @@ public final class Util {
         return item;
     }
 
-    public static boolean containsEnchant(PlayerInventory inventory, Enchantment enchantment){
-        return Arrays.stream(EquipmentSlot.values()).anyMatch(equipmentSlot -> inventory.getItem(equipmentSlot) != null && containsEnchant(inventory.getItem(equipmentSlot), enchantment));
+    public static ItemStack containsEnchant(PlayerInventory inventory, Enchantment enchantment){
+        Set<EquipmentSlot> set = Arrays.stream(EquipmentSlot.values()).filter(equipmentSlot -> inventory.getItem(equipmentSlot) != null && containsEnchant(inventory.getItem(equipmentSlot), enchantment)).collect(Collectors.toSet());
+        if (set.isEmpty())
+            return null;
+        return inventory.getItem(set.iterator().next());
     }
 
-    private static boolean containsEnchant(ItemStack item, Enchantment enchantment){
+    public static boolean containsEnchant(ItemStack item, Enchantment enchantment){
         return item.getEnchantments().keySet().stream().anyMatch(en -> en.getKey().equals(enchantment.getKey()));
     }
 
-    public static int getLevel(PlayerInventory inventory, Enchantment enchantment){
-        int level = -1;
-        int index = 0;
-        while (level == -1 && index < EquipmentSlot.values().length){
-            level = getLevel(inventory.getItem(EquipmentSlot.values()[index]), enchantment);
-            index ++;
-        }
-        return level;
-    }
-
-    private static int getLevel(ItemStack item, Enchantment enchantment){
+    public static int getLevel(ItemStack item, Enchantment enchantment){
         if (item == null)
             return -1;
         for (Map.Entry<Enchantment, Integer> entry : item.getEnchantments().entrySet())

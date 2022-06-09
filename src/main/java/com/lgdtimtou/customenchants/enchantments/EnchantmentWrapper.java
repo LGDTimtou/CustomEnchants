@@ -1,6 +1,5 @@
 package com.lgdtimtou.customenchants.enchantments;
 
-import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;

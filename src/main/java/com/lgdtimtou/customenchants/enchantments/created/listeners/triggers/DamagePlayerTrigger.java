@@ -19,6 +19,6 @@ public class DamagePlayerTrigger extends Trigger {
             return;
         if (!(e.getDamager() instanceof Player player))
             return;
-        executeCommands(e, player, Map.of("damaged", damaged.getDisplayName()));
+        executeCommands(e, player, null, Map.of("damaged", damaged.getDisplayName()));
     }
 }

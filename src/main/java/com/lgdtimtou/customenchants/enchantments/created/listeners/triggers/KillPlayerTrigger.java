@@ -17,7 +17,7 @@ public class KillPlayerTrigger extends Trigger {
     public void onKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Player killed))
             return;
-        executeCommands(e, killed.getKiller(), Map.of("killed", killed.getDisplayName()));
+        executeCommands(e, killed.getKiller(), null, Map.of("killed", killed.getDisplayName()));
     }
 
 
