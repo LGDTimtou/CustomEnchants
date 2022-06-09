@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
+import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -26,7 +27,8 @@ public class BreakBlockTrigger extends Trigger {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e){
-        executeCommands(e, e.getPlayer(), null, Map.of());
+        Location loc = e.getBlock().getLocation();
+        executeCommands(e, e.getPlayer(), null, Map.of("block_x", String.valueOf(loc.getX()), "block_y", String.valueOf(loc.getY()), "block_z", String.valueOf(loc.getZ())));
     }
 
 
