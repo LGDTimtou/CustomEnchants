@@ -6,7 +6,7 @@
 
     <groupId>com.lgdtimtou</groupId>
     <artifactId>CustomEnchants</artifactId>
-    <version>1.0</version>
+    <version>1.5.1</version>
     <packaging>jar</packaging>
 
     <name>CustomEnchants</name>
