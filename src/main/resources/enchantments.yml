@@ -79,8 +79,8 @@ head_hunter:
 stun:
   enabled: true
   max_level: 3
-  triggers: damage_player
-  targets: ["weapon", "trident", "bow", "crossbow"]
+  triggers: [damage_player, fishing_rod_hit_player]
+  targets: ["weapon", "trident", "bow", "crossbow", "fishing_rod"]
   levels:
     1:
       cooldown: 60
@@ -157,6 +157,27 @@ absorb:
       cancel_event: true
       cooldown: 8
       chance: 10
+
+diamond_fish:
+  enabled: true
+  max_level: 5
+  triggers: [fishing_rod_caught]
+  targets: fishing_rod
+  levels:
+    1:
+      chance: 1
+      commands:
+        - 'tellraw %player% {"text": "You caught a diamond!", "color": "green"}'
+        - "give %player% diamond 1"
+    2:
+      chance: 2
+    3:
+      chance: 3
+    4:
+      chance: 4
+    5:
+      chance: 5
+
 
 
 

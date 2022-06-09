@@ -1,6 +1,5 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
-import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
 import org.bukkit.enchantments.Enchantment;
 
@@ -21,7 +20,9 @@ public enum EnchantTriggerType {
     TAKE_DAMAGE_FROM_NONENTITY(),
     TAKE_DAMAGE_FROM_ENTITY(),
     TAKE_DAMAGE_FROM_PLAYER(TAKE_DAMAGE_FROM_ENTITY),
-    TAKE_DAMAGE_FROM_MOB(TAKE_DAMAGE_FROM_ENTITY);
+    TAKE_DAMAGE_FROM_MOB(TAKE_DAMAGE_FROM_ENTITY),
+    FISHING_ROD_CAUGHT(),
+    FISHING_ROD_HIT_PLAYER();
 
     private final Set<EnchantTriggerType> overriddenBy;
 
@@ -46,6 +47,8 @@ public enum EnchantTriggerType {
             case TAKE_DAMAGE_FROM_ENTITY -> new TakeDamageFromEntityTrigger(enchantment);
             case TAKE_DAMAGE_FROM_MOB -> new TakeDamageFromMobTrigger(enchantment);
             case TAKE_DAMAGE_FROM_PLAYER -> new TakeDamageFromPlayerTrigger(enchantment);
+            case FISHING_ROD_CAUGHT -> new FishingRodCaughtTrigger(enchantment);
+            case FISHING_ROD_HIT_PLAYER -> new FishingRodHitPlayerTrigger(enchantment);
         };
     }
 
