@@ -22,17 +22,15 @@ public class SubCommandRemove extends EnchantSubCommand{
         if (!(sender instanceof Player player))
             return null;
 
-        if (player.getInventory().getItemInMainHand().getType() == Material.AIR)
-            return null;
-
         ItemStack item = player.getInventory().getItemInMainHand();
-        if (item.getItemMeta() == null)
-            return null;
+        if (item.getType() == Material.AIR || item.getItemMeta() == null)
+            item = null;
 
         if (args.length == 2){
+            ItemStack finalItem = item;
             Stream<CustomEnchant> filtered = CustomEnchant.getCustomEnchantSet().stream()
                     .filter(ce -> ce.getName().toLowerCase().startsWith(args[1].toLowerCase()))
-                    .filter(ce -> item.getItemMeta().getEnchants().containsKey(ce.getEnchantment()));
+                    .filter(ce -> finalItem == null || finalItem.getItemMeta().getEnchants().containsKey(ce.getEnchantment()));
             return filtered.map(ce -> ce.getName().toLowerCase()).collect(Collectors.toList());
         } else
             return null;
@@ -56,7 +54,7 @@ public class SubCommandRemove extends EnchantSubCommand{
         else {
             int index = -1;
             for (int i = 0; i < lore.size(); i++)
-                if (lore.get(i).contains(enchantment.getLoreName()))
+                if (lore.get(i).contains(enchantment.getLore()))
                     index = i;
             if (index != -1)
                 lore.remove(index);

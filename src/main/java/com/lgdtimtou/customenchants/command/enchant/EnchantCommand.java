@@ -34,6 +34,11 @@ public class EnchantCommand extends Command {
             return false;
         }
 
+        if (args[0].equalsIgnoreCase("getbook")){
+            subCommand.execute(player, null, null, -1);
+            return true;
+        }
+
         String enchantName = args[1].toLowerCase();
         int level = 1;
         if (args.length > 2 && args[0].equalsIgnoreCase("add")){

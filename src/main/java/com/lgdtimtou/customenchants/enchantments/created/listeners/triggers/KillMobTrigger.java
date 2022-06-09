@@ -12,7 +12,7 @@ import java.util.Map;
 public class KillMobTrigger extends Trigger{
 
     public KillMobTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
-        super(enchantment, levels);
+        super(enchantment);
     }
 
 
@@ -20,7 +20,7 @@ public class KillMobTrigger extends Trigger{
     public void onMobKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Monster))
             return;
-        if (!defaultChecks(e.getEntity().getKiller()))
+        if (!defaultChecks(e, e.getEntity().getKiller()))
             return;
 
         dispatchCommands(e.getEntity().getKiller(), Map.of());

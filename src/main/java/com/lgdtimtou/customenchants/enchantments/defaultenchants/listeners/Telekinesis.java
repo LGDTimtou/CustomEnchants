@@ -1,8 +1,8 @@
-package com.lgdtimtou.customenchants.enchantments.defaultenchants.listeners.listeners;
+package com.lgdtimtou.customenchants.enchantments.defaultenchants.listeners;
 
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
-import org.bukkit.GameMode;
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +11,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Telekinesis implements CustomEnchantListener {
 
@@ -20,9 +21,7 @@ public class Telekinesis implements CustomEnchantListener {
         PlayerInventory inv = e.getPlayer().getInventory();
         if (inv.getItemInMainHand().getItemMeta() == null)
             return;
-        if (!inv.getItemInMainHand().containsEnchantment(DefaultCustomEnchant.TELEKINESIS.getEnchantment()))
-            return;
-        if (e.getPlayer().getGameMode() != GameMode.SURVIVAL)
+        if (!Util.containsEnchant(inv.getItemInMainHand(), DefaultCustomEnchant.TELEKINESIS.getEnchantment()))
             return;
 
         e.setDropItems(false);
@@ -41,14 +40,12 @@ public class Telekinesis implements CustomEnchantListener {
         if (killer == null)
             return;
 
+
         PlayerInventory inv = killer.getInventory();
         if (inv.getItemInMainHand().getItemMeta() == null)
             return;
-        if (!inv.getItemInMainHand().containsEnchantment(DefaultCustomEnchant.TELEKINESIS.getEnchantment()))
+        if (!Util.containsEnchant(inv.getItemInMainHand(), DefaultCustomEnchant.TELEKINESIS.getEnchantment()))
             return;
-        if (killer.getGameMode() != GameMode.SURVIVAL)
-            return;
-
 
         Set<ItemStack> set = new HashSet<>();
         e.getDrops().forEach(item -> set.add(inv.addItem(item).get(0)));

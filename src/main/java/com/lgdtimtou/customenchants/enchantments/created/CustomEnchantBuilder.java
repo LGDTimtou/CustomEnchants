@@ -1,17 +1,14 @@
 package com.lgdtimtou.customenchants.enchantments.created;
 
-import com.lgdtimtou.customenchants.other.FileFunction;
-import com.lgdtimtou.customenchants.other.Files;
-import com.lgdtimtou.customenchants.other.Util;
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
+import com.lgdtimtou.customenchants.other.Files;
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.EnchantmentTarget;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -24,6 +21,7 @@ public class CustomEnchantBuilder {
     private final boolean enabled;
     private int maxLvl;
     private ArrayList<EnchantTriggerType> triggerTypes;
+    private Set<EnchantmentTarget> targets;
     private final List<CustomEnchantLevelInfo> levels = new ArrayList<>();
 
 
@@ -41,21 +39,26 @@ public class CustomEnchantBuilder {
             return;
         }
 
-        String trigger = config.getString(name + ".triggers");
-        if (trigger == null) {
+        String triggers = config.getString(name + ".triggers");
+        if (triggers == null) {
             error = true;
             return;
         }
 
-        triggerTypes = Arrays.stream(trigger.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"))
-                .filter(tr -> Arrays.stream(EnchantTriggerType.values()).anyMatch(v -> v.name().equals(tr.toUpperCase())))
-                .map(tr -> EnchantTriggerType.valueOf(tr.toUpperCase())).collect(Collectors.toCollection(ArrayList::new));
+        triggerTypes = (ArrayList<EnchantTriggerType>) Util.filter(triggers, EnchantTriggerType.values(), EnchantTriggerType.class, Collectors.toCollection(ArrayList::new));
         EnchantTriggerType.fixOverrides(triggerTypes);
 
         if (triggerTypes.isEmpty()){
             error = true;
             return;
         }
+
+
+        String targets = config.getString(name + ".targets");
+        if (targets == null)
+            this.targets = Arrays.stream(EnchantmentTarget.values()).collect(Collectors.toSet());
+        else
+            this.targets = (HashSet<EnchantmentTarget>) Util.filter(targets, EnchantmentTarget.values(), EnchantmentTarget.class, Collectors.toCollection(HashSet::new));
 
         for (int i = 1; i <= maxLvl; i++)
             levels.add(new CustomEnchantLevelInfo(name, i));
@@ -82,7 +85,7 @@ public class CustomEnchantBuilder {
         if (error)
             Util.log(ChatColor.RED + "Cannot Build " + name + ", check enchantments.yml for any syntax errors");
         else if (enabled)
-            new CustomEnchant(name, maxLvl, triggerTypes, levels);
+            new CustomEnchant(name, maxLvl, triggerTypes, targets, levels);
     }
 
 
@@ -137,7 +140,7 @@ public class CustomEnchantBuilder {
             return cancelEvent;
         }
 
-        public int getInheritCommandsFrom() {
+        private int getInheritCommandsFrom() {
             return inheritCommandsFrom;
         }
 

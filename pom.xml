@@ -38,7 +38,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>C:\MCServers\Plugin Testing\1.18.2 Testing Server\plugins</outputDirectory>
+                            <outputDirectory>C:\MCServers\Plugin Testing\1.19 Testing Server\plugins</outputDirectory>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18.2-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -1,20 +1,25 @@
 package com.lgdtimtou.customenchants.enchantments;
 
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Set;
+
 public class EnchantmentWrapper extends Enchantment {
 
     private final String name;
     private final int maxLvl;
+    private final Set<EnchantmentTarget> targets;
 
 
-    public EnchantmentWrapper(String namespace, String name, int maxLvl) {
-        super(NamespacedKey.minecraft(namespace));
+    public EnchantmentWrapper(String name, int maxLvl, Set<EnchantmentTarget> targets) {
+        super(NamespacedKey.minecraft(name.toLowerCase()));
         this.name = name;
         this.maxLvl = maxLvl;
+        this.targets = targets;
     }
 
     @Override
@@ -54,6 +59,10 @@ public class EnchantmentWrapper extends Enchantment {
 
     @Override
     public boolean canEnchantItem(ItemStack item) {
-        return false;
+        boolean goed = false;
+        for (EnchantmentTarget target : targets)
+            if (target.includes(item))
+                goed = true;
+        return goed;
     }
 }

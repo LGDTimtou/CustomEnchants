@@ -11,14 +11,14 @@ import java.util.Map;
 
 public class KillAnimalTrigger extends Trigger{
     public KillAnimalTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
-        super(enchantment, levels);
+        super(enchantment);
     }
 
     @EventHandler
     public void onAnimalKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Animals))
             return;
-        if (!defaultChecks(e.getEntity().getKiller()))
+        if (!defaultChecks(e, e.getEntity().getKiller()))
             return;
 
         dispatchCommands(e.getEntity().getKiller(), Map.of());

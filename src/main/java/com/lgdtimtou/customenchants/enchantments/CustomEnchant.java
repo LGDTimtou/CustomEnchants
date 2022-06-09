@@ -8,6 +8,7 @@ import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Ench
 import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -21,17 +22,24 @@ public class CustomEnchant {
 
     private final String name;
     private final Enchantment enchantment;
+    private final Set<EnchantmentTarget> targets;
 
-    public CustomEnchant(String name, int maxLvl, CustomEnchantListener listener){
+    private final List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels;
+
+    public CustomEnchant(String name, int maxLvl, Set<EnchantmentTarget> targets, CustomEnchantListener listener){
         this.name = name;
-        this.enchantment = new EnchantmentWrapper(name, Util.title(name), maxLvl);
+        this.targets = targets;
+        this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
+        this.levels = Collections.emptyList();
         enchantments.put(name, this);
         Util.registerEvent(listener);
     }
 
-    public CustomEnchant(String name, int maxLvl, List<EnchantTriggerType> types, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
+    public CustomEnchant(String name, int maxLvl, List<EnchantTriggerType> types, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
         this.name = name;
-        this.enchantment = new EnchantmentWrapper(name, Util.title(name), maxLvl);
+        this.targets = targets;
+        this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
+        this.levels = levels;
         enchantments.put(name, this);
 
         types.forEach(type -> Util.registerEvent(type.getTrigger(enchantment, levels)));
@@ -46,7 +54,11 @@ public class CustomEnchant {
         return name;
     }
 
-    public String getLoreName() {
+    public Set<EnchantmentTarget> getTargets(){
+        return targets;
+    }
+
+    public String getLore() {
         return Util.title(name.replaceAll("_", " "));
     }
 
@@ -55,6 +67,35 @@ public class CustomEnchant {
             throw new IllegalArgumentException(name + " enchantment does not exist");
         return enchantments.get(name);
     }
+
+    //Info for each level
+
+    public int getCooldown(int level){
+        if (level <= 0 || level > levels.size())
+            return -1;
+        return levels.get(level - 1).getCooldown();
+    }
+
+    public int getChance(int level){
+        if (level <= 0 || level > levels.size())
+            return -1;
+        return (int) levels.get(level - 1).getChance() * 100;
+    }
+
+    public boolean isCancelled(int level){
+        if (level <= 0 || level > levels.size())
+            return false;
+        return levels.get(level - 1).isEventCancelled();
+    }
+
+    public List<String> getCommands(int level){
+        if (level <= 0 || level > levels.size())
+            return Collections.emptyList();
+        return levels.get(level - 1).getCommands();
+    }
+
+
+
 
 
 

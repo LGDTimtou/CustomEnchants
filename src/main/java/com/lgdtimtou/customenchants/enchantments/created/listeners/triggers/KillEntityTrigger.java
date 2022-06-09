@@ -10,12 +10,12 @@ import java.util.Map;
 
 public class KillEntityTrigger extends Trigger{
     public KillEntityTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
-        super(enchantment, levels);
+        super(enchantment);
     }
 
     @EventHandler
     public void onEntityKill(EntityDeathEvent e){
-        if (!defaultChecks(e.getEntity().getKiller()))
+        if (!defaultChecks(e, e.getEntity().getKiller()))
             return;
 
         dispatchCommands(e.getEntity().getKiller(), Map.of());

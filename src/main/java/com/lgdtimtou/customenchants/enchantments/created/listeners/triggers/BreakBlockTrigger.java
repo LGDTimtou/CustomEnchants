@@ -20,7 +20,7 @@ public class BreakBlockTrigger extends Trigger {
      */
 
     public BreakBlockTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
-        super(enchantment, levels);
+        super(enchantment);
     }
 
 
@@ -28,10 +28,9 @@ public class BreakBlockTrigger extends Trigger {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e){
-        if (!defaultChecks(e.getPlayer()))
+        if (!defaultChecks(e, e.getPlayer()))
             return;
 
-        e.setCancelled(this.isCancelled());
         dispatchCommands(e.getPlayer(), Map.of());
     }
 

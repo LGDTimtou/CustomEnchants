@@ -11,14 +11,14 @@ import java.util.Map;
 
 public class DamageEntityTrigger extends Trigger{
     public DamageEntityTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
-        super(enchantment, levels);
+        super(enchantment);
     }
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e){
         if (!(e.getDamager() instanceof Player player))
             return;
-        if (!defaultChecks(player))
+        if (!defaultChecks(e, player))
             return;
 
         dispatchCommands(player, Map.of());

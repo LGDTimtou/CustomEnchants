@@ -12,7 +12,7 @@ import java.util.Map;
 public class DamagePlayerTrigger extends Trigger {
 
     public DamagePlayerTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
-        super(enchantment, levels);
+        super(enchantment);
     }
 
     @EventHandler
@@ -21,7 +21,7 @@ public class DamagePlayerTrigger extends Trigger {
             return;
         if (!(e.getDamager() instanceof Player player))
             return;
-        if (!defaultChecks(player))
+        if (!defaultChecks(e, player))
             return;
 
         dispatchCommands(player, Map.of("damaged", damaged.getDisplayName()));

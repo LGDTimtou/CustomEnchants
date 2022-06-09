@@ -1,5 +1,6 @@
 Prefix: "&4&l[&6&lCustomEnchants&4&l]&r "
 OnlyPlayers: "&cOnly players can use this command"
+Setting: "&cCheck the %setting% setting in the config.yml file to change this"
 
 EnchantCommandUsage: "&7Usage: /ce <add | remove> <enchantment> [level(number)]"
 NonExistingEnchant: "&cSpecified enchantment is not included in this plugin"
@@ -7,4 +8,5 @@ EmptyHand: "&cYou must be holding an item to enchant"
 AlreadyHasEnchant: "&cThis item is already enchanted with %enchant% %level%"
 DoesntHaveEnchant: "&cThis item is not enchanted with %enchant%"
 MaxLevelExceeded: "&cThe max level for %enchant% is %level%"
+UnsafeEnchantment: "&c%enchant% can only be applied to any of the following: %targets%"
 LevelNegative: "&cLevel cannot be negative"

@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class DamageAnimalTrigger extends Trigger{
     public DamageAnimalTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
-        super(enchantment, levels);
+        super(enchantment);
     }
 
     @EventHandler
@@ -21,7 +21,7 @@ public class DamageAnimalTrigger extends Trigger{
             return;
         if (!(e.getDamager() instanceof Player player))
             return;
-        if (!defaultChecks(player))
+        if (!defaultChecks(e, player))
             return;
 
         dispatchCommands(player, Map.of());

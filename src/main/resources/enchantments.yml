@@ -4,7 +4,9 @@
 # enchantment_name (all lowercase and _ for spaces):                                                                                       #
 #   enabled: Whether the enchantment is enabled yes or no                                                                                  #
 #   max_level: The maximum level of the enchantment                                                                                        #
-#   trigger: The event that triggers the commands, chose from: [block_break, player_kill, mob_kill, animal_kill]                           #
+#   triggers: The events that trigger the commands                                                                                         #
+#   [targets: [armor, armor_feet, armor_legs, armor_torso, armor_head, weapon, tool, bow, fishing_rod, breakable, wearable,                #
+#                trident, crossbow, vanishable] (all by default)]                                                                          #
 #   levels:                                                                                                                                #
 #     1:                                                                                                                                   #
 #       cooldown: The time in seconds before the commands have their chance of executing again (0 by default)                              #
@@ -16,7 +18,7 @@
 #     ...                                                                                                                                  #
 #     ...                                                                                                                                  #
 #     'max_level':                                                                                                                         #
-#       cooldown: ...                                                                                                                        #
+#       cooldown: ...                                                                                                                      #
 #       ...                                                                                                                                #
 ############################################################################################################################################
 
@@ -25,6 +27,7 @@ diamond_hunter:
   enabled: True
   max_level: 10
   triggers: "break_block"
+  targets: "tool"
   levels:
     1:
       chance: 10
@@ -49,7 +52,7 @@ diamond_hunter:
       cooldown: 5
       chance: 90
       commands:
-        - 'tellraw %player% {"text": "You just found a diamond!", "color": "green"}'
+        - 'tellraw %player% {"text": "You just found a diamond block!", "color": "green"}'
         - 'give %player% diamond_block 1'
     10:
       cooldown: 5
@@ -62,6 +65,7 @@ head_hunter:
   enabled: True
   max_level: 3
   triggers: "kill_player"
+  targets: ["tool", "weapon", "bow", "trident", "crossbow"]
   levels:
     1:
       chance: 5
@@ -76,6 +80,7 @@ stun:
   enabled: true
   max_level: 3
   triggers: damage_player
+  targets: ["weapon", "trident", "bow", "crossbow"]
   levels:
     1:
       cooldown: 60
@@ -101,7 +106,7 @@ stun:
 
 
 god:
-  enabled: False
+  enabled: true
   max_level: 1
   triggers: [kill_entity]
   levels:

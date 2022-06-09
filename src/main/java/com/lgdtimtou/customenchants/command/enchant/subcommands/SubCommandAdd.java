@@ -1,6 +1,7 @@
 package com.lgdtimtou.customenchants.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchants.other.Files;
 import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -25,19 +26,19 @@ public class SubCommandAdd extends EnchantSubCommand {
         if (!(sender instanceof Player player))
             return null;
 
-        if (player.getInventory().getItemInMainHand().getType() == Material.AIR)
-            return null;
+
 
         ItemStack item = player.getInventory().getItemInMainHand();
-        if (item.getItemMeta() == null)
-            return null;
+        if (item.getType() == Material.AIR || item.getItemMeta() == null)
+            item = null;
 
         return switch(args.length){
             //Returns the names of all the custom enchants
             case 2 -> {
+                ItemStack finalItem = item;
                 Stream<CustomEnchant> filtered = CustomEnchant.getCustomEnchantSet().stream()
                         .filter(ce -> ce.getName().toLowerCase().startsWith(args[1].toLowerCase()))
-                        .filter(ce -> !item.getEnchantments().containsKey(ce.getEnchantment()));
+                        .filter(ce -> finalItem == null || !finalItem.getEnchantments().containsKey(ce.getEnchantment()));
                 yield filtered.map(ce -> ce.getName().toLowerCase()).collect(Collectors.toList());
             }
             //Checks if the given enchant at place 1 exists if so
@@ -73,16 +74,23 @@ public class SubCommandAdd extends EnchantSubCommand {
             return;
         }
 
+        if (!enchantment.getEnchantment().canEnchantItem(item) && !Files.CONFIG.getConfig().getBoolean("allow_unsafe_enchantments")){
+            player.sendMessage(Util.getMessage("UnsafeEnchantment").replace("%enchant%", Util.title(enchantment.getName()))
+                    .replace("%targets%", enchantment.getTargets().toString()));
+            player.sendMessage(Util.getMessageNoPrefix("Setting").replace("%setting%", "allow_unsafe_enchantments"));
+            return;
+        }
+
 
         //Adding or replacing enchantment lore
-        String enchantLore = ChatColor.GRAY + enchantment.getLoreName() + " " + CustomEnchant.getLevelRoman(level);
+        String enchantLore = ChatColor.GRAY + enchantment.getLore() + " " + CustomEnchant.getLevelRoman(level);
         List<String> lore = meta.getLore();
         if (lore == null)
             lore = List.of(enchantLore);
         else {
             boolean replaced = false;
             for (int i = 0; i < lore.size(); i++) {
-                if (lore.get(i).contains(enchantment.getLoreName())){
+                if (lore.get(i).contains(enchantment.getLore())){
                     lore.set(i, enchantLore);
                     replaced = true;
                 }

@@ -12,14 +12,14 @@ import java.util.Map;
 public class KillPlayerTrigger extends Trigger {
 
     public KillPlayerTrigger(Enchantment enchantment, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels) {
-        super(enchantment, levels);
+        super(enchantment);
     }
 
     @EventHandler
     public void onKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Player killed))
             return;
-        if (!defaultChecks(killed.getKiller()))
+        if (!defaultChecks(e, killed.getKiller()))
             return;
 
 

@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 
 public enum Files {
 
+    CONFIG("config.yml"),
     MESSAGES("messages.yml"),
     ENCHANTMENTS("enchantments.yml");
 

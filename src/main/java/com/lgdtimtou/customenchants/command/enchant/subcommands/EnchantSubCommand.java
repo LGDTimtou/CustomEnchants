@@ -18,4 +18,5 @@ public abstract class EnchantSubCommand implements SubCommand {
     }
 
     public abstract void execute(Player player, ItemStack item, CustomEnchant enchantment, int level);
+
 }
