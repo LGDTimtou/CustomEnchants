@@ -7,7 +7,6 @@ import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
-
 //TODO KillCounter enchant
 //TODO make the enchantments work on books
 
@@ -24,12 +23,12 @@ public final class Main extends JavaPlugin {
         CustomEnchant.register();
         new EnchantCommand();
 
-        Util.log(ChatColor.GREEN + "Successfully enabled Timtou's plugin");
+        Util.log(ChatColor.GREEN + "Successfully enabled CustomEnchants");
     }
 
     @Override
     public void onDisable() {
-        Util.log(ChatColor.GREEN + "Successfully disabled Timtou's plugin");
+        Util.log(ChatColor.GREEN + "Successfully disabled CustomEnchants");
     }
 
 
