@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -9,7 +10,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.Map;
 
 public class TakeDamageFromEntityTrigger extends Trigger {
-    public TakeDamageFromEntityTrigger(Enchantment enchantment) {
+    public TakeDamageFromEntityTrigger(Enchantment enchantment){
         super(enchantment);
     }
 
@@ -18,6 +19,6 @@ public class TakeDamageFromEntityTrigger extends Trigger {
         if (!(e.getEntity() instanceof Player player))
             return;
 
-        executeCommands(e, player, null, Map.of());
+        executeCommands(e, player, e.getDamager().getType().name(), null, Map.of());
     }
 }

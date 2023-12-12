@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class KillPlayerTrigger extends Trigger {
 
-    public KillPlayerTrigger(Enchantment enchantment) {
+    public KillPlayerTrigger(Enchantment enchantment){
         super(enchantment);
     }
 
@@ -18,7 +19,7 @@ public class KillPlayerTrigger extends Trigger {
     public void onKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Player killed))
             return;
-        executeCommands(e, killed.getKiller(), null, Map.of("killed", killed.getDisplayName()));
+        executeCommands(e, killed.getKiller(), killed.getDisplayName(), null, Map.of("killed", killed.getDisplayName()));
     }
 
 

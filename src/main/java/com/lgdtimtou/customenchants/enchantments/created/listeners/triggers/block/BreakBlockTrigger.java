@@ -17,7 +17,7 @@ public class BreakBlockTrigger extends Trigger {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e){
         Location loc = e.getBlock().getLocation();
-        executeCommands(e, e.getPlayer(), null, Map.of("block_x", String.valueOf(loc.getX()), "block_y", String.valueOf(loc.getY()), "block_z", String.valueOf(loc.getZ())));
+        executeCommands(e, e.getPlayer(), e.getBlock().getType().name(), null, Map.of("block_x", String.valueOf(loc.getX()), "block_y", String.valueOf(loc.getY()), "block_z", String.valueOf(loc.getZ())));
     }
 
 

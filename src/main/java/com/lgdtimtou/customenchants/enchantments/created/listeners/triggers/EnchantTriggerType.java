@@ -17,6 +17,7 @@ import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromNonEntityTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromPlayerTrigger;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,11 +45,9 @@ public enum EnchantTriggerType {
 
     private final Set<EnchantTriggerType> overriddenBy;
 
-    <E> EnchantTriggerType (EnchantTriggerType... overriddenBy){
+    EnchantTriggerType (EnchantTriggerType... overriddenBy){
         this.overriddenBy = Arrays.stream(overriddenBy).collect(Collectors.toSet());
     }
-
-    
 
     public CustomEnchantListener getTrigger(Enchantment enchantment){
         return switch(this){
@@ -82,4 +81,6 @@ public enum EnchantTriggerType {
                 it.remove();
         }
     }
+
+
 }

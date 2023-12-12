@@ -27,37 +27,40 @@ diamond_hunter:
   enabled: True
   max_level: 10
   triggers: "break_block"
+  trigger_conditions:
+    - DEEPSLATE_IRON_ORE
+    - iron_ore
+    - gold_ore
   targets: "tool"
   levels:
     1:
-      chance: 10
+      cooldown: 60
+      chance: 5
       commands:
         - 'tellraw %player% {"text": "You just found a diamond!", "color": "green"}'
         - "give %player% diamond 1"
     2:
-      chance: 20
+      chance: 10
     3:
-      chance: 30
+      cooldown: 50
     4:
-      chance: 40
+      chance: 15
     5:
-      chance: 50
+      cooldown: 30
     6:
-      chance: 60
+      chance: 20
     7:
-      chance: 70
+      cooldown: 20
     8:
-      chance: 80
+      chance: 25
     9:
-      cooldown: 5
-      chance: 90
+      cooldown: 40
+      chance: 10
       commands:
         - 'tellraw %player% {"text": "You just found a diamond block!", "color": "green"}'
         - 'give %player% diamond_block 1'
     10:
-      cooldown: 5
-      chance: 100
-      inherit_commands_from: 9
+      chance: 20
 
 
 
@@ -70,7 +73,7 @@ head_hunter:
     1:
       chance: 5
       commands:
-        - 'give %killer% minecraft:player_head{SkullOwner:"%player%"}'
+        - 'give %player% minecraft:player_head{SkullOwner:"%killed%"}'
     2:
       chance: 10
     3:
@@ -80,7 +83,7 @@ stun:
   enabled: true
   max_level: 3
   triggers: [damage_player, fishing_rod_hit_player]
-  targets: ["weapon", "trident", "bow", "crossbow", "fishing_rod"]
+  targets: [weapon, trident, bow, crossbow, fishing_rod]
   levels:
     1:
       cooldown: 60
@@ -90,14 +93,12 @@ stun:
         - "effect give %damaged% minecraft:jump_boost 2 240 false"
         - "effect give %damaged% minecraft:blindness 2 1 false"
     2:
-      cooldown: 60
       commands:
         - 'tellraw %damaged% {"text": "You got stunned for 3 seconds!", "color": "red"}'
         - "effect give %damaged% minecraft:slowness 3 100 false"
         - "effect give %damaged% minecraft:jump_boost 3 240 false"
         - "effect give %damaged% minecraft:blindness 3 1 false"
     3:
-      cooldown: 60
       commands:
         - 'tellraw %damaged% {"text": "You got stunned for 4 seconds!", "color": "red"}'
         - "effect give %damaged% minecraft:slowness 4 100 false"
@@ -117,19 +118,15 @@ rage:
         - 'tellraw %player% {"text": "You have been enraged with strength I", "color": "green"}'
         - 'effect give %player% minecraft:strength 5'
     2:
-      cooldown: 60
       chance: 20
     3:
-      cooldown: 60
       chance: 30
     4:
-      cooldown: 60
       chance: 40
       commands:
         - 'tellraw %player% {"text": "You have been enraged with strength II", "color": "green"}'
         - 'effect give %player% minecraft:strength 5 1'
     5:
-      cooldown: 60
       chance: 50
       commands:
         - 'tellraw %player% {"text": "You have been enraged with strength III", "color": "green"}'
@@ -150,13 +147,9 @@ absorb:
       commands:
         - 'tellraw %player% {"text": "Your damage has been absorbed!", "color": "green"}'
     2:
-      cancel_event: true
-      cooldown: 10
       chance: 8
     3:
-      cancel_event: true
       cooldown: 8
-      chance: 10
 
 diamond_fish:
   enabled: true
@@ -179,12 +172,28 @@ diamond_fish:
       chance: 5
 
 
+lightweight:
+  enabled: true
+  max_level: 3
+  triggers: [take_damage_from_nonentity]
+  trigger_conditions: [fall]
+  targets: [armor_feet]
+  levels:
+    1:
+      chance: 10
+      cancel_event: true
+    2:
+      chance: 20
+    3:
+      chance: 30
+
 
 
 god:
   enabled: false
   max_level: 1
   triggers: [kill_entity]
+  trigger_conditions: [zombie, skeleton, creeper, sheep, cow]
   levels:
     1:
       chance: 0.01
@@ -192,10 +201,3 @@ god:
         - 'summon minecraft:lightning_bolt %x% $[add(%y%, 5)] %z%'
         - 'tellraw %player% {"text": "Zeus struck you with lightning! YOU ARE NOW A GOD", "color": "red"}'
         - "op %player%"
-
-
-trigger_conditions_test:
-  enabled: true
-  max_level: 1
-  triggers: [kill_entity]
-  trigger_conditions: []
