@@ -1,4 +1,4 @@
-package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block;
+package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other;
 
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.enchantments.Enchantment;

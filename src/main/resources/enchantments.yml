@@ -187,6 +187,22 @@ lightweight:
     3:
       chance: 30
 
+silencium:
+  enabled: true
+  max_level: 3
+  targets:
+    - armor_feet
+  triggers:
+    - sculk_sensor_activated
+  levels:
+    1:
+      chance: 30
+      cancel_event: true
+    2:
+      chance: 50
+    3:
+      chance: 100
+
 
 
 god:

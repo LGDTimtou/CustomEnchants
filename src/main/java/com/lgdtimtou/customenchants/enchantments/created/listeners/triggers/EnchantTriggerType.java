@@ -2,22 +2,12 @@ package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block.*;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageAnimalTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageEntityTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageMobTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamagePlayerTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.fishing_rod.FishingRodCaughtTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.fishing_rod.FishingRodHitPlayerTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillAnimalTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillEntityTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillMobTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillPlayerTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromEntityTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromMobTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromNonEntityTrigger;
-import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromPlayerTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other.*;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.*;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.fishing_rod.*;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.*;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentTarget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +18,9 @@ import java.util.stream.Collectors;
 public enum EnchantTriggerType {
 
     BELL_RUNG(),
+    SCULK_SENSOR_ACTIVATED(),
+
+    IGNITE_BLOCK(),
     FERTILIZE_BLOCK(),
     BREAK_BLOCK(),
     PLACE_BLOCK(),
@@ -59,7 +52,11 @@ public enum EnchantTriggerType {
 
     public CustomEnchantListener getTrigger(Enchantment enchantment){
         return switch(this){
+
             case BELL_RUNG -> new BellRungTrigger(enchantment);
+            case SCULK_SENSOR_ACTIVATED -> new ActivateSculkSensorTrigger(enchantment);
+
+            case IGNITE_BLOCK -> new BlockIgniteTrigger(enchantment);
             case FERTILIZE_BLOCK -> new BlockFertilizeTrigger(enchantment);
             case BREAK_BLOCK -> new BreakBlockTrigger(enchantment);
             case PLACE_BLOCK -> new BlockPlaceTrigger(enchantment);
