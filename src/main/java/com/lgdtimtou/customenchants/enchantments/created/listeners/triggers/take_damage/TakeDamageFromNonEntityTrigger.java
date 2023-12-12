@@ -18,6 +18,6 @@ public class TakeDamageFromNonEntityTrigger extends Trigger {
     public void onTakeDamageFromNonEntity(EntityDamageEvent e){
         if (!(e.getEntity() instanceof Player player))
             return;
-        executeCommands(e, player, e.getCause().name(), null, Map.of());
+        executeCommands(e, player, e.getCause().name(), Map.of("cause", e.getCause().name()));
     }
 }

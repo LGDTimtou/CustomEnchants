@@ -20,6 +20,6 @@ public class FishingRodCaughtTrigger extends Trigger {
             return;
         if (e.getCaught() == null)
             return;
-        executeCommands(e, e.getPlayer(), ((ItemStack)e.getCaught()).getType().name(), null, Map.of());
+        executeCommands(e, e.getPlayer(), ((ItemStack)e.getCaught()).getType().name(), Map.of("item", ((ItemStack)e.getCaught()).getType().name()));
     }
 }

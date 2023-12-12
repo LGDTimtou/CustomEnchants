@@ -101,9 +101,6 @@ public class CustomEnchant {
     }
 
     public boolean checkTriggerConditions(String triggerConditionCheck){
-        Util.log(triggerConditionCheck);
-        Util.log("" + triggerConditions);
-
         if (triggerConditions.isEmpty()) return true;
         return triggerConditions.contains(triggerConditionCheck.toLowerCase());
     }

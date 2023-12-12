@@ -33,14 +33,14 @@ public class Trigger implements CustomEnchantListener {
     }
 
 
-    protected void executeCommands(Event e, Player player, String triggerConditionCheck, ItemStack item, Map<String, String> parameters){
+    protected void executeCommands(Event e, Player player, String triggerConditionCheck, Map<String, String> parameters){
         if (player == null)
             return;
         PlayerInventory inv = player.getInventory();
         Location location = player.getLocation();
 
         ItemStack enchantedItem = Util.containsEnchant(inv, this.enchantment.getEnchantment());
-        if (enchantedItem == null || (item != null && item != enchantedItem))
+        if (enchantedItem == null)
             return;
 
         //Check if this enchantment is still in cooldown for the player
@@ -49,7 +49,7 @@ public class Trigger implements CustomEnchantListener {
             return;
 
         //Check if the trigger conditions are met
-        if (!this.enchantment.checkTriggerConditions(triggerConditionCheck))
+        if (triggerConditionCheck != null && !this.enchantment.checkTriggerConditions(triggerConditionCheck))
             return;
 
         //Get the level of the enchantment
@@ -78,23 +78,20 @@ public class Trigger implements CustomEnchantListener {
             return;
         }
 
-        dispatchCommands(player, parameters);
+        //Replace local parameters
+        parameters.forEach((key, value) -> commands = commands.stream().map(command -> command.replace("%" + key + "%", value.toLowerCase())).collect(Collectors.toList()));
+
+        //Execute the commands from the console
+        dispatchCommands(player);
     }
 
-    private void dispatchCommands(Player player, Map<String, String> parameters){
-        replaceParameters(parameters);
+    private void dispatchCommands(Player player){
         commands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
         if (enchantment.getCooldown(level) > 0){
             pendingCooldown.get(player).add(this.enchantment.getEnchantment());
             Bukkit.getScheduler().runTaskLater(Main.getMain(), v -> pendingCooldown.get(player).remove(this.enchantment.getEnchantment()), enchantment.getCooldown(level) * 20L);
         }
     }
-
-    private void replaceParameters(Map<String, String> map) {
-        map.forEach((key, value) -> commands = commands.stream().map(command -> command.replace("%" + key + "%", value)).collect(Collectors.toList()));
-    }
-
-
 
 
 }

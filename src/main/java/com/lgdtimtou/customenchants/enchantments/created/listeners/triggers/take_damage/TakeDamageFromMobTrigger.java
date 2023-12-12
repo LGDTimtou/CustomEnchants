@@ -21,6 +21,6 @@ public class TakeDamageFromMobTrigger extends Trigger {
             return;
         if (!(e.getDamager() instanceof Monster monster))
             return;
-        executeCommands(e, player, monster.getType().name(), null, Map.of());
+        executeCommands(e, player, monster.getType().name(), Map.of("mob", monster.getType().name()));
     }
 }

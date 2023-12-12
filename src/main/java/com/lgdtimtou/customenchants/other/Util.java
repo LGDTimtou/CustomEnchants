@@ -66,6 +66,7 @@ public final class Util {
     }
 
     public static boolean containsEnchant(ItemStack item, Enchantment enchantment){
+        if (item == null) return false;
         return item.getEnchantments().keySet().stream().anyMatch(en -> en.getKey().equals(enchantment.getKey()));
     }
 

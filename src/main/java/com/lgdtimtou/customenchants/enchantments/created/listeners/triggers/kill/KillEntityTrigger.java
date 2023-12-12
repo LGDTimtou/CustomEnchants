@@ -15,6 +15,6 @@ public class KillEntityTrigger extends Trigger {
 
     @EventHandler
     public void onEntityKill(EntityDeathEvent e){
-        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), null, Map.of());
+        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of("entity", e.getEntity().getType().name()));
     }
 }

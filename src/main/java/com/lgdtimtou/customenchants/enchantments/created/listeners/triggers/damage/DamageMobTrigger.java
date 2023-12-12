@@ -21,7 +21,7 @@ public class DamageMobTrigger extends Trigger {
             return;
         if (!(e.getDamager() instanceof Player player))
             return;
-        executeCommands(e, player, e.getEntity().getType().name(), null, Map.of());
+        executeCommands(e, player, e.getEntity().getType().name(), Map.of("mob", e.getEntity().getType().name()));
     }
 
 }

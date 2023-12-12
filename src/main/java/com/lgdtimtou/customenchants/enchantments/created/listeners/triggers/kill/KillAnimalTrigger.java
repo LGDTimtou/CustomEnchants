@@ -18,6 +18,6 @@ public class KillAnimalTrigger extends Trigger {
     public void onAnimalKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Animals))
             return;
-        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), null, Map.of());
+        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of("animal", e.getEntity().getType().name()));
     }
 }
