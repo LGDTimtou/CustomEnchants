@@ -17,6 +17,6 @@ public class BlockIgniteTrigger extends Trigger {
         if (e.getPlayer() == null)
             return;
 
-        executeCommands(e, e.getPlayer(), e.getBlock().getType().name(), Map.of("block", e.getBlock().getType().name(), "cause", e.getCause().name()));
+        executeCommands(e, e.getPlayer(), e.getCause().name(), Map.of("block", e.getBlock().getType().name(), "cause", e.getCause().name()));
     }
 }

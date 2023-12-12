@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 public enum EnchantTriggerType {
 
+    PRIME_TNT(),
+    CHANGE_SIGN(),
     BELL_RUNG(),
     SCULK_SENSOR_ACTIVATED(),
 
@@ -53,6 +55,8 @@ public enum EnchantTriggerType {
     public CustomEnchantListener getTrigger(Enchantment enchantment){
         return switch(this){
 
+            case PRIME_TNT -> new PrimeTNTTrigger(enchantment);
+            case CHANGE_SIGN -> new ChangeSignTrigger(enchantment);
             case BELL_RUNG -> new BellRungTrigger(enchantment);
             case SCULK_SENSOR_ACTIVATED -> new ActivateSculkSensorTrigger(enchantment);
 
