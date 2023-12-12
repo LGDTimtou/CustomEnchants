@@ -17,7 +17,7 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class Trigger implements CustomEnchantListener {
+public class Trigger implements CustomEnchantListener {
 
     private static final Random RG = new Random();
 

@@ -192,3 +192,10 @@ god:
         - 'summon minecraft:lightning_bolt %x% $[add(%y%, 5)] %z%'
         - 'tellraw %player% {"text": "Zeus struck you with lightning! YOU ARE NOW A GOD", "color": "red"}'
         - "op %player%"
+
+
+trigger_conditions_test:
+  enabled: true
+  max_level: 1
+  triggers: [kill_entity]
+  trigger_conditions: []

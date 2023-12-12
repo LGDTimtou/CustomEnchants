@@ -1,5 +1,6 @@
-package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
+package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

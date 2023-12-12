@@ -1,5 +1,6 @@
-package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
+package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -7,7 +8,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
 
-public class KillMobTrigger extends Trigger{
+public class KillMobTrigger extends Trigger {
 
     public KillMobTrigger(Enchantment enchantment) {
         super(enchantment);

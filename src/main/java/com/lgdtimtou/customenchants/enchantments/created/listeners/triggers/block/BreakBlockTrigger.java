@@ -1,5 +1,6 @@
-package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
+package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
