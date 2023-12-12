@@ -4,7 +4,6 @@ import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.other.Files;
 import com.lgdtimtou.customenchants.other.Util;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.EnchantmentTarget;
 
@@ -30,17 +29,20 @@ public class CustomEnchantBuilder {
         this.name = n.toLowerCase();
         FileConfiguration config = Files.ENCHANTMENTS.getConfig();
 
+
         enabled = config.getBoolean(name + ".enabled");
         if (!enabled) return;
 
         maxLvl = config.getInt(name + ".max_level");
         if (maxLvl == 0) {
+            Util.error(name + ": 'max_level' must be greater than 0");
             error = true;
             return;
         }
 
         String triggers = config.getString(name + ".triggers");
         if (triggers == null) {
+            Util.error(name + ": error when parsing 'triggers'");
             error = true;
             return;
         }
@@ -49,6 +51,7 @@ public class CustomEnchantBuilder {
         EnchantTriggerType.fixOverrides(triggerTypes);
 
         if (triggerTypes.isEmpty()){
+            Util.error(name + ": 'triggers' does not contain any valid triggers");
             error = true;
             return;
         }
@@ -66,8 +69,8 @@ public class CustomEnchantBuilder {
 
         if (levels.stream().anyMatch(level -> !level.isEnabled())){
             error = true;
-            Util.log(ChatColor.RED + "There was an error getting info from the " + name + " enchantment levels");
-            Util.log(ChatColor.RED + "Make sure that all levels (1 -> max_level) are included and have a valid chance and commands list");
+            Util.error(name + ": 'levels' contains a syntax error");
+            Util.log("All levels [1:max_level] should be defined and have a valid chance");
         }
 
         levels.forEach(level -> {
@@ -77,13 +80,13 @@ public class CustomEnchantBuilder {
 
         levels.forEach(level -> {
             if (level.getCommands().isEmpty())
-                Util.log(ChatColor.RED + name + " enchant level: " + level.getLevel() + ", does not have any commands");
+                Util.error(name + ": level " + level.getLevel() + ", does not have any commands");
         });
     }
 
     public void build(){
         if (error)
-            Util.log(ChatColor.RED + "Cannot Build " + name + ", check enchantments.yml for any syntax errors");
+            Util.error(name + ": error during building process, fix above errors before building again");
         else if (enabled)
             new CustomEnchant(name, maxLvl, triggerTypes, targets, levels);
     }
