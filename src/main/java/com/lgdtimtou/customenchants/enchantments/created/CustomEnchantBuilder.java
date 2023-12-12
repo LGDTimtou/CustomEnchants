@@ -4,7 +4,7 @@ import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.other.Files;
 import com.lgdtimtou.customenchants.other.Util;
-import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.EnchantmentTarget;
 
@@ -21,8 +21,9 @@ public class CustomEnchantBuilder {
     private final boolean enabled;
     private int maxLvl;
     private ArrayList<EnchantTriggerType> triggerTypes;
+    private Set<String> triggerConditions;
     private Set<EnchantmentTarget> targets;
-    private final List<CustomEnchantLevelInfo> levels = new ArrayList<>();
+    private final List<CustomEnchantLevel> levels = new ArrayList<>();
 
 
     public CustomEnchantBuilder(String n){
@@ -30,17 +31,23 @@ public class CustomEnchantBuilder {
         this.name = n.toLowerCase();
         FileConfiguration config = Files.ENCHANTMENTS.getConfig();
 
+        //Parsing the enabled option
         enabled = config.getBoolean(name + ".enabled");
         if (!enabled) return;
 
+        //Parsing the max level of the enchantment
         maxLvl = config.getInt(name + ".max_level");
         if (maxLvl == 0) {
+            Util.error(name + ": 'max_level' must be greater than 0");
             error = true;
             return;
         }
 
+
+        //Parsing the triggers
         String triggers = config.getString(name + ".triggers");
         if (triggers == null) {
+            Util.error(name + ": error when parsing 'triggers'");
             error = true;
             return;
         }
@@ -49,84 +56,69 @@ public class CustomEnchantBuilder {
         EnchantTriggerType.fixOverrides(triggerTypes);
 
         if (triggerTypes.isEmpty()){
+            Util.error(name + ": 'triggers' does not contain any valid triggers");
             error = true;
             return;
         }
 
+        //Parsing the trigger conditions
+        String triggerConditions = config.getString(name + ".trigger_conditions");
+        if (triggerConditions == null) this.triggerConditions = Collections.emptySet();
+        else this.triggerConditions = Util.yamlListToStream(triggerConditions).map(String::toLowerCase).collect(Collectors.toSet());
 
+        //Parsing the enchantment target items
         String targets = config.getString(name + ".targets");
         if (targets == null)
             this.targets = Arrays.stream(EnchantmentTarget.values()).collect(Collectors.toSet());
         else
             this.targets = (HashSet<EnchantmentTarget>) Util.filter(targets, EnchantmentTarget.values(), EnchantmentTarget.class, Collectors.toCollection(HashSet::new));
 
-        for (int i = 1; i <= maxLvl; i++)
-            levels.add(new CustomEnchantLevelInfo(name, i));
-
-
-        if (levels.stream().anyMatch(level -> !level.isEnabled())){
-            error = true;
-            Util.log(ChatColor.RED + "There was an error getting info from the " + name + " enchantment levels");
-            Util.log(ChatColor.RED + "Make sure that all levels (1 -> max_level) are included and have a valid chance and commands list");
+        //Parsing each level
+        for (int i = 1; i <= maxLvl; i++){
+            ConfigurationSection section = config.getConfigurationSection(name + ".levels." + i);
+            if (section == null){
+                Util.error(name + ": error when parsing level " + i);
+                return;
+            }
+            this.levels.add(new CustomEnchantLevel(section, i == 1 ? new CustomEnchantLevel() : this.levels.get(this.levels.size() - 1)));
         }
-
-        levels.forEach(level -> {
-            if (level.getInheritCommandsFrom() > 0 && level.getInheritCommandsFrom() <= maxLvl)
-                level.getCommands().addAll(levels.get(level.getInheritCommandsFrom() - 1).getCommands());
-        });
-
-        levels.forEach(level -> {
-            if (level.getCommands().isEmpty())
-                Util.log(ChatColor.RED + name + " enchant level: " + level.getLevel() + ", does not have any commands");
-        });
     }
 
     public void build(){
         if (error)
-            Util.log(ChatColor.RED + "Cannot Build " + name + ", check enchantments.yml for any syntax errors");
+            Util.error(name + ": error during building process, fix above errors before building again");
         else if (enabled)
-            new CustomEnchant(name, maxLvl, triggerTypes, targets, levels);
+            new CustomEnchant(name, maxLvl, triggerTypes, triggerConditions, targets, levels);
     }
 
-
-
-    //Info about each level of the enchantment (chance and commands)
-    public static class CustomEnchantLevelInfo {
-
-        private final int level;
-        private final boolean enabled;
+    public static class CustomEnchantLevel {
 
         private final int cooldown;
-        private double chance;
+        private final double chance;
         private final boolean cancelEvent;
         private final List<String> commands;
 
-        private int inheritCommandsFrom;
-
-        public CustomEnchantLevelInfo(String name, int level){
-            this.level = level;
-            FileConfiguration config = Files.ENCHANTMENTS.getConfig();
-            enabled = true;
-
-            cooldown = config.getInt(name + ".levels." + level + ".cooldown");
-
-            chance = config.getDouble(name + ".levels." + level + ".chance");
+        public CustomEnchantLevel(ConfigurationSection section, CustomEnchantLevel previous){
+            int cooldown = section.getInt("cooldown", previous.cooldown);
+            double chance = section.getDouble("chance", previous.chance);
             if (chance > 100 || chance <= 0) chance = 100;
-            cancelEvent = config.getBoolean(name + ".levels." + level + ".cancel_event");
-            commands = config.getStringList(name + ".levels." + level + ".commands");
+            boolean cancelEvent = section.getBoolean("cancel_event", previous.cancelEvent);
+            List<String> commands = section.getStringList("commands");
+            if (commands.isEmpty()) commands = previous.commands;
 
-            inheritCommandsFrom = config.getInt(name + ".levels." + level + ".inherit_commands_from");
-            if (commands.isEmpty() && inheritCommandsFrom == 0)
-                inheritCommandsFrom = 1;
+            this.cooldown = cooldown;
+            this.chance = chance;
+            this.cancelEvent = cancelEvent;
+            this.commands = commands;
         }
 
-        public int getLevel() {
-            return level;
+        CustomEnchantLevel(){
+            this.cooldown = 0;
+            this.chance = 100;
+            this.cancelEvent = false;
+            this.commands = Collections.emptyList();
         }
 
-        private boolean isEnabled(){
-            return enabled;
-        }
 
         public int getCooldown() {
             return cooldown;
@@ -138,10 +130,6 @@ public class CustomEnchantBuilder {
 
         public boolean isEventCancelled() {
             return cancelEvent;
-        }
-
-        private int getInheritCommandsFrom() {
-            return inheritCommandsFrom;
         }
 
         public List<String> getCommands() {

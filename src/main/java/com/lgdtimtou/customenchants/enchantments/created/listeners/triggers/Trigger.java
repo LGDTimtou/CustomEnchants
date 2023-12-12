@@ -17,26 +17,23 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class Trigger implements CustomEnchantListener {
+public class Trigger implements CustomEnchantListener {
 
     private static final Random RG = new Random();
 
     private static final Map<Player, Set<Enchantment>> pendingCooldown = new HashMap<>();
 
-
     private final CustomEnchant enchantment;
-
 
     private int level;
     private List<String> commands;
-
 
     public Trigger(Enchantment enchantment){
         this.enchantment = CustomEnchant.get(enchantment.getKey().getKey());
     }
 
 
-    protected void executeCommands(Event e, Player player, ItemStack item, Map<String, String> parameters){
+    protected void executeCommands(Event e, Player player, String triggerConditionCheck, ItemStack item, Map<String, String> parameters){
         if (player == null)
             return;
         PlayerInventory inv = player.getInventory();
@@ -51,12 +48,17 @@ class Trigger implements CustomEnchantListener {
         if (pendingCooldown.get(player).contains(this.enchantment.getEnchantment()))
             return;
 
+        //Check if the trigger conditions are met
+        if (!this.enchantment.checkTriggerConditions(triggerConditionCheck))
+            return;
+
         //Get the level of the enchantment
         level = Util.getLevel(enchantedItem, this.enchantment.getEnchantment());
 
         //Return if chance didn't trigger
         if (RG.nextInt(10001) > enchantment.getChance(level))
             return;
+
 
         //Cancel event if specified to do so
         if (e instanceof Cancellable event)
@@ -65,7 +67,7 @@ class Trigger implements CustomEnchantListener {
 
         //Replace global parameters
         //player's name
-        commands = enchantment.getCommands(level - 1).stream().map(command -> command.replace("%player%", player.getDisplayName())).collect(Collectors.toList());
+        commands = enchantment.getCommands(level).stream().map(command -> command.replace("%player%", player.getDisplayName())).collect(Collectors.toList());
         //Coordinates
         commands = commands.stream().map(c -> c.replace("%x%", String.valueOf(location.getX()))
                 .replace("%y%", String.valueOf(location.getY())).replace("%z%", String.valueOf(location.getZ()))).collect(Collectors.toList());

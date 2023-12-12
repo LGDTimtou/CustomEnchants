@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Util {
 
@@ -24,6 +25,8 @@ public final class Util {
     public static void log(String message){
         Bukkit.getLogger().info(message);
     }
+
+    public static void error(String message) {Bukkit.getLogger().severe(ChatColor.RED + "[ERROR] " + message);}
 
     public static String title(String text){
         return Arrays.stream(text.split(" ")).map(word -> word.substring(0, 1).toUpperCase() + word.substring(1)).collect(Collectors.joining(" "));
@@ -76,8 +79,18 @@ public final class Util {
     }
 
     public static <E extends Enum<E>, A> Collection<E> filter(String string, E[] enumValues, Class<E> clazz,  Collector<E, A, Collection<E>> collector){
-        return Arrays.stream(string.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"))
+        return yamlListToStream(string)
                 .filter(tr -> Arrays.stream(enumValues).anyMatch(v -> v.name().equals(tr.toUpperCase())))
                 .map(tr -> E.valueOf(clazz, tr.toUpperCase())).collect(collector);
+    }
+
+    public static Stream<String> yamlListToStream(String yamlList){
+        return Arrays.stream(yamlList.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"));
+    }
+
+
+    public static <T extends Enum<T>> Set<String> convertEnumToStringSet(Class<T> enumm){
+        if (enumm == null) return Collections.emptySet();
+        return Arrays.stream(enumm.getEnumConstants()).map(enumConstant -> enumConstant.name().toLowerCase()).collect(Collectors.toSet());
     }
 }

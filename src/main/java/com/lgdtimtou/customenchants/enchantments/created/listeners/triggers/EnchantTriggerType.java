@@ -1,19 +1,38 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block.BreakBlockTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageAnimalTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageEntityTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageMobTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamagePlayerTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.fishing_rod.FishingRodCaughtTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.fishing_rod.FishingRodHitPlayerTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillAnimalTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillEntityTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillMobTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillPlayerTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromEntityTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromMobTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromNonEntityTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.take_damage.TakeDamageFromPlayerTrigger;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum EnchantTriggerType {
 
-    BREAK_BLOCK,
-    KILL_ENTITY,
+    BREAK_BLOCK(),
+    KILL_ENTITY(),
     KILL_MOB(KILL_ENTITY),
     KILL_ANIMAL(KILL_ENTITY),
     KILL_PLAYER(KILL_ENTITY),
-    DAMAGE_ENTITY,
+    DAMAGE_ENTITY(),
     DAMAGE_MOB(DAMAGE_ENTITY),
     DAMAGE_ANIMAL(DAMAGE_ENTITY),
     DAMAGE_PLAYER(DAMAGE_ENTITY),
@@ -26,11 +45,9 @@ public enum EnchantTriggerType {
 
     private final Set<EnchantTriggerType> overriddenBy;
 
-    EnchantTriggerType(EnchantTriggerType... overriddenBy){
+    EnchantTriggerType (EnchantTriggerType... overriddenBy){
         this.overriddenBy = Arrays.stream(overriddenBy).collect(Collectors.toSet());
     }
-
-    
 
     public CustomEnchantListener getTrigger(Enchantment enchantment){
         return switch(this){
@@ -64,8 +81,6 @@ public enum EnchantTriggerType {
                 it.remove();
         }
     }
-
-
 
 
 }

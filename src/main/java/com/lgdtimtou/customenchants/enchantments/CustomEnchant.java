@@ -24,7 +24,9 @@ public class CustomEnchant {
     private final Enchantment enchantment;
     private final Set<EnchantmentTarget> targets;
 
-    private final List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels;
+    private final Set<String> triggerConditions;
+
+    private final List<CustomEnchantBuilder.CustomEnchantLevel> levels;
 
     public CustomEnchant(String name, int maxLvl, Set<EnchantmentTarget> targets, CustomEnchantListener listener){
         this.name = name;
@@ -32,16 +34,20 @@ public class CustomEnchant {
         this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
         this.levels = Collections.emptyList();
         enchantments.put(name, this);
+
+        this.triggerConditions = Collections.emptySet();
         Util.registerEvent(listener);
     }
 
-    public CustomEnchant(String name, int maxLvl, List<EnchantTriggerType> types, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevelInfo> levels){
+    public CustomEnchant(String name, int maxLvl, List<EnchantTriggerType> types, Set<String> triggerConditions, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
         this.name = name;
         this.targets = targets;
         this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
         this.levels = levels;
+
         enchantments.put(name, this);
 
+        this.triggerConditions = triggerConditions;
         types.forEach(type -> Util.registerEvent(type.getTrigger(enchantment)));
     }
 
@@ -94,6 +100,14 @@ public class CustomEnchant {
         return levels.get(level - 1).getCommands();
     }
 
+    public boolean checkTriggerConditions(String triggerConditionCheck){
+        Util.log(triggerConditionCheck);
+        Util.log("" + triggerConditions);
+
+        if (triggerConditions.isEmpty()) return true;
+        return triggerConditions.contains(triggerConditionCheck.toLowerCase());
+    }
+
 
 
 
@@ -114,7 +128,7 @@ public class CustomEnchant {
             if (!enchantments.contains(enchantment))
                 registerEnchantment(enchantment);
 
-        Util.log(ChatColor.GREEN + "Successfully registered these enchantments: " + getCustomEnchantSet().stream().map(CustomEnchant::getName).toList());
+        Util.log(ChatColor.GREEN + "Successfully registered enchantments: " + getCustomEnchantSet().stream().map(CustomEnchant::getName).toList());
     }
 
     public static Set<CustomEnchant> getCustomEnchantSet(){
