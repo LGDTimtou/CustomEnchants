@@ -121,7 +121,7 @@ public class CustomEnchant {
             if (!enchantments.contains(enchantment))
                 registerEnchantment(enchantment);
 
-        Util.log(ChatColor.GREEN + "Successfully registered enchantments: " + getCustomEnchantSet().stream().map(CustomEnchant::getName).toList());
+        Util.log("Registered enchantments: " + getCustomEnchantSet().stream().map(CustomEnchant::getName).toList());
     }
 
     public static Set<CustomEnchant> getCustomEnchantSet(){

@@ -25,6 +25,7 @@ import org.bukkit.enchantments.Enchantment;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,9 +87,17 @@ public enum EnchantTriggerType {
     }
 
     public static void fixOverrides(Map<EnchantTriggerType, Set<String>> map){
-        Set<EnchantTriggerType> types = map.keySet();
-        for (EnchantTriggerType type : types)
-            if (types.stream().anyMatch(type.overriddenBy::contains))
-                map.remove(type);
+        Iterator<Map.Entry<EnchantTriggerType, Set<String>>> it = map.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry<EnchantTriggerType, Set<String>> entry = it.next();
+            EnchantTriggerType type = entry.getKey();
+            type.overriddenBy.forEach(overriddenByType -> {
+                if (map.containsKey(overriddenByType)) {
+                    map.get(overriddenByType).addAll(entry.getValue());
+                    it.remove();
+                    Util.error(type + " was overridden by " + overriddenByType);
+                }
+            });
+        }
     }
 }

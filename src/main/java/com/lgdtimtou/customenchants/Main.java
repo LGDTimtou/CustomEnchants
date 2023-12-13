@@ -22,14 +22,10 @@ public final class Main extends JavaPlugin {
         Files.register();
         CustomEnchant.register();
         new EnchantCommand();
-
-        Util.log(ChatColor.GREEN + "Successfully enabled CustomEnchants");
     }
 
     @Override
-    public void onDisable() {
-        Util.log(ChatColor.GREEN + "Successfully disabled CustomEnchants");
-    }
+    public void onDisable() {}
 
 
     public static Main getMain(){
