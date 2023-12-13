@@ -10,8 +10,8 @@ import org.bukkit.event.player.PlayerFishEvent;
 import java.util.Map;
 
 public class FishingRodHitPlayerTrigger extends Trigger {
-    public FishingRodHitPlayerTrigger(Enchantment enchantment){
-        super(enchantment);
+    public FishingRodHitPlayerTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

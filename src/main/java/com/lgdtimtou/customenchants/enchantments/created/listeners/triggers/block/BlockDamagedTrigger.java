@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
@@ -9,8 +10,8 @@ import org.bukkit.event.block.BlockDamageEvent;
 import java.util.Map;
 
 public class BlockDamagedTrigger extends Trigger {
-    public BlockDamagedTrigger(Enchantment enchantment) {
-        super(enchantment);
+    public BlockDamagedTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

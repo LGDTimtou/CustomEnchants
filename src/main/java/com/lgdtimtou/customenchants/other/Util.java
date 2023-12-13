@@ -78,20 +78,31 @@ public final class Util {
                 return entry.getValue();
         return -1;
     }
+    public static <E extends Enum<E>, A> Collection<E> filterEnumNames(Stream<String> stream, Class<E> enumClass, Collector<E, A, Collection<E>> collector){
+        return stream
+                .filter(tr -> Arrays.stream(enumClass.getEnumConstants()).anyMatch(v -> v.name().equals(tr.toUpperCase())))
+                .map(tr -> E.valueOf(enumClass, tr.toUpperCase())).collect(collector);
+    }
 
-    public static <E extends Enum<E>, A> Collection<E> filter(String string, E[] enumValues, Class<E> clazz,  Collector<E, A, Collection<E>> collector){
-        return yamlListToStream(string)
-                .filter(tr -> Arrays.stream(enumValues).anyMatch(v -> v.name().equals(tr.toUpperCase())))
-                .map(tr -> E.valueOf(clazz, tr.toUpperCase())).collect(collector);
+    public static <E extends Enum<E>> Map<E, Set<String>> filterMap(Map<String, Object> map, Class<E> enumClass){
+        Map<E, Set<String>> result = new HashMap<>();
+        HashSet<E> enums = (HashSet<E>) filterEnumNames(map.keySet().stream(), enumClass, Collectors.toCollection(HashSet::new));
+        for (E enumValue : enums){
+            Object obj = map.get(enumValue.name().toLowerCase());
+            if (obj instanceof String)
+                result.put(enumValue, Util.yamlListToStream((String) obj).collect(Collectors.toSet()));
+            else if (obj instanceof ArrayList){
+                HashSet<String> set = new HashSet<>();
+                for (Object item : (ArrayList<?>) obj)
+                    if (item instanceof String) set.add((String) item);
+                result.put(enumValue, set);
+            }
+        }
+        return result;
     }
 
     public static Stream<String> yamlListToStream(String yamlList){
         return Arrays.stream(yamlList.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"));
     }
 
-
-    public static <T extends Enum<T>> Set<String> convertEnumToStringSet(Class<T> enumm){
-        if (enumm == null) return Collections.emptySet();
-        return Arrays.stream(enumm.getEnumConstants()).map(enumConstant -> enumConstant.name().toLowerCase()).collect(Collectors.toSet());
-    }
 }

@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class DamagePlayerTrigger extends Trigger {
 
-    public DamagePlayerTrigger(Enchantment enchantment){
-        super(enchantment);
+    public DamagePlayerTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

@@ -9,8 +9,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import java.util.Map;
 
 public class KillEntityTrigger extends Trigger {
-    public KillEntityTrigger(Enchantment enchantment){
-        super(enchantment);
+    public KillEntityTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

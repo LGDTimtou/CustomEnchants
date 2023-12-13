@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class KillMobTrigger extends Trigger {
 
-    public KillMobTrigger(Enchantment enchantment){
-        super(enchantment);
+    public KillMobTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
 

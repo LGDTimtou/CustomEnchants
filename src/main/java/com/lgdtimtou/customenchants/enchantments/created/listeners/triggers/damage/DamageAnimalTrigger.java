@@ -11,8 +11,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.Map;
 
 public class DamageAnimalTrigger extends Trigger {
-    public DamageAnimalTrigger(Enchantment enchantment){
-        super(enchantment);
+    public DamageAnimalTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.EnchantmentTarget;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,7 @@ public class CustomEnchantBuilder {
     private final String name;
     private final boolean enabled;
     private int maxLvl;
-    private ArrayList<EnchantTriggerType> triggerTypes;
-    private Set<String> triggerConditions;
+    private Map<EnchantTriggerType, Set<String>> triggers = Map.of();
     private Set<EnchantmentTarget> targets;
     private final List<CustomEnchantLevel> levels = new ArrayList<>();
 
@@ -43,35 +43,29 @@ public class CustomEnchantBuilder {
             return;
         }
 
-
-        //Parsing the triggers
-        String triggers = config.getString(name + ".triggers");
-        if (triggers == null) {
+        //Parse the triggers and its condition parameters
+        ConfigurationSection triggerSection = config.getConfigurationSection(name + ".triggers");
+        if (triggerSection == null){
             Util.error(name + ": error when parsing 'triggers'");
             error = true;
             return;
         }
 
-        triggerTypes = (ArrayList<EnchantTriggerType>) Util.filter(triggers, EnchantTriggerType.values(), EnchantTriggerType.class, Collectors.toCollection(ArrayList::new));
-        EnchantTriggerType.fixOverrides(triggerTypes);
-
-        if (triggerTypes.isEmpty()){
-            Util.error(name + ": 'triggers' does not contain any valid triggers");
+        this.triggers = Util.filterMap(triggerSection.getValues(false), EnchantTriggerType.class);
+        if (this.triggers.isEmpty()){
+            Util.error(name + ": no valid triggers");
             error = true;
             return;
         }
+        EnchantTriggerType.fixOverrides(this.triggers);
 
-        //Parsing the trigger conditions
-        String triggerConditions = config.getString(name + ".trigger_conditions");
-        if (triggerConditions == null) this.triggerConditions = Collections.emptySet();
-        else this.triggerConditions = Util.yamlListToStream(triggerConditions).map(String::toLowerCase).collect(Collectors.toSet());
 
         //Parsing the enchantment target items
         String targets = config.getString(name + ".targets");
         if (targets == null)
             this.targets = Arrays.stream(EnchantmentTarget.values()).collect(Collectors.toSet());
         else
-            this.targets = (HashSet<EnchantmentTarget>) Util.filter(targets, EnchantmentTarget.values(), EnchantmentTarget.class, Collectors.toCollection(HashSet::new));
+            this.targets = (HashSet<EnchantmentTarget>) Util.filterEnumNames(Util.yamlListToStream(targets), EnchantmentTarget.class, Collectors.toCollection(HashSet::new));
 
         //Parsing each level
         for (int i = 1; i <= maxLvl; i++){
@@ -88,7 +82,7 @@ public class CustomEnchantBuilder {
         if (error)
             Util.error(name + ": error during building process, fix above errors before building again");
         else if (enabled)
-            new CustomEnchant(name, maxLvl, triggerTypes, triggerConditions, targets, levels);
+            new CustomEnchant(name, maxLvl, triggers, targets, levels);
     }
 
     public static class CustomEnchantLevel {

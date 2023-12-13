@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
@@ -11,8 +12,8 @@ import java.util.Map;
 public class BlockPlaceTrigger extends Trigger {
 
 
-    public BlockPlaceTrigger(Enchantment enchantment) {
-        super(enchantment);
+    public BlockPlaceTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

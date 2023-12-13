@@ -24,7 +24,7 @@ public class CustomEnchant {
     private final Enchantment enchantment;
     private final Set<EnchantmentTarget> targets;
 
-    private final Set<String> triggerConditions;
+    private final Map<EnchantTriggerType, Set<String>> triggers;
 
     private final List<CustomEnchantBuilder.CustomEnchantLevel> levels;
 
@@ -35,11 +35,11 @@ public class CustomEnchant {
         this.levels = Collections.emptyList();
         enchantments.put(name, this);
 
-        this.triggerConditions = Collections.emptySet();
+        this.triggers = Map.of();
         Util.registerEvent(listener);
     }
 
-    public CustomEnchant(String name, int maxLvl, List<EnchantTriggerType> types, Set<String> triggerConditions, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
+    public CustomEnchant(String name, int maxLvl, Map<EnchantTriggerType, Set<String>> triggers, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
         this.name = name;
         this.targets = targets;
         this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
@@ -47,8 +47,8 @@ public class CustomEnchant {
 
         enchantments.put(name, this);
 
-        this.triggerConditions = triggerConditions;
-        types.forEach(type -> Util.registerEvent(type.getTrigger(enchantment)));
+        this.triggers = triggers;
+        triggers.keySet().forEach(type -> Util.registerEvent(type.getTrigger(enchantment)));
     }
 
 
@@ -100,15 +100,11 @@ public class CustomEnchant {
         return levels.get(level - 1).getCommands();
     }
 
-    public boolean checkTriggerConditions(String triggerConditionCheck){
-        if (triggerConditions.isEmpty()) return true;
-        return triggerConditions.contains(triggerConditionCheck.toLowerCase());
+    public boolean checkTriggerConditions(String triggerParameter, EnchantTriggerType type){
+        Set<String> triggerConditions = triggers.get(type);
+        if (triggerConditions == null || triggerConditions.isEmpty()) return true;
+        return triggerConditions.contains(triggerParameter.toLowerCase());
     }
-
-
-
-
-
 
     //Registering
     public static void register(){

@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class KillPlayerTrigger extends Trigger {
 
-    public KillPlayerTrigger(Enchantment enchantment){
-        super(enchantment);
+    public KillPlayerTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

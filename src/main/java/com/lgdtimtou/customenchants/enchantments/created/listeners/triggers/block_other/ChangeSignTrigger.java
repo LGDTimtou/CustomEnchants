@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
@@ -9,8 +10,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class ChangeSignTrigger extends Trigger {
-    public ChangeSignTrigger(Enchantment enchantment) {
-        super(enchantment);
+    public ChangeSignTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

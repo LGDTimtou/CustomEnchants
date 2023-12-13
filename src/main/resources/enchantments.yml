@@ -208,8 +208,10 @@ silencium:
 god:
   enabled: false
   max_level: 1
-  triggers: [kill_entity]
-  trigger_conditions: [zombie, skeleton, creeper, sheep, cow]
+  triggers: [kill_entity, break_block]
+  trigger_conditions:
+    kill_entity: [zombie, skeleton, creeper, sheep, cow]
+    break_block: [grass_block]
   levels:
     1:
       chance: 0.01

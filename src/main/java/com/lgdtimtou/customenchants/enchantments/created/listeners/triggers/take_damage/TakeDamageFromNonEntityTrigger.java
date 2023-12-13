@@ -10,8 +10,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.Map;
 
 public class TakeDamageFromNonEntityTrigger extends Trigger {
-    public TakeDamageFromNonEntityTrigger(Enchantment enchantment){
-        super(enchantment);
+    public TakeDamageFromNonEntityTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

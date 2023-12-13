@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.block.BlockState;
@@ -10,8 +11,8 @@ import org.bukkit.event.block.BlockFertilizeEvent;
 import java.util.Map;
 
 public class BlockFertilizeTrigger extends Trigger {
-    public BlockFertilizeTrigger(Enchantment enchantment) {
-        super(enchantment);
+    public BlockFertilizeTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
 

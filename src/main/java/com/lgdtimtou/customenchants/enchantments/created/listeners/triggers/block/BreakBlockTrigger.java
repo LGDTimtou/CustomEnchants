@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
@@ -9,8 +10,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.Map;
 
 public class BreakBlockTrigger extends Trigger {
-    public BreakBlockTrigger(Enchantment enchantment){
-        super(enchantment);
+    public BreakBlockTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
 

@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other;
 
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.enchantments.Enchantment;
@@ -10,8 +11,8 @@ import org.bukkit.event.block.BlockReceiveGameEvent;
 import java.util.Map;
 
 public class ActivateSculkSensorTrigger extends Trigger {
-    public ActivateSculkSensorTrigger(Enchantment enchantment) {
-        super(enchantment);
+    public ActivateSculkSensorTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

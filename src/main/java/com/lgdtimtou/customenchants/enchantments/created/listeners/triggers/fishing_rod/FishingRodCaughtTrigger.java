@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Map;
 
 public class FishingRodCaughtTrigger extends Trigger {
-    public FishingRodCaughtTrigger(Enchantment enchantment){
-        super(enchantment);
+    public FishingRodCaughtTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler

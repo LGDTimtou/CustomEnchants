@@ -10,8 +10,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import java.util.Map;
 
 public class KillAnimalTrigger extends Trigger {
-    public KillAnimalTrigger(Enchantment enchantment){
-        super(enchantment);
+    public KillAnimalTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler
