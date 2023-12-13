@@ -16,7 +16,7 @@ public class ArmorDeEquipTrigger extends Trigger {
 
     @EventHandler
     public void onArmorDeEquip(ArmorEquipEvent e){
-        executeCommands(e, e.getPlayer(), e.getNewArmorPiece().getType().name(), Map.of(
+        executeCommands(e, e.getPlayer(), Set.of(e.getOldArmorPiece()), e.getNewArmorPiece().getType().name(), Map.of(
                 "new_armor_piece", e.getNewArmorPiece().getType().name(),
                 "old_armor_piece", e.getOldArmorPiece().getType().name(),
                 "armor_type", e.getType().name()
