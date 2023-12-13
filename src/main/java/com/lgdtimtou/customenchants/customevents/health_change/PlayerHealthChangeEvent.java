@@ -8,9 +8,9 @@ public class PlayerHealthChangeEvent extends CustomEvent implements Cancellable 
     private final double healthChange;
     private final double health;
     private final double previous_health;
-    private final Player player;
     private boolean isCancelled;
-    PlayerHealthChangeEvent(double healthChange, Player player){
+    PlayerHealthChangeEvent(final Player player, double healthChange){
+        super(player);
         this.healthChange = healthChange;
         this.health = player.getHealth() - healthChange;
         this.previous_health = player.getHealth();
@@ -27,10 +27,6 @@ public class PlayerHealthChangeEvent extends CustomEvent implements Cancellable 
     @Override
     public void setCancelled(boolean cancel) {
         this.isCancelled = cancel;
-    }
-
-    public Player getPlayer(){
-        return player;
     }
 
 

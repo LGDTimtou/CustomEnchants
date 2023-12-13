@@ -1,6 +1,8 @@
 package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers;
 
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.armor.ArmorDeEquipTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.armor.ArmorEquipTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block.*;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other.ActivateSculkSensorTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other.BellRungTrigger;
@@ -34,6 +36,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum EnchantTriggerType {
+
+    EQUIP_ARMOR(ArmorEquipTrigger.class),
+    DE_EQUIP_ARMOR(ArmorDeEquipTrigger.class),
 
     PRIME_TNT(PrimeTNTTrigger.class),
     CHANGE_SIGN(ChangeSignTrigger.class),
@@ -121,7 +126,7 @@ public enum EnchantTriggerType {
                     Integer valueInteger = Integer.valueOf(value);
                     comp = valueInteger.compareTo(conditionInteger);
                 case STRING:
-                    comp = value.compareTo(condition);
+                    comp = value.toLowerCase().compareTo(condition.toLowerCase());
             }
         } catch(NumberFormatException e) {
             return false;

@@ -35,14 +35,18 @@ public class Trigger implements CustomEnchantListener {
         this.type = type;
     }
 
-
     protected void executeCommands(Event e, Player player, String triggerCondition, Map<String, String> parameters){
+        executeCommands(e, player, Collections.emptySet(), triggerCondition, parameters);
+    }
+
+    protected void executeCommands(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, String triggerCondition, Map<String, String> parameters){
         if (player == null)
             return;
         PlayerInventory inv = player.getInventory();
         Location location = player.getLocation();
 
-        ItemStack enchantedItem = Util.containsEnchant(inv, this.enchantment.getEnchantment());
+
+        ItemStack enchantedItem = Util.getEnchantmentContainingItem(inv, customEnchantedItemsSelection, this.enchantment.getEnchantment());
         if (enchantedItem == null)
             return;
 
@@ -54,7 +58,6 @@ public class Trigger implements CustomEnchantListener {
         //Check if the trigger conditions are met
         if (triggerCondition != null && !this.enchantment.checkTriggerConditions(triggerCondition, type))
             return;
-
         //Get the level of the enchantment
         level = Util.getLevel(enchantedItem, this.enchantment.getEnchantment());
 

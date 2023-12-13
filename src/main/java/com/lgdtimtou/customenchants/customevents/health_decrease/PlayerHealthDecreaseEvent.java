@@ -9,10 +9,10 @@ public class PlayerHealthDecreaseEvent extends CustomEvent implements Cancellabl
     private final double decrease;
     private final double health;
     private final double previous_health;
-    private final Player player;
 
 
-    public PlayerHealthDecreaseEvent(double decrease, Player player){
+    public PlayerHealthDecreaseEvent(final Player player, double decrease){
+        super(player);
         this.decrease = decrease;
         this.health = player.getHealth() - decrease;
         this.previous_health = player.getHealth();
@@ -32,10 +32,6 @@ public class PlayerHealthDecreaseEvent extends CustomEvent implements Cancellabl
 
     public double getDecrease() {
         return decrease;
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public double getHealth() {

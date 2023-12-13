@@ -58,11 +58,17 @@ public final class Util {
         return item;
     }
 
-    public static ItemStack containsEnchant(PlayerInventory inventory, Enchantment enchantment){
-        Set<EquipmentSlot> set = Arrays.stream(EquipmentSlot.values()).filter(equipmentSlot -> inventory.getItem(equipmentSlot) != null && containsEnchant(inventory.getItem(equipmentSlot), enchantment)).collect(Collectors.toSet());
-        if (set.isEmpty())
+    public static ItemStack getEnchantmentContainingItem(PlayerInventory inventory, Set<ItemStack> customEnchantedItemsSelection, Enchantment enchantment){
+        if (customEnchantedItemsSelection.isEmpty()){
+            for (EquipmentSlot slot : EquipmentSlot.values()){
+                ItemStack item = inventory.getItem(slot);
+                if (containsEnchant(item, enchantment)) return item;
+            }
             return null;
-        return inventory.getItem(set.iterator().next());
+        }
+        for (ItemStack item : customEnchantedItemsSelection)
+            if (containsEnchant(item, enchantment)) return item;
+        return null;
     }
 
     public static boolean containsEnchant(ItemStack item, Enchantment enchantment){

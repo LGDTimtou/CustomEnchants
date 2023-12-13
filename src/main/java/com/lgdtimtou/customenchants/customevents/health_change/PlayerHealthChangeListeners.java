@@ -17,8 +17,8 @@ public class PlayerHealthChangeListeners implements Listener {
     public void onPlayerTakeDamage(EntityDamageEvent e){
         if (!(e.getEntity() instanceof Player player))
             return;
-        Event healthChangeEvent = new PlayerHealthChangeEvent(-e.getDamage(), player);
-        Event healthDecreaseEvent = new PlayerHealthDecreaseEvent(e.getDamage(), player);
+        Event healthChangeEvent = new PlayerHealthChangeEvent(player, -e.getDamage());
+        Event healthDecreaseEvent = new PlayerHealthDecreaseEvent(player, e.getDamage());
         Bukkit.getPluginManager().callEvent(healthChangeEvent);
         Bukkit.getPluginManager().callEvent(healthDecreaseEvent);
     }
@@ -27,8 +27,8 @@ public class PlayerHealthChangeListeners implements Listener {
     public void onPlayerTakeDamageByEntity(EntityDamageByEntityEvent e){
         if (!(e.getEntity() instanceof Player player))
             return;
-        Event healthChangeEvent = new PlayerHealthChangeEvent(-e.getDamage(), player);
-        Event healthDecreaseEvent = new PlayerHealthDecreaseEvent(e.getDamage(), player);
+        Event healthChangeEvent = new PlayerHealthChangeEvent(player, -e.getDamage());
+        Event healthDecreaseEvent = new PlayerHealthDecreaseEvent(player, e.getDamage());
         Bukkit.getPluginManager().callEvent(healthChangeEvent);
         Bukkit.getPluginManager().callEvent(healthDecreaseEvent);
     }
@@ -37,7 +37,7 @@ public class PlayerHealthChangeListeners implements Listener {
     public void onPlayerRegenHealth(EntityRegainHealthEvent e){
         if (!(e.getEntity() instanceof Player player))
             return;
-        Event event = new PlayerHealthChangeEvent(e.getAmount(), player);
+        Event event = new PlayerHealthChangeEvent(player, e.getAmount());
         Bukkit.getPluginManager().callEvent(event);
     }
 
