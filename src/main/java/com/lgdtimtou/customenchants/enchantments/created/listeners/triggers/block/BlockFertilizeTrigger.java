@@ -2,8 +2,6 @@ package com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.blo
 
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Trigger;
-import com.lgdtimtou.customenchants.other.Util;
-import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockFertilizeEvent;
