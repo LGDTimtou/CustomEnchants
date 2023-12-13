@@ -1,12 +1,11 @@
 package com.lgdtimtou.customenchants.enchantments;
 
-import com.lgdtimtou.customenchants.other.Files;
-import com.lgdtimtou.customenchants.other.Util;
 import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
-import org.bukkit.ChatColor;
+import com.lgdtimtou.customenchants.other.Files;
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 
@@ -36,7 +35,7 @@ public class CustomEnchant {
         enchantments.put(name, this);
 
         this.triggers = Map.of();
-        Util.registerEvent(listener);
+        Util.registerListener(listener);
     }
 
     public CustomEnchant(String name, int maxLvl, Map<EnchantTriggerType, Set<String>> triggers, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
@@ -48,7 +47,7 @@ public class CustomEnchant {
         enchantments.put(name, this);
 
         this.triggers = triggers;
-        triggers.keySet().forEach(type -> Util.registerEvent(type.getTrigger(enchantment)));
+        triggers.keySet().forEach(type -> Util.registerListener(type.getTrigger(enchantment)));
     }
 
 
@@ -103,7 +102,7 @@ public class CustomEnchant {
     public boolean checkTriggerConditions(String triggerParameter, EnchantTriggerType type){
         Set<String> triggerConditions = triggers.get(type);
         if (triggerConditions == null || triggerConditions.isEmpty()) return true;
-        return triggerConditions.contains(triggerParameter.toLowerCase());
+        return triggerConditions.stream().anyMatch(condition -> type.compareConditions(condition, triggerParameter));
     }
 
     //Registering

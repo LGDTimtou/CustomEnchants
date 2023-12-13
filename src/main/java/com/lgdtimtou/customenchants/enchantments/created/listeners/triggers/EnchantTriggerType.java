@@ -12,6 +12,9 @@ import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.dama
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamagePlayerTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.fishing_rod.FishingRodCaughtTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.fishing_rod.FishingRodHitPlayerTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.health.PlayerHealthChangeTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.health.PlayerHealthDecreaseTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.health.PlayerHealthIncreaseTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillAnimalTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillEntityTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.kill.KillMobTrigger;
@@ -59,12 +62,28 @@ public enum EnchantTriggerType {
     TAKE_DAMAGE_FROM_MOB(TakeDamageFromMobTrigger.class, TAKE_DAMAGE_FROM_ENTITY),
 
     FISHING_ROD_CAUGHT(FishingRodCaughtTrigger.class),
-    FISHING_ROD_HIT_PLAYER(FishingRodHitPlayerTrigger.class);
+    FISHING_ROD_HIT_PLAYER(FishingRodHitPlayerTrigger.class),
+
+    HEALTH_CHANGE(PlayerHealthChangeTrigger.class),
+    HEALTH_CHANGE_GREATER_THAN(PlayerHealthChangeTrigger.class, ConditionFunction.GREATER_THAN, ConditionType.DOUBLE, HEALTH_CHANGE),
+    HEALTH_CHANGE_LESSER_THAN(PlayerHealthChangeTrigger.class, ConditionFunction.LESSER_THAN, ConditionType.DOUBLE, HEALTH_CHANGE),
+    HEALTH_INCREASE(PlayerHealthIncreaseTrigger.class, HEALTH_CHANGE),
+    HEALTH_INCREASE_GREATER_THAN(PlayerHealthIncreaseTrigger.class, ConditionFunction.GREATER_THAN, ConditionType.DOUBLE, HEALTH_INCREASE),
+    HEALTH_INCREASE_LESSER_THAN(PlayerHealthIncreaseTrigger.class, ConditionFunction.LESSER_THAN, ConditionType.DOUBLE, HEALTH_INCREASE),
+    HEALTH_DECREASE(PlayerHealthDecreaseTrigger.class, HEALTH_CHANGE),
+    HEALTH_DECREASE_GREATER_THAN(PlayerHealthDecreaseTrigger.class, ConditionFunction.GREATER_THAN, ConditionType.DOUBLE, HEALTH_DECREASE),
+    HEALTH_DECREASE_LESSER_THAN(PlayerHealthDecreaseTrigger.class, ConditionFunction.LESSER_THAN, ConditionType.DOUBLE, HEALTH_DECREASE);
 
     private final Set<EnchantTriggerType> overriddenBy;
     private Constructor<?> constructor;
+    private final ConditionFunction conditionFunction;
+    private final ConditionType conditionType;
 
     EnchantTriggerType (Class<?> triggerClass, EnchantTriggerType... overriddenBy){
+        this(triggerClass, ConditionFunction.EQUALS, ConditionType.STRING, overriddenBy);
+    }
+
+    EnchantTriggerType(Class<?> triggerClass, ConditionFunction conditionFunction, ConditionType conditionType, EnchantTriggerType... overriddenBy){
         try {
             constructor = triggerClass.getConstructor(Enchantment.class, EnchantTriggerType.class);
         } catch (NoSuchMethodException e){
@@ -73,6 +92,8 @@ public enum EnchantTriggerType {
             Util.error("Trigger class: " + triggerClass);
         }
         this.overriddenBy = Arrays.stream(overriddenBy).collect(Collectors.toSet());
+        this.conditionFunction = conditionFunction;
+        this.conditionType = conditionType;
     }
 
 
@@ -84,6 +105,33 @@ public enum EnchantTriggerType {
             Util.error("Trigger type: " + this);
             return null;
         }
+    }
+
+    public boolean compareConditions(String condition, String value){
+        int comp = 0;
+        try {
+            switch(conditionType){
+                case DOUBLE:
+                    Double conditionDouble = Double.valueOf(condition);
+                    Double valueDouble = Double.valueOf(value);
+                    comp = valueDouble.compareTo(conditionDouble);
+                    break;
+                case INTEGER:
+                    Integer conditionInteger = Integer.valueOf(condition);
+                    Integer valueInteger = Integer.valueOf(value);
+                    comp = valueInteger.compareTo(conditionInteger);
+                case STRING:
+                    comp = value.compareTo(condition);
+            }
+        } catch(NumberFormatException e) {
+            return false;
+        }
+
+        return switch (this.conditionFunction) {
+            case EQUALS -> comp == 0;
+            case GREATER_THAN -> comp > 0;
+            case LESSER_THAN -> comp < 0;
+        };
     }
 
     public static void fixOverrides(Map<EnchantTriggerType, Set<String>> map){
@@ -99,5 +147,20 @@ public enum EnchantTriggerType {
                 }
             });
         }
+    }
+
+    enum ConditionType {
+        STRING,
+        DOUBLE,
+        INTEGER
+
+    }
+
+    enum ConditionFunction {
+        EQUALS,
+        GREATER_THAN,
+        LESSER_THAN
+
+
     }
 }

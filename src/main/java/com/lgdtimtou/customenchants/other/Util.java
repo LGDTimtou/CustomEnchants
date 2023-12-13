@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 public final class Util {
 
-    public static void registerEvent(Listener listener){
+    public static void registerListener(Listener listener){
         Main.getMain().getServer().getPluginManager().registerEvents(listener, Main.getMain());
     }
 
@@ -94,7 +94,7 @@ public final class Util {
             else if (obj instanceof ArrayList){
                 HashSet<String> set = new HashSet<>();
                 for (Object item : (ArrayList<?>) obj)
-                    if (item instanceof String) set.add((String) item);
+                    set.add(String.valueOf(item));
                 result.put(enumValue, set);
             }
         }
