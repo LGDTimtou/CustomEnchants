@@ -15,15 +15,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Trigger implements CustomEnchantListener {
 
     private static final Random RG = new Random();
 
-    private static final Map<Player, Set<Enchantment>> pendingCooldown = new HashMap<>();
+    private static final Map<Player, Map<Enchantment, Long>> pendingCooldown = new HashMap<>();
 
     private static final Pattern delayCommandPattern = Pattern.compile("^[ ]*delay ([0-9]+)[ ]*$");
 
@@ -42,7 +42,7 @@ public class Trigger implements CustomEnchantListener {
         executeCommands(e, player, Collections.emptySet(), triggerCondition, parameters);
     }
 
-    protected void executeCommands(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, String triggerCondition, Map<String, String> parameters){
+    protected void executeCommands(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, String triggerCondition, Map<String, String> localParameters){
         if (player == null)
             return;
         PlayerInventory inv = player.getInventory();
@@ -53,16 +53,29 @@ public class Trigger implements CustomEnchantListener {
         if (enchantedItem == null)
             return;
 
+        //Get the level of the enchantment
+        int level = Util.getLevel(enchantedItem, this.enchantment.getEnchantment());
+
         //Check if this enchantment is still in cooldown for the player
-        pendingCooldown.computeIfAbsent(player, v -> new HashSet<>());
-        if (pendingCooldown.get(player).contains(this.enchantment.getEnchantment()))
+        pendingCooldown.computeIfAbsent(player, v -> new HashMap<>());
+        if (pendingCooldown.get(player).containsKey(this.enchantment.getEnchantment())){
+            if (enchantment.hasCoolDownMessage()){
+                Long startTime = pendingCooldown.get(player).get(this.enchantment.getEnchantment());
+                int timeLeftSeconds = enchantment.getCooldown(level) - (int)((System.currentTimeMillis() - startTime)/1000);
+                player.sendMessage(Util.replaceParameters(Map.of(
+                        "player", player.getDisplayName(),
+                        "enchantment", enchantment.getName(),
+                        "time_left", Util.secondsToString(timeLeftSeconds, false),
+                        "time_left_full_out", Util.secondsToString(timeLeftSeconds, true)
+                ), enchantment.getCoolDownMessage()));
+            }
             return;
+        }
 
         //Check if the trigger conditions are met
         if (triggerCondition != null && !this.enchantment.checkTriggerConditions(triggerCondition, type))
             return;
-        //Get the level of the enchantment
-        int level = Util.getLevel(enchantedItem, this.enchantment.getEnchantment());
+
 
         //Return if chance didn't trigger
         if (RG.nextInt(10001) > enchantment.getChance(level))
@@ -76,26 +89,28 @@ public class Trigger implements CustomEnchantListener {
 
         //Add cool down if necessary
         if (enchantment.getCooldown(level) > 0){
-            pendingCooldown.get(player).add(this.enchantment.getEnchantment());
+            pendingCooldown.get(player).put(this.enchantment.getEnchantment(), System.currentTimeMillis());
             Bukkit.getScheduler().runTaskLater(Main.getMain(), v -> pendingCooldown.get(player).remove(this.enchantment.getEnchantment()), enchantment.getCooldown(level) * 20L);
         }
 
 
-        //Replace global parameters
-        //player's name
-        commands = enchantment.getCommands(level).stream().map(command -> command.replace("%player%", player.getDisplayName())).collect(Collectors.toList());
-        //Coordinates
-        commands = commands.stream().map(c -> c.replace("%x%", String.valueOf(location.getX()))
-                .replace("%y%", String.valueOf(location.getY())).replace("%z%", String.valueOf(location.getZ()))).collect(Collectors.toList());
+        //add global parameters to parameter map
+        HashMap<String, String> parameters = new HashMap<>(localParameters);
+        parameters.put("player", player.getDisplayName());
+        parameters.put("x", String.valueOf(location.getX()));
+        parameters.put("y", String.valueOf(location.getY()));
+        parameters.put("z", String.valueOf(location.getZ()));
 
+        //Replace parameters
+        commands = enchantment.getCommands(level).stream().map(command -> Util.replaceParameters(parameters, command)).collect(Collectors.toList());
+
+
+        //Execute file functions
         try {
             commands = FileFunction.parse(commands);
         } catch (NumberFormatException exception){
             return;
         }
-
-        //Replace local parameters
-        parameters.forEach((key, value) -> commands = commands.stream().map(command -> command.replace("%" + key + "%", value.toLowerCase())).collect(Collectors.toList()));
 
         //Execute the commands from the console
         dispatchCommand(0);

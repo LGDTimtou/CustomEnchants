@@ -20,6 +20,8 @@ public class CustomEnchantBuilder {
     private final String name;
     private final boolean enabled;
     private int maxLvl;
+
+    private String coolDownMessage;
     private Map<EnchantTriggerType, Set<String>> triggers = Map.of();
     private Set<EnchantmentTarget> targets;
     private final List<CustomEnchantLevel> levels = new ArrayList<>();
@@ -66,6 +68,10 @@ public class CustomEnchantBuilder {
         else
             this.targets = (HashSet<EnchantmentTarget>) Util.filterEnumNames(Util.yamlListToStream(targets), EnchantmentTarget.class, Collectors.toCollection(HashSet::new));
 
+        //Parsing optional cool down message
+        this.coolDownMessage = config.getString(name + ".cooldown_message");
+
+
         //Parsing each level
         for (int i = 1; i <= maxLvl; i++){
             ConfigurationSection section = config.getConfigurationSection(name + ".levels." + i);
@@ -81,7 +87,7 @@ public class CustomEnchantBuilder {
         if (error)
             Util.error(name + ": error during building process, fix above errors before building again");
         else if (enabled)
-            new CustomEnchant(name, maxLvl, triggers, targets, levels);
+            new CustomEnchant(name, maxLvl, triggers, targets, coolDownMessage, levels);
     }
 
     public static class CustomEnchantLevel {

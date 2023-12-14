@@ -6,6 +6,7 @@ import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.Ench
 import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchants.other.Files;
 import com.lgdtimtou.customenchants.other.Util;
+import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 
@@ -27,9 +28,12 @@ public class CustomEnchant {
 
     private final List<CustomEnchantBuilder.CustomEnchantLevel> levels;
 
+    private final String coolDownMessage;
+
     public CustomEnchant(String name, int maxLvl, Set<EnchantmentTarget> targets, CustomEnchantListener listener){
         this.name = name;
         this.targets = targets;
+        this.coolDownMessage = null;
         this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
         this.levels = Collections.emptyList();
         enchantments.put(name, this);
@@ -38,9 +42,10 @@ public class CustomEnchant {
         Util.registerListener(listener);
     }
 
-    public CustomEnchant(String name, int maxLvl, Map<EnchantTriggerType, Set<String>> triggers, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
+    public CustomEnchant(String name, int maxLvl, Map<EnchantTriggerType, Set<String>> triggers, Set<EnchantmentTarget> targets, String coolDownMessage, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
         this.name = name;
         this.targets = targets;
+        this.coolDownMessage = coolDownMessage;
         this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
         this.levels = levels;
 
@@ -79,6 +84,14 @@ public class CustomEnchant {
         if (level <= 0 || level > levels.size())
             return -1;
         return levels.get(level - 1).getCooldown();
+    }
+
+    public String getCoolDownMessage() {
+        return ChatColor.translateAlternateColorCodes('&', coolDownMessage);
+    }
+
+    public boolean hasCoolDownMessage() {
+        return coolDownMessage != null;
     }
 
     public int getChance(int level){
@@ -144,13 +157,9 @@ public class CustomEnchant {
         }
     }
 
-    public static String getLevelRoman(int level){
+    public static String getLevelRoman(int level) {
         if (level < 1 || level > roman.length)
             return "error";
         return roman[level - 1];
     }
-
-
-
-
 }

@@ -111,4 +111,23 @@ public final class Util {
         return Arrays.stream(yamlList.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"));
     }
 
+    public static String replaceParameters(Map<String, String> parameters, String str){
+        /* Oneliner
+        return parameters.entrySet().stream()
+                .reduce(str, (result, entry) -> result.replaceAll(entry.getKey(), entry.getValue()),
+                        (a, b) -> a);
+        */
+        String result = str;
+        for (Map.Entry<String, String> mapEntry : parameters.entrySet())
+            result = result.replaceAll("%" + mapEntry.getKey() + "%", mapEntry.getValue());
+        return result;
+    }
+
+    public static String secondsToString(int seconds, boolean full){
+        int hours = Math.floorDiv(seconds, 3600);
+        int minutes = Math.floorDiv(seconds % 3600, 60);
+        int sec = seconds % 60;
+        return (hours > 0 ? hours + (full ? " hours " : "h "):"") + (minutes > 0 ? minutes + (full ? " minutes " : "m "):"") + sec + (full ? " seconds":"s");
+    }
+
 }
