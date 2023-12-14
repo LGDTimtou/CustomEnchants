@@ -1,12 +1,11 @@
 package com.lgdtimtou.customenchants.enchantments;
 
-import com.lgdtimtou.customenchants.other.Files;
-import com.lgdtimtou.customenchants.other.Util;
 import com.lgdtimtou.customenchants.enchantments.created.CustomEnchantBuilder;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchants.enchantments.defaultenchants.DefaultCustomEnchant;
-import org.bukkit.ChatColor;
+import com.lgdtimtou.customenchants.other.Files;
+import com.lgdtimtou.customenchants.other.Util;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 
@@ -24,7 +23,7 @@ public class CustomEnchant {
     private final Enchantment enchantment;
     private final Set<EnchantmentTarget> targets;
 
-    private final Set<String> triggerConditions;
+    private final Map<EnchantTriggerType, Set<String>> triggers;
 
     private final List<CustomEnchantBuilder.CustomEnchantLevel> levels;
 
@@ -35,11 +34,11 @@ public class CustomEnchant {
         this.levels = Collections.emptyList();
         enchantments.put(name, this);
 
-        this.triggerConditions = Collections.emptySet();
-        Util.registerEvent(listener);
+        this.triggers = Map.of();
+        Util.registerListener(listener);
     }
 
-    public CustomEnchant(String name, int maxLvl, List<EnchantTriggerType> types, Set<String> triggerConditions, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
+    public CustomEnchant(String name, int maxLvl, Map<EnchantTriggerType, Set<String>> triggers, Set<EnchantmentTarget> targets, List<CustomEnchantBuilder.CustomEnchantLevel> levels){
         this.name = name;
         this.targets = targets;
         this.enchantment = new EnchantmentWrapper(name, maxLvl, targets);
@@ -47,8 +46,8 @@ public class CustomEnchant {
 
         enchantments.put(name, this);
 
-        this.triggerConditions = triggerConditions;
-        types.forEach(type -> Util.registerEvent(type.getTrigger(enchantment)));
+        this.triggers = triggers;
+        triggers.keySet().forEach(type -> Util.registerListener(type.getTrigger(enchantment)));
     }
 
 
@@ -100,18 +99,11 @@ public class CustomEnchant {
         return levels.get(level - 1).getCommands();
     }
 
-    public boolean checkTriggerConditions(String triggerConditionCheck){
-        Util.log(triggerConditionCheck);
-        Util.log("" + triggerConditions);
-
-        if (triggerConditions.isEmpty()) return true;
-        return triggerConditions.contains(triggerConditionCheck.toLowerCase());
+    public boolean checkTriggerConditions(String triggerParameter, EnchantTriggerType type){
+        Set<String> triggerConditions = triggers.get(type);
+        if (triggerConditions == null || triggerConditions.isEmpty()) return true;
+        return triggerConditions.stream().anyMatch(condition -> type.compareConditions(condition, triggerParameter));
     }
-
-
-
-
-
 
     //Registering
     public static void register(){
@@ -128,7 +120,7 @@ public class CustomEnchant {
             if (!enchantments.contains(enchantment))
                 registerEnchantment(enchantment);
 
-        Util.log(ChatColor.GREEN + "Successfully registered enchantments: " + getCustomEnchantSet().stream().map(CustomEnchant::getName).toList());
+        Util.log("Registered enchantments: " + getCustomEnchantSet().stream().map(CustomEnchant::getName).toList());
     }
 
     public static Set<CustomEnchant> getCustomEnchantSet(){

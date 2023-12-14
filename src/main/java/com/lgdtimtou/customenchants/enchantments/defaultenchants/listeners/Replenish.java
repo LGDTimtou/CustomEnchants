@@ -16,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.Set;
 
 public class Replenish implements CustomEnchantListener {
 
@@ -33,7 +34,7 @@ public class Replenish implements CustomEnchantListener {
 
     @EventHandler
     public void blockBreak(BlockBreakEvent e){
-        if (Util.containsEnchant(e.getPlayer().getInventory(), DefaultCustomEnchant.REPLENISH.getEnchantment()) == null)
+        if (Util.getEnchantmentContainingItem(e.getPlayer().getInventory(), Set.of(), DefaultCustomEnchant.REPLENISH.getEnchantment()) == null)
             return;
 
         Inventory inv = e.getPlayer().getInventory();

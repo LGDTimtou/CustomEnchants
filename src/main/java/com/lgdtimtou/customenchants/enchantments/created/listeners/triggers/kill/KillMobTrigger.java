@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class KillMobTrigger extends Trigger {
 
-    public KillMobTrigger(Enchantment enchantment){
-        super(enchantment);
+    public KillMobTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
 
@@ -20,7 +20,7 @@ public class KillMobTrigger extends Trigger {
     public void onMobKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Monster))
             return;
-        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), null, Map.of());
+        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of("mob", e.getEntity().getType().name()));
     }
 
 }

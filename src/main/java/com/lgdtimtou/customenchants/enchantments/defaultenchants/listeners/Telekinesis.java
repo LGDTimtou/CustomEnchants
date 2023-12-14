@@ -21,7 +21,7 @@ public class Telekinesis implements CustomEnchantListener {
         PlayerInventory inv = e.getPlayer().getInventory();
         if (inv.getItemInMainHand().getItemMeta() == null)
             return;
-        if (Util.containsEnchant(inv, DefaultCustomEnchant.TELEKINESIS.getEnchantment()) == null)
+        if (Util.getEnchantmentContainingItem(inv, Set.of(), DefaultCustomEnchant.TELEKINESIS.getEnchantment()) == null)
             return;
 
         e.setDropItems(false);
@@ -44,7 +44,7 @@ public class Telekinesis implements CustomEnchantListener {
         PlayerInventory inv = killer.getInventory();
         if (inv.getItemInMainHand().getItemMeta() == null)
             return;
-        if (Util.containsEnchant(inv, DefaultCustomEnchant.TELEKINESIS.getEnchantment()) == null)
+        if (Util.getEnchantmentContainingItem(inv, Set.of(), DefaultCustomEnchant.TELEKINESIS.getEnchantment()) == null)
             return;
 
         Set<ItemStack> set = new HashSet<>();

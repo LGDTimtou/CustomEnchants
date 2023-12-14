@@ -1,10 +1,9 @@
 package com.lgdtimtou.customenchants;
 
 import com.lgdtimtou.customenchants.command.enchant.EnchantCommand;
+import com.lgdtimtou.customenchants.customevents.CustomEvent;
 import com.lgdtimtou.customenchants.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchants.other.Files;
-import com.lgdtimtou.customenchants.other.Util;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 //TODO KillCounter enchant
@@ -21,14 +20,8 @@ public final class Main extends JavaPlugin {
         plugin = this;
         Files.register();
         CustomEnchant.register();
+        CustomEvent.register();
         new EnchantCommand();
-
-        Util.log(ChatColor.GREEN + "Successfully enabled CustomEnchants");
-    }
-
-    @Override
-    public void onDisable() {
-        Util.log(ChatColor.GREEN + "Successfully disabled CustomEnchants");
     }
 
 

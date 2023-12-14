@@ -10,8 +10,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.Map;
 
 public class TakeDamageFromPlayerTrigger extends Trigger {
-    public TakeDamageFromPlayerTrigger(Enchantment enchantment){
-        super(enchantment);
+    public TakeDamageFromPlayerTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler
@@ -20,6 +20,6 @@ public class TakeDamageFromPlayerTrigger extends Trigger {
             return;
         if (!(e.getDamager() instanceof Player damager))
             return;
-        executeCommands(e, player, damager.getDisplayName(), null, Map.of("damager", damager.getDisplayName()));
+        executeCommands(e, player, damager.getDisplayName(), Map.of("damager", damager.getDisplayName()));
     }
 }

@@ -10,14 +10,14 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import java.util.Map;
 
 public class KillAnimalTrigger extends Trigger {
-    public KillAnimalTrigger(Enchantment enchantment){
-        super(enchantment);
+    public KillAnimalTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler
     public void onAnimalKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Animals))
             return;
-        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), null, Map.of());
+        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of("animal", e.getEntity().getType().name()));
     }
 }

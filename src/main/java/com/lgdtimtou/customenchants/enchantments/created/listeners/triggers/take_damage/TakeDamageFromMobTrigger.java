@@ -11,8 +11,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.Map;
 
 public class TakeDamageFromMobTrigger extends Trigger {
-    public TakeDamageFromMobTrigger(Enchantment enchantment){
-        super(enchantment);
+    public TakeDamageFromMobTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler
@@ -21,6 +21,6 @@ public class TakeDamageFromMobTrigger extends Trigger {
             return;
         if (!(e.getDamager() instanceof Monster monster))
             return;
-        executeCommands(e, player, monster.getType().name(), null, Map.of());
+        executeCommands(e, player, monster.getType().name(), Map.of("mob", monster.getType().name()));
     }
 }

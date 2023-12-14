@@ -45,7 +45,7 @@ public enum FileFunction {
                     sub -= first ? -Double.parseDouble(value) : Double.parseDouble(value);
                     first = false;
                 } catch (NumberFormatException e){
-                    Util.log(ChatColor.RED + "Check enchantments.yml for add function usage: $[add(double, double, ...)]");
+                    Util.log(ChatColor.RED + "Check enchantments.yml for sub function usage: $[sub(double, double, ...)]");
                     return "-1";
                 }
             }
@@ -65,7 +65,7 @@ public enum FileFunction {
                 try {
                     mul *= Double.parseDouble(value);
                 } catch (NumberFormatException e){
-                    Util.log(ChatColor.RED + "Check enchantments.yml for add function usage: $[add(double, double, ...)]");
+                    Util.log(ChatColor.RED + "Check enchantments.yml for mul function usage: $[mul(double, double, ...)]");
                     return "-1";
                 }
             }
@@ -107,5 +107,4 @@ public enum FileFunction {
             return updated;
         }).collect(Collectors.toList());
     }
-
 }

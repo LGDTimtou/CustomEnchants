@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Map;
 
 public class FishingRodCaughtTrigger extends Trigger {
-    public FishingRodCaughtTrigger(Enchantment enchantment){
-        super(enchantment);
+    public FishingRodCaughtTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler
@@ -20,6 +20,6 @@ public class FishingRodCaughtTrigger extends Trigger {
             return;
         if (e.getCaught() == null)
             return;
-        executeCommands(e, e.getPlayer(), ((ItemStack)e.getCaught()).getType().name(), null, Map.of());
+        executeCommands(e, e.getPlayer(), ((ItemStack)e.getCaught()).getType().name(), Map.of("item", ((ItemStack)e.getCaught()).getType().name()));
     }
 }

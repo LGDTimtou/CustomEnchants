@@ -10,8 +10,8 @@ import org.bukkit.event.player.PlayerFishEvent;
 import java.util.Map;
 
 public class FishingRodHitPlayerTrigger extends Trigger {
-    public FishingRodHitPlayerTrigger(Enchantment enchantment){
-        super(enchantment);
+    public FishingRodHitPlayerTrigger(Enchantment enchantment, EnchantTriggerType type) {
+        super(enchantment, type);
     }
 
     @EventHandler
@@ -20,6 +20,6 @@ public class FishingRodHitPlayerTrigger extends Trigger {
             return;
         if (!(e.getCaught() instanceof Player caught))
             return;
-        executeCommands(e, e.getPlayer(), caught.getDisplayName(), null, Map.of("damaged", caught.getDisplayName()));
+        executeCommands(e, e.getPlayer(), caught.getDisplayName(), Map.of("damaged", caught.getDisplayName()));
     }
 }
