@@ -77,6 +77,7 @@ public class CustomEnchantBuilder {
             ConfigurationSection section = config.getConfigurationSection(name + ".levels." + i);
             if (section == null){
                 Util.error(name + ": error when parsing level " + i);
+                error = true;
                 return;
             }
             this.levels.add(new CustomEnchantLevel(section, i == 1 ? new CustomEnchantLevel() : this.levels.get(this.levels.size() - 1)));

@@ -22,6 +22,39 @@
 #       ...                                                                                                                                #
 ############################################################################################################################################
 
+wolf_summoner:
+  enabled: true
+  max_level: 3
+  triggers:
+    right_click_item: []
+  targets: weapon
+  cooldown_message: '&dYou have to wait %time_left% to spawn your wolfs again!'
+  levels:
+    '1':
+      cooldown: 120
+      commands:
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - delay 15
+        - kill @e[type=wolf,name="%player%s Attacker"]
+    '2':
+      commands:
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - delay 30
+        - kill @e[type=wolf,name="%player%s Attacker"]
+    '3':
+      commands:
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - delay 60
+        - kill @e[type=wolf,name="%player%s Attacker"]
 
 diamond_hunter:
   enabled: True

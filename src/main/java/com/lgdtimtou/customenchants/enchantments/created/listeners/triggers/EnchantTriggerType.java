@@ -8,6 +8,8 @@ import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.bloc
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other.BellRungTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other.ChangeSignTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.block_other.PrimeTNTTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.click.LeftClickItemTrigger;
+import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.click.RightClickItemTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageAnimalTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageEntityTrigger;
 import com.lgdtimtou.customenchants.enchantments.created.listeners.triggers.damage.DamageMobTrigger;
@@ -77,7 +79,10 @@ public enum EnchantTriggerType {
     HEALTH_INCREASE_LESSER_THAN(PlayerHealthIncreaseTrigger.class, ConditionFunction.LESSER_THAN, ConditionType.DOUBLE, HEALTH_INCREASE),
     HEALTH_DECREASE(PlayerHealthDecreaseTrigger.class, HEALTH_CHANGE),
     HEALTH_DECREASE_GREATER_THAN(PlayerHealthDecreaseTrigger.class, ConditionFunction.GREATER_THAN, ConditionType.DOUBLE, HEALTH_DECREASE),
-    HEALTH_DECREASE_LESSER_THAN(PlayerHealthDecreaseTrigger.class, ConditionFunction.LESSER_THAN, ConditionType.DOUBLE, HEALTH_DECREASE);
+    HEALTH_DECREASE_LESSER_THAN(PlayerHealthDecreaseTrigger.class, ConditionFunction.LESSER_THAN, ConditionType.DOUBLE, HEALTH_DECREASE),
+
+    LEFT_CLICK_ITEM(LeftClickItemTrigger.class),
+    RIGHT_CLICK_ITEM(RightClickItemTrigger.class);
 
     private final Set<EnchantTriggerType> overriddenBy;
     private Constructor<?> constructor;
