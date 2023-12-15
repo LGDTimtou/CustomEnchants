@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public enum EnchantTriggerType {
@@ -131,7 +132,8 @@ public enum EnchantTriggerType {
                     Integer valueInteger = Integer.valueOf(value);
                     comp = valueInteger.compareTo(conditionInteger);
                 case STRING:
-                    comp = value.toLowerCase().compareTo(condition.toLowerCase());
+                    Pattern pattern = Pattern.compile(condition.toLowerCase().replace("*", ".*"));
+                    return pattern.matcher(value.toLowerCase()).matches();
             }
         } catch(NumberFormatException e) {
             return false;
