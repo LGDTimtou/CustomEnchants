@@ -1,0 +1,14 @@
+Trigger conditions (regex)
+Bunch of new triggers
+enchantments.yml revamp
+delay between commands
+cooldown message (with parameters)
+anvils
+enchantment tables
+villagers
+treasure
+creative inventory
+with normal enchant command
+new options
+conflicting enchants
+default enchantment settings

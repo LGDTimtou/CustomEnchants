@@ -1,0 +1,268 @@
+# Template
+
+############################################################################################################################################
+# enchantment_name (all lowercase and _ for spaces):                                                                                       #
+#   enabled: Whether the enchantment is enabled yes or no                                                                                  #
+#   max_level: The maximum level of the enchantment                                                                                        #
+#   triggers: The events that trigger the commands                                                                                         #
+#   [targets: [armor, armor_feet, armor_legs, armor_torso, armor_head, weapon, tool, bow, fishing_rod, breakable, wearable,                #
+#                trident, crossbow, vanishable] (all by default)]                                                                          #
+#   levels:                                                                                                                                #
+#     1:                                                                                                                                   #
+#       cooldown: The time in seconds before the commands have their chance of executing again (0 by default)                              #
+#       chance: The chance of the commands executing [0.01-100] (100 by default)                                                           #
+#       cancel_event: Whether the trigger event should be cancelled (for example not actually breaking the block) (false by default)       #
+#       inherit_commands_from: The level from which you want to inherit commands (will be 1 by default if the level has no commands)       #
+#       commands: A list of commands that will be executed by the console if the enchantment event triggers                                #
+#     ...                                                                                                                                  #
+#     ...                                                                                                                                  #
+#     ...                                                                                                                                  #
+#     'max_level':                                                                                                                         #
+#       cooldown: ...                                                                                                                      #
+#       ...                                                                                                                                #
+############################################################################################################################################
+
+wolf_summoner:
+  enabled: true
+  definition:
+    max_level: 3
+    enchanting_table:
+      included: true
+      weight: 10
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    targets: [weapon]
+    conflicts_with: []
+    is_treasure: true
+    is_tradeable: true
+
+  triggers:
+    right_click_item: []
+  cooldown_message: '&dYou have to wait %time_left% to spawn your wolfs again!'
+  levels:
+    '1':
+      cooldown: 120
+      commands:
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - delay 15
+        - kill @e[type=wolf,name="%player%s Attacker"]
+    '2':
+      commands:
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - delay 30
+        - kill @e[type=wolf,name="%player%s Attacker"]
+    '3':
+      commands:
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - summon minecraft:wolf %x% %y% %z% {Owner:%player%, CustomName:"\"%player%s
+          Attacker\""}
+        - delay 60
+        - kill @e[type=wolf,name="%player%s Attacker"]
+
+silencium:
+  enabled: true
+  definition:
+    max_level: 3
+    enchanting_table:
+      included: true
+      weight: 10
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    conflicts_with: [ ]
+    is_treasure: true
+    is_tradeable: true
+    targets:
+      - armor_feet
+
+  triggers:
+    sculk_sensor_activated: []
+  levels:
+    1:
+      chance: 30
+      cancel_event: true
+    2:
+      chance: 50
+    3:
+      chance: 100
+
+
+lightweight:
+  enabled: true
+  definition:
+    max_level: 3
+    enchanting_table:
+      included: true
+      weight: 10
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    conflicts_with: [ ]
+    is_treasure: true
+    is_tradeable: true
+    targets:
+      - armor_feet
+
+  triggers:
+    take_damage_from_nonentity: [fall]
+  levels:
+    1:
+      chance: 10
+      cancel_event: true
+    2:
+      chance: 20
+    3:
+      chance: 30
+
+
+diamond_fish:
+  enabled: true
+  definition:
+    max_level: 5
+    enchanting_table:
+      included: true
+      weight: 10
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    conflicts_with: [ ]
+    is_treasure: true
+    is_tradeable: true
+    targets: fishing_rod
+
+  triggers:
+    fishing_rod_caught: []
+  levels:
+    1:
+      chance: 1
+      commands:
+        - 'tellraw %player% {"text": "You caught a diamond!", "color": "green"}'
+        - "give %player% diamond 1"
+    2:
+      chance: 2
+    3:
+      chance: 3
+    4:
+      chance: 4
+    5:
+      chance: 5
+
+absorb:
+  enabled: true
+  definition:
+    max_level: 3
+    enchanting_table:
+      included: true
+      weight: 10
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    conflicts_with: [ ]
+    is_treasure: true
+    is_tradeable: true
+    targets: [armor_legs]
+
+  triggers:
+    take_damage_from_nonentity: []
+    take_damage_from_entity: []
+  levels:
+    1:
+      cancel_event: true
+      cooldown: 10
+      chance: 5
+      commands:
+        - 'tellraw %player% {"text": "Your damage has been absorbed!", "color": "green"}'
+    2:
+      chance: 8
+    3:
+      cooldown: 8
+
+rage:
+  enabled: true
+  definition:
+    max_level: 5
+    enchanting_table:
+      included: true
+      weight: 10
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    conflicts_with: [ ]
+    is_treasure: true
+    is_tradeable: true
+    targets: [ armor_torso ]
+
+  triggers:
+    take_damage_from_entity: []
+  levels:
+    1:
+      cooldown: 60
+      chance: 10
+      commands:
+        - 'tellraw %player% {"text": "You have been enraged with strength I", "color": "green"}'
+        - 'effect give %player% minecraft:strength 5'
+    2:
+      chance: 20
+    3:
+      chance: 30
+    4:
+      chance: 40
+      commands:
+        - 'tellraw %player% {"text": "You have been enraged with strength II", "color": "green"}'
+        - 'effect give %player% minecraft:strength 5 1'
+    5:
+      chance: 50
+      commands:
+        - 'tellraw %player% {"text": "You have been enraged with strength III", "color": "green"}'
+        - 'effect give %player% minecraft:strength 5 2'
+
+head_hunter:
+  enabled: True
+  definition:
+    max_level: 3
+    enchanting_table:
+      included: true
+      weight: 10
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    conflicts_with: [ ]
+    is_treasure: true
+    is_tradeable: true
+    targets: ["weapon", "bow", "trident", "crossbow"]
+
+  triggers:
+    kill_player: []
+
+  levels:
+    1:
+      chance: 5
+      commands:
+        - 'give %player% minecraft:player_head{SkullOwner:"%killed%"}'
+    2:
+      chance: 10
+    3:
+      chance: 25
+
