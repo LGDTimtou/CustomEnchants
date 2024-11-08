@@ -25,8 +25,8 @@ public class CustomEnchant extends CustomEnchantRecord {
     private final Enchantment enchantment;
 
 
-    public CustomEnchant(String name, CustomEnchantDefinition definition, String coolDownMessage, List<CustomEnchantBuilder.CustomEnchantLevel> levels, Map<EnchantTriggerType, Set<String>> triggers) {
-        super(Util.getPrettyName(name), definition, coolDownMessage);
+    public CustomEnchant(String name, CustomEnchantDefinition definition, Map<String, Boolean> tags, String coolDownMessage, List<CustomEnchantBuilder.CustomEnchantLevel> levels, Map<EnchantTriggerType, Set<String>> triggers) {
+        super(Util.getPrettyName(name), definition, tags, coolDownMessage);
 
         this.levels = levels;
         this.triggers = triggers;
@@ -45,8 +45,8 @@ public class CustomEnchant extends CustomEnchantRecord {
         enchantments.put(this.namespacedName, this);
     }
 
-    public CustomEnchant(String name, CustomEnchantDefinition definition, CustomEnchantListener listener) {
-        this(name, definition, null, List.of(), Map.of());
+    public CustomEnchant(String name, CustomEnchantDefinition definition, Map<String, Boolean> tags, CustomEnchantListener listener) {
+        this(name, definition, tags, null, List.of(), Map.of());
         if (this.enchantment != null)
             Util.registerListener(listener);
     }

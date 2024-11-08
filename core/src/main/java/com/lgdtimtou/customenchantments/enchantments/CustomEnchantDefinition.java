@@ -10,10 +10,6 @@ public record CustomEnchantDefinition(
         CustomEnchantCost minCost,
         CustomEnchantCost maxCost,
         int anvilCost,
-        boolean isCurse,
-        boolean isTreasure,
-        boolean isTradeable,
-        boolean isInEnchantingTable,
         Set<EnchantmentTarget> enchantmentTargets,
         Set<String> conflictingEnchantments
 ) {

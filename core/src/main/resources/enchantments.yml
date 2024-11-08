@@ -27,7 +27,6 @@ wolf_summoner:
   definition:
     max_level: 3
     enchanting_table:
-      included: true
       weight: 10
       min_cost_base: 1
       min_cost_incr: 11
@@ -36,8 +35,10 @@ wolf_summoner:
     anvil_cost: 2
     targets: [weapon]
     conflicts_with: []
-    is_treasure: true
-    is_tradeable: true
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
 
   triggers:
     right_click_item: []
@@ -74,7 +75,6 @@ silencium:
   definition:
     max_level: 3
     enchanting_table:
-      included: true
       weight: 10
       min_cost_base: 1
       min_cost_incr: 11
@@ -82,8 +82,10 @@ silencium:
       max_cost_incr: 11
     anvil_cost: 2
     conflicts_with: [ ]
-    is_treasure: true
-    is_tradeable: true
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
     targets:
       - armor_feet
 
@@ -104,7 +106,6 @@ lightweight:
   definition:
     max_level: 3
     enchanting_table:
-      included: true
       weight: 10
       min_cost_base: 1
       min_cost_incr: 11
@@ -112,8 +113,10 @@ lightweight:
       max_cost_incr: 11
     anvil_cost: 2
     conflicts_with: [ ]
-    is_treasure: true
-    is_tradeable: true
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
     targets:
       - armor_feet
 
@@ -134,7 +137,6 @@ diamond_fish:
   definition:
     max_level: 5
     enchanting_table:
-      included: true
       weight: 10
       min_cost_base: 1
       min_cost_incr: 11
@@ -142,8 +144,10 @@ diamond_fish:
       max_cost_incr: 11
     anvil_cost: 2
     conflicts_with: [ ]
-    is_treasure: true
-    is_tradeable: true
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
     targets: fishing_rod
 
   triggers:
@@ -168,7 +172,6 @@ absorb:
   definition:
     max_level: 3
     enchanting_table:
-      included: true
       weight: 10
       min_cost_base: 1
       min_cost_incr: 11
@@ -176,8 +179,10 @@ absorb:
       max_cost_incr: 11
     anvil_cost: 2
     conflicts_with: [ ]
-    is_treasure: true
-    is_tradeable: true
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
     targets: [armor_legs]
 
   triggers:
@@ -200,7 +205,6 @@ rage:
   definition:
     max_level: 5
     enchanting_table:
-      included: true
       weight: 10
       min_cost_base: 1
       min_cost_incr: 11
@@ -208,8 +212,10 @@ rage:
       max_cost_incr: 11
     anvil_cost: 2
     conflicts_with: [ ]
-    is_treasure: true
-    is_tradeable: true
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
     targets: [ armor_torso ]
 
   triggers:
@@ -241,7 +247,6 @@ head_hunter:
   definition:
     max_level: 3
     enchanting_table:
-      included: true
       weight: 10
       min_cost_base: 1
       min_cost_incr: 11
@@ -249,8 +254,10 @@ head_hunter:
       max_cost_incr: 11
     anvil_cost: 2
     conflicts_with: [ ]
-    is_treasure: true
-    is_tradeable: true
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
     targets: ["weapon", "bow", "trident", "crossbow"]
 
   triggers:

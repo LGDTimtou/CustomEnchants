@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchantments.enchantments.created;
 
+import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchantDefinition;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
@@ -30,17 +31,14 @@ public class CustomEnchantBuilder {
     private int maxCostBase;
     private int maxCostIncr;
     private int anvilCost;
-    private boolean isCurse;
-    private boolean isTreasure;
-    private boolean isTradeable;
-    private boolean inEnchantingTable;
+    private final Map<String, Boolean> tags = new HashMap<>();
 
     private Set<EnchantmentTarget> targets;
     private Set<String> conflictingEnchantments;
 
 
     private String coolDownMessage;
-    private Map<EnchantTriggerType, Set<String>> triggers = Map.of();
+    private Map<EnchantTriggerType, Set<String>> triggers = new HashMap<>();
     private final List<CustomEnchantLevel> levels = new ArrayList<>();
 
 
@@ -131,12 +129,6 @@ public class CustomEnchantBuilder {
             }
         }
 
-        //Parsing if the enchantment is in the enchantment table
-        if (!config.isBoolean(path + "enchanting_table.included"))
-            inEnchantingTable = true;
-        else
-            inEnchantingTable = config.getBoolean(path + "enchanting_table.included");
-
         //Parsing the enchantment table weight
         enchantmentTableWeight = config.getInt(path + "enchanting_table.weight");
         if (enchantmentTableWeight < 0 || enchantmentTableWeight > 1024) {
@@ -170,14 +162,10 @@ public class CustomEnchantBuilder {
         if (anvilCost == -1)
             anvilCost = 2;
 
-        //Parsing if the enchantment is a curse
-        isCurse = config.isBoolean(path + "is_curse") && config.getBoolean(path + "is_curse");
-
-        //Parsing if the enchantment is a treasure
-        isTreasure = config.isBoolean(path + "is_treasure") && config.getBoolean(path + "is_treasure");
-
-        //Parsing if the enchantment is tradeable
-        isTradeable = config.isBoolean(path + "is_tradeable") && config.getBoolean(path + "is_tradeable");
+        //Parse the tags
+        ConfigurationSection tagSection = config.getConfigurationSection(namespacedName + ".definition.tags");
+        if (tagSection != null)
+            tagSection.getKeys(false).forEach(key -> tags.put("minecraft:" + key.toLowerCase(), tagSection.getBoolean(key, false)));
 
 
         //Parsing the enchantment target items
@@ -206,14 +194,10 @@ public class CustomEnchantBuilder {
                     new CustomEnchantDefinition.CustomEnchantCost(minCostBase, minCostIncr),
                     new CustomEnchantDefinition.CustomEnchantCost(maxCostBase, maxCostIncr),
                     anvilCost,
-                    isCurse,
-                    isTreasure,
-                    isTradeable,
-                    inEnchantingTable,
                     targets,
                     conflictingEnchantments
             );
-            new CustomEnchant(namespacedName, definition, coolDownMessage, levels, triggers);
+            new CustomEnchant(namespacedName, definition, tags, coolDownMessage, levels, triggers);
         }
     }
 

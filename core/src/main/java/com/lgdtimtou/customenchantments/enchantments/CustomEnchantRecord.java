@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.EnchantmentTarget;
 
+import java.util.Map;
 import java.util.Set;
 
 public class CustomEnchantRecord {
@@ -11,11 +12,13 @@ public class CustomEnchantRecord {
     protected final String namespacedName;
     protected final CustomEnchantDefinition customEnchantDefinition;
     protected final String cooldownMessage;
+    private final Map<String, Boolean> tags;
 
-    protected CustomEnchantRecord(String name, CustomEnchantDefinition customEnchantDefinition, String cooldownMessage) {
+    protected CustomEnchantRecord(String name, CustomEnchantDefinition customEnchantDefinition, Map<String, Boolean> tags, String cooldownMessage) {
         this.name = name;
         this.namespacedName = Util.getNamedspacedName(name);
         this.customEnchantDefinition = customEnchantDefinition;
+        this.tags = tags;
         this.cooldownMessage = cooldownMessage != null ? ChatColor.translateAlternateColorCodes('&', cooldownMessage) : null;
     }
 
@@ -27,8 +30,8 @@ public class CustomEnchantRecord {
         return namespacedName;
     }
 
-    public CustomEnchantDefinition getCustomEnchantDefinition() {
-        return customEnchantDefinition;
+    public Map<String, Boolean> getTags() {
+        return tags;
     }
 
     public String getCoolDownMessage() {
@@ -57,22 +60,6 @@ public class CustomEnchantRecord {
 
     public int getAnvilCost() {
         return customEnchantDefinition.anvilCost();
-    }
-
-    public boolean isCurse() {
-        return customEnchantDefinition.isCurse();
-    }
-
-    public boolean isTreasure() {
-        return customEnchantDefinition.isTreasure();
-    }
-
-    public boolean isTradeable() {
-        return customEnchantDefinition.isTradeable();
-    }
-
-    public boolean isInEnchantingTable() {
-        return customEnchantDefinition.isInEnchantingTable();
     }
 
     public Set<EnchantmentTarget> getEnchantmentTargets() {

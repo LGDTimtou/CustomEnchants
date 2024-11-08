@@ -28,6 +28,7 @@ import org.bukkit.craftbukkit.v1_21_R2.util.CraftNamespacedKey;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -36,6 +37,8 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
 
     private final MappedRegistry<Enchantment> ENCHANTS;
     private final MappedRegistry<Item> ITEMS;
+
+    private final Map<String, TagKey<Enchantment>> enchantmentTags = new HashMap<>();
 
     private static final String REGISTRY_FROZEN_TAGS_FIELD = "j"; // frozenTags
     private static final String REGISTRY_ALL_TAGS_FIELD = "k"; // allTags
@@ -46,6 +49,8 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         MinecraftServer SERVER = ((CraftServer) Bukkit.getServer()).getServer();
         ENCHANTS = (MappedRegistry<Enchantment>) SERVER.registryAccess().lookup(Registries.ENCHANTMENT).orElseThrow();
         ITEMS = (MappedRegistry<Item>) SERVER.registryAccess().lookup(Registries.ITEM).orElseThrow();
+
+        fillEnchantmentTags();
     }
 
     @NotNull
@@ -145,48 +150,18 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         Holder.Reference<Enchantment> reference = ENCHANTS.createIntrusiveHolder(enchantment);
         Registry.register(ENCHANTS, enchantId, enchantment);
 
-
-        if (customEnchant.isTreasure()) {
-            addInTag(EnchantmentTags.TREASURE, reference);
-            addInTag(EnchantmentTags.DOUBLE_TRADE_PRICE, reference);
-            removeFromTag(EnchantmentTags.NON_TREASURE, reference);
-        }
-        else {
-            addInTag(EnchantmentTags.NON_TREASURE, reference);
-            removeFromTag(EnchantmentTags.TREASURE, reference);
-            removeFromTag(EnchantmentTags.DOUBLE_TRADE_PRICE, reference);
-        }
-
-        /*if (isOnRandomLoot) {
-            addInTag(EnchantmentTags.ON_RANDOM_LOOT, reference);
-        }*/
-
-        /*if (!customEnchant.isTreasure()) {
-            if (isOnMobSpawnEquipment) {
-                addInTag(EnchantmentTags.ON_MOB_SPAWN_EQUIPMENT, reference);
+        enchantmentTags.forEach((tagName, tagKey) -> {
+            if (customEnchant.getTags().getOrDefault(tagName, false)) {
+                addInTag(tagKey, reference);
+                if (tagName.equalsIgnoreCase("treasure"))
+                    removeFromTag(EnchantmentTags.NON_TREASURE, reference);
             }
-
-            if (isOnTradedEquipment) {
-                addInTag(EnchantmentTags.ON_TRADED_EQUIPMENT, reference);
+            else {
+                removeFromTag(tagKey, reference);
+                if (tagName.equalsIgnoreCase("treasure"))
+                    addInTag(EnchantmentTags.NON_TREASURE, reference);
             }
-        }*/
-
-
-        if (customEnchant.isTradeable())
-            addInTag(EnchantmentTags.TRADEABLE, reference);
-        else
-            removeFromTag(EnchantmentTags.TRADEABLE, reference);
-
-
-        if (customEnchant.isCurse())
-            addInTag(EnchantmentTags.CURSE, reference);
-        else {
-            removeFromTag(EnchantmentTags.CURSE, reference);
-            if (customEnchant.isInEnchantingTable())
-                addInTag(EnchantmentTags.IN_ENCHANTING_TABLE, reference);
-            else
-                removeFromTag(EnchantmentTags.IN_ENCHANTING_TABLE, reference);
-        }
+        });
 
         return Util.getEnchantmentByName(customEnchant.getNamespacedName());
     }
@@ -278,7 +253,22 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         });
     }
 
-
+    private void fillEnchantmentTags() {
+        Field[] fields = EnchantmentTags.class.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getType().equals(TagKey.class)) {
+                try {
+                    TagKey<Enchantment> tagKey = (TagKey<Enchantment>) field.get(null);
+                    ResourceLocation location = tagKey.location();
+                    String value = location.toString();
+                    if (!value.contains("exclusive") && !value.equals("non_treasure"))
+                        enchantmentTags.put(value.replaceAll("/", "_"), tagKey);
+                } catch(IllegalAccessException e){
+                    // Ignore
+                }
+            }
+        }
+    }
 
 
 }
