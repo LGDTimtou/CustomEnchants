@@ -33,7 +33,8 @@ public final class Util {
         Bukkit.getConsoleSender().sendMessage("[CustomEnchants] " + message);
     }
 
-    public static void error(String message) {log(ChatColor.RED + message);}
+    public static void error(String message) {log(ChatColor.RED + "[ERROR]" + message);}
+    public static void warn(String message) {log(ChatColor.YELLOW + "[WARNING]" + message);}
 
     public static String title(String text){
         return Arrays.stream(text.split(" ")).map(word -> word.substring(0, 1).toUpperCase() + word.substring(1)).collect(Collectors.joining(" "));

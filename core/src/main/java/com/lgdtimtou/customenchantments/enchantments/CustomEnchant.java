@@ -2,14 +2,12 @@ package com.lgdtimtou.customenchantments.enchantments;
 
 import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.created.CustomEnchantBuilder;
-import com.lgdtimtou.customenchantments.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -45,12 +43,6 @@ public class CustomEnchant extends CustomEnchantRecord {
         enchantments.put(this.namespacedName, this);
     }
 
-    public CustomEnchant(String name, CustomEnchantDefinition definition, Map<String, Boolean> tags, CustomEnchantListener listener) {
-        this(name, definition, tags, null, List.of(), Map.of());
-        if (this.enchantment != null)
-            Util.registerListener(listener);
-    }
-
 
 
     public Enchantment getEnchantment() {
@@ -63,10 +55,6 @@ public class CustomEnchant extends CustomEnchantRecord {
         if (level <= 0 || level > levels.size())
             return -1;
         return levels.get(level - 1).getCooldown();
-    }
-
-    public boolean conflictsWith(ItemStack item){
-        return item.getEnchantments().keySet().stream().anyMatch(enchantment::conflictsWith);
     }
 
     public int getChance(int level){

@@ -4,12 +4,18 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class ProjectileLandTrigger extends Trigger {
     private final EntityType projectile;
@@ -25,17 +31,33 @@ public class ProjectileLandTrigger extends Trigger {
     }
 
     @EventHandler
-    public void onProjectileLand(ProjectileHitEvent e){
-        if (projectile != null && e.getEntity().getType() != projectile)
-            return;
-        if (!(e.getEntity().getShooter() instanceof Player player))
+    public void onProjectileHitEntity(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Projectile usedProjectile))
             return;
 
-        Location projectileLoc = e.getEntity().getLocation();
+        handleTrigger(e, usedProjectile);
+    }
+
+    @EventHandler
+    public void onProjectileLand(ProjectileHitEvent e){
+        handleTrigger(e, e.getEntity());
+    }
+
+    private void handleTrigger(Event e, Projectile usedProjectile) {
+        if (projectile != null && usedProjectile.getType() != projectile)
+            return;
+        if (!(usedProjectile.getShooter() instanceof Player player))
+            return;
+
+        String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
+        usedProjectile.addScoreboardTag(projectileUniqueTag);
+
+        Location projectileLoc = usedProjectile.getLocation();
         executeCommands(e, player, null, Map.of(
-                "x_" + projectile.name(), String.valueOf(projectileLoc.getX()),
-                "y_" + projectile.name(), String.valueOf(projectileLoc.getY()),
-                "z_" + projectile.name(), String.valueOf(projectileLoc.getZ())
+                "projectile_x", String.valueOf(projectileLoc.getX()),
+                "projectile_y", String.valueOf(projectileLoc.getY()),
+                "projectile_z", String.valueOf(projectileLoc.getZ()),
+                "projectile_tag", projectileUniqueTag
         ));
     }
 }

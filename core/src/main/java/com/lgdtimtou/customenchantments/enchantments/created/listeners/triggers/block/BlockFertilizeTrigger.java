@@ -16,7 +16,7 @@ public class BlockFertilizeTrigger extends Trigger {
 
     @EventHandler
     public void onFertilize(BlockFertilizeEvent e){
-        executeCommands(e, e.getPlayer(), e.getBlock().getType().name(), Map.of("material", e.getBlock().getType().name()));
+        executeCommands(e, e.getPlayer(), e.getBlock().getType().name(), Map.of("block", e.getBlock().getType().name()));
     }
 
 }

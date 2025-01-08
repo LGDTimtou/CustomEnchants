@@ -3,6 +3,7 @@ package com.lgdtimtou.customenchantments.enchantments.defaultenchants;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Excavator;
+import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Lumber;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Replenish;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Telekinesis;
 
@@ -11,6 +12,7 @@ public enum DefaultCustomEnchant {
     //Enchantments
     REPLENISH("replenish", 1, new Replenish()),
     TELEKINESIS("telekinesis", 1, new Telekinesis()),
+    LUMBER("lumber", 1, new Lumber()),
     EXCAVATOR("excavator", 1, new Excavator());
 
     private final String namespacedName;

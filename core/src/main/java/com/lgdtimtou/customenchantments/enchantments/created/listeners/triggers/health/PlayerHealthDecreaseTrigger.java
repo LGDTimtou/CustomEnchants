@@ -17,7 +17,7 @@ public class PlayerHealthDecreaseTrigger extends Trigger {
     public void onPlayerHealthDecrease(PlayerHealthDecreaseEvent e){
         executeCommands(e, e.getPlayer(), String.valueOf(e.getHealth()), Map.of(
                 "health", String.valueOf(e.getHealth()),
-                "decrease", String.valueOf(e.getDecrease()),
+                "health_change", String.valueOf(-e.getDecrease()),
                 "previous_health", String.valueOf(e.getPrevious_health())
         ));
     }

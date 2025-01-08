@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class KillAnimalTrigger extends Trigger {
     public KillAnimalTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
@@ -18,6 +19,15 @@ public class KillAnimalTrigger extends Trigger {
     public void onAnimalKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Animals))
             return;
-        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of("animal", e.getEntity().getType().name()));
+
+        String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
+        e.getEntity().addScoreboardTag(uniqueTag);
+        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of(
+                "animal", e.getEntity().getType().name(),
+                "entity_tag", uniqueTag,
+                "entity_x", String.valueOf(e.getEntity().getLocation().getX()),
+                "entity_y", String.valueOf(e.getEntity().getLocation().getY()),
+                "entity_z", String.valueOf(e.getEntity().getLocation().getZ())
+        ));
     }
 }

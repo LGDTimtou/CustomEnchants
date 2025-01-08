@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class FishingRodCaughtTrigger extends Trigger {
     public FishingRodCaughtTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
@@ -20,6 +21,15 @@ public class FishingRodCaughtTrigger extends Trigger {
             return;
         if (e.getCaught() == null)
             return;
-        executeCommands(e, e.getPlayer(), ((ItemStack)e.getCaught()).getType().name(), Map.of("item", ((ItemStack)e.getCaught()).getType().name()));
+
+        String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
+        e.getCaught().addScoreboardTag(uniqueTag);
+        executeCommands(e, e.getPlayer(), (e.getCaught()).getType().name(), Map.of(
+                "caught", (e.getCaught()).getType().name(),
+                "entity_tag", uniqueTag,
+                "entity_x", String.valueOf(e.getCaught().getLocation().getX()),
+                "entity_y", String.valueOf(e.getCaught().getLocation().getY()),
+                "entity_z", String.valueOf(e.getCaught().getLocation().getZ())
+        ));
     }
 }

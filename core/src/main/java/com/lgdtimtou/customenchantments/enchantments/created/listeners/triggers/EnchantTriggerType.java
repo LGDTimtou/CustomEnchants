@@ -51,21 +51,21 @@ public enum EnchantTriggerType {
     SNOWBALL_HIT_ENTITY(SnowballHitEntityTrigger.class, SNOWBALL_LAND),
 
     //Armor
-    EQUIP_ARMOR(ArmorEquipTrigger.class),
-    DE_EQUIP_ARMOR(ArmorDeEquipTrigger.class),
+    ARMOR_EQUIP(ArmorEquipTrigger.class),
+    ARMOR_DE_EQUIP(ArmorDeEquipTrigger.class),
 
     //Other
     PRIME_TNT(PrimeTNTTrigger.class),
     CHANGE_SIGN(ChangeSignTrigger.class),
     BELL_RUNG(BellRungTrigger.class),
-    SCULK_SENSOR_ACTIVATED(ActivateSculkSensorTrigger.class),
+    ACTIVATE_SCULK_SENSOR(ActivateSculkSensorTrigger.class),
 
     //Blocks
-    IGNITE_BLOCK(BlockIgniteTrigger.class),
-    FERTILIZE_BLOCK(BlockFertilizeTrigger.class),
-    BREAK_BLOCK(BreakBlockTrigger.class),
-    PLACE_BLOCK(BlockPlaceTrigger.class),
-    DAMAGE_BLOCK(BlockDamagedTrigger.class, BREAK_BLOCK),
+    BLOCK_IGNITE(BlockIgniteTrigger.class),
+    BLOCK_FERTILIZE(BlockFertilizeTrigger.class),
+    BLOCK_BREAK(BlockBreakTrigger.class),
+    BLOCK_PLACE(BlockPlaceTrigger.class),
+    BLOCK_DAMAGED(BlockDamagedTrigger.class, BLOCK_BREAK),
 
     //Kill
     KILL_ENTITY(KillEntityTrigger.class),
@@ -159,6 +159,7 @@ public enum EnchantTriggerType {
                     Integer conditionInteger = Integer.valueOf(condition);
                     Integer valueInteger = Integer.valueOf(value);
                     comp = valueInteger.compareTo(conditionInteger);
+                    break;
                 case STRING:
                     Pattern pattern = Pattern.compile(condition.toLowerCase().replace("*", ".*"));
                     return pattern.matcher(value.toLowerCase()).matches();

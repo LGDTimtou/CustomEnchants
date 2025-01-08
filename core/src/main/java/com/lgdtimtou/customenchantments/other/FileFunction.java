@@ -64,11 +64,20 @@ public enum FileFunction {
                 try {
                     mul *= Double.parseDouble(value);
                 } catch (NumberFormatException e){
-                    Util.log(ChatColor.RED + "Check enchantments.yml for mul function usage: $[mul(double, double, ...)]");
+                    Util.error("Check enchantments.yml: wrong 'mul' function usage: $[mul(double, double, ...)]");
                     return "-1";
                 }
             }
             return String.valueOf(mul);
+        }
+    },
+    RANDOM("random"){
+        @Override
+        public String execute(String... values) {
+            if (values.length > 0)
+                Util.warn("Check enchantments.yml: 'random' function does not take any parameters");
+
+            return String.valueOf(Math.random());
         }
     };
 

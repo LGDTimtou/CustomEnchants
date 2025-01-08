@@ -1,1 +1,5 @@
-choose random
+(api maken)
+fixen dat die scoreboard tags weggaan na tijd
+movement triggers
+list command om alle enchantments te zien
+telikineses laten werken met lumber en excavator wrs ook

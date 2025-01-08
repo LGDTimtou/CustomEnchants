@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class ProjectileHitBlockTrigger extends Trigger {
 
@@ -33,12 +34,16 @@ public class ProjectileHitBlockTrigger extends Trigger {
         if (e.getHitBlock() == null)
             return;
 
+        String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
+        e.getEntity().addScoreboardTag(projectileUniqueTag);
+
         Location arrowLoc = e.getEntity().getLocation();
         executeCommands(e, player, e.getHitBlock().getType().name(), Map.of(
-                "hit_block", e.getHitBlock().getType().name(),
-                "x_" + projectile.name(), String.valueOf(arrowLoc.getX()),
-                "y_" + projectile.name(), String.valueOf(arrowLoc.getY()),
-                "z_" + projectile.name(), String.valueOf(arrowLoc.getZ())
+                "block", e.getHitBlock().getType().name(),
+                "projectile_x", String.valueOf(arrowLoc.getX()),
+                "projectile_y", String.valueOf(arrowLoc.getY()),
+                "projectile_z", String.valueOf(arrowLoc.getZ()),
+                "projectile_tag", projectileUniqueTag
         ));
     }
 }

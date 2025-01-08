@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class KillEntityTrigger extends Trigger {
     public KillEntityTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
@@ -15,6 +16,14 @@ public class KillEntityTrigger extends Trigger {
 
     @EventHandler
     public void onEntityKill(EntityDeathEvent e){
-        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of("entity", e.getEntity().getType().name()));
+        String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
+        e.getEntity().addScoreboardTag(uniqueTag);
+        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of(
+                "entity", e.getEntity().getType().name(),
+                "entity_tag", uniqueTag,
+                "entity_x", String.valueOf(e.getEntity().getLocation().getX()),
+                "entity_y", String.valueOf(e.getEntity().getLocation().getY()),
+                "entity_z", String.valueOf(e.getEntity().getLocation().getZ())
+        ));
     }
 }

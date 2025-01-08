@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class TakeDamageFromEntityTrigger extends Trigger {
     public TakeDamageFromEntityTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
@@ -19,6 +20,11 @@ public class TakeDamageFromEntityTrigger extends Trigger {
         if (!(e.getEntity() instanceof Player player))
             return;
 
-        executeCommands(e, player, e.getDamager().getType().name(), Map.of("entity", e.getDamager().getType().name()));
+        String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
+        e.getDamager().addScoreboardTag(uniqueTag);
+        executeCommands(e, player, e.getDamager().getType().name(), Map.of(
+                "entity", e.getDamager().getType().name(),
+                "entity_tag", uniqueTag
+        ));
     }
 }

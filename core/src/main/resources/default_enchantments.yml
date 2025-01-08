@@ -51,5 +51,23 @@ excavator:
       tradeable: true
     targets:
       - tool
-    conflicts_with: [replenish]
+    conflicts_with: [replenish, lumber]
+
+lumber:
+  enabled: true
+  definition:
+    enchanting_table:
+      weight: 5
+      min_cost_base: 1
+      min_cost_incr: 11
+      max_cost_base: 10
+      max_cost_incr: 11
+    anvil_cost: 2
+    tags:
+      in_enchanting_table: true
+      treasure: true
+      tradeable: true
+    targets:
+      - tool
+    conflicts_with: [excavator]
 

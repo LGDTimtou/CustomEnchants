@@ -9,8 +9,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import java.util.Map;
 
-public class BreakBlockTrigger extends Trigger {
-    public BreakBlockTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
+public class BlockBreakTrigger extends Trigger {
+    public BlockBreakTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
         super(customEnchant, type);
     }
 
