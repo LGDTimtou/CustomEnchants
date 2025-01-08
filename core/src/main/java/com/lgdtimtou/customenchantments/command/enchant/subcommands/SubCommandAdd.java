@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class SubCommandAdd extends EnchantSubCommand {
 
     public SubCommandAdd() {
-        super("add");
+        super("add", 1, "EnchantSubCommandAddUsage");
     }
 
     @Override
@@ -58,34 +58,64 @@ public class SubCommandAdd extends EnchantSubCommand {
     }
 
     @Override
-    public void execute(Player player, ItemStack item, CustomEnchant enchantment, int level) {
-        if (item != null && item.containsEnchantment(enchantment.getEnchantment()) && level == item.getEnchantmentLevel(enchantment.getEnchantment())){
-            player.sendMessage(Util.getMessage("AlreadyHasEnchant").replace("%enchant%", enchantment.getName())
+    public void execute(Player player, String[] args) {
+        String enchantName = args[1].toLowerCase();
+        int level = 1;
+        if (args.length > 2){
+            try {
+                level = Integer.parseInt(args[2]);
+            } catch (Exception e){
+                player.sendMessage(Util.getMessage("EnchantCommandUsage"));
+                return;
+            }
+        }
+
+        //Enchant bestaat niet
+        CustomEnchant customEnchant;
+        try {
+            customEnchant = CustomEnchant.get(enchantName);
+        } catch (IllegalArgumentException e) {
+            player.sendMessage(Util.getMessage("NonExistingEnchant"));
+            return;
+        }
+
+        //Speler heeft niets vast
+        if (player.getInventory().getItemInMainHand().getType() == Material.AIR){
+            player.sendMessage(Util.getMessage("EmptyHand"));
+            return;
+        }
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+
+        if (item.containsEnchantment(customEnchant.getEnchantment()) && level == item.getEnchantmentLevel(customEnchant.getEnchantment())){
+            player.sendMessage(Util.getMessage("AlreadyHasEnchant").replace("%enchant%", customEnchant.getName())
                     .replace("%level%", CustomEnchant.getLevelRoman(level)));
             return;
         }
 
 
-        if (level <= 0 || enchantment.getEnchantment().getMaxLevel() < level){
+        if (level <= 0 || customEnchant.getEnchantment().getMaxLevel() < level){
             player.sendMessage(Util.replaceParameters(Map.of(
-                    "max_level", String.valueOf(enchantment.getEnchantment().getMaxLevel()),
-                    "enchant", enchantment.getName()
+                    "max_level", String.valueOf(customEnchant.getEnchantment().getMaxLevel()),
+                    "enchant", customEnchant.getName()
             ), Util.getMessage("LevelRange")));
             return;
         }
 
-        if (!enchantment.getEnchantment().canEnchantItem(item) && !Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()){
+        if (!customEnchant.getEnchantment().canEnchantItem(item) && !Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()){
             player.sendMessage(Util.getMessage("UnsafeEnchantment")
-                    .replace("%enchant%", Util.title(enchantment.getName()))
-                    .replace("%targets%", enchantment.getEnchantmentTargets().toString()));
+                    .replace("%enchant%", Util.title(customEnchant.getName()))
+                    .replace("%targets%", customEnchant.getEnchantmentTargets().toString()));
             player.sendMessage(Util.getMessageNoPrefix("Setting")
                     .replace("%setting%", "allow_unsafe_enchantments"));
             return;
         }
 
         if (Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean())
-            item.addUnsafeEnchantment(enchantment.getEnchantment(), level);
+            item.addUnsafeEnchantment(customEnchant.getEnchantment(), level);
         else
-            item.addEnchantment(enchantment.getEnchantment(), level);
+            item.addEnchantment(customEnchant.getEnchantment(), level);
     }
+
 }

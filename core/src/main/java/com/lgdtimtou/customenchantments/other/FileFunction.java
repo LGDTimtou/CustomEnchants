@@ -74,9 +74,6 @@ public enum FileFunction {
     RANDOM("random"){
         @Override
         public String execute(String... values) {
-            if (values.length > 0)
-                Util.warn("Check enchantments.yml: 'random' function does not take any parameters");
-
             return String.valueOf(Math.random());
         }
     };

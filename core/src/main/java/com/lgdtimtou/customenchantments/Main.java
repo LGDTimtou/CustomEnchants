@@ -6,8 +6,6 @@ import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.nms.EnchantmentManager;
 import com.lgdtimtou.customenchantments.other.Files;
 import org.bukkit.Bukkit;
-import org.bukkit.event.block.TNTPrimeEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.regex.Matcher;

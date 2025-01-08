@@ -3,3 +3,4 @@ fixen dat die scoreboard tags weggaan na tijd
 movement triggers
 list command om alle enchantments te zien
 telikineses laten werken met lumber en excavator wrs ook
+health triggers aanpassen, want niet goed (ook toevoegen aan website)

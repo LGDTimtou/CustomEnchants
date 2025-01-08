@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class SubCommandRemove extends EnchantSubCommand{
     public SubCommandRemove() {
-        super("remove");
+        super("remove",1, "EnchantSubCommandRemoveUsage");
     }
 
     @Override
@@ -35,13 +35,32 @@ public class SubCommandRemove extends EnchantSubCommand{
     }
 
     @Override
-    public void execute(Player player, ItemStack item, CustomEnchant enchantment, int level) {
-        if (!item.containsEnchantment(enchantment.getEnchantment())){
-            player.sendMessage(Util.getMessage("DoesntHaveEnchant").replace("%enchant%", enchantment.getName()));
+    public void execute(Player player, String[] args) {
+        String enchantName = args[1].toLowerCase();
+
+        //Enchant bestaat niet
+        CustomEnchant customEnchant;
+        try {
+            customEnchant = CustomEnchant.get(enchantName);
+        } catch (IllegalArgumentException e) {
+            player.sendMessage(Util.getMessage("NonExistingEnchant"));
+            return;
+        }
+
+        //Speler heeft niets vast
+        if (player.getInventory().getItemInMainHand().getType() == Material.AIR){
+            player.sendMessage(Util.getMessage("EmptyHand"));
+            return;
+        }
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        if (!item.containsEnchantment(customEnchant.getEnchantment())){
+            player.sendMessage(Util.getMessage("DoesntHaveEnchant").replace("%enchant%", customEnchant.getName()));
             return;
         }
 
         //Removing enchant
-        item.removeEnchantment(enchantment.getEnchantment());
+        item.removeEnchantment(customEnchant.getEnchantment());
     }
 }
