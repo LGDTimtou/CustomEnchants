@@ -22,7 +22,7 @@ public enum FileFunction {
                 try {
                     sum += Double.parseDouble(value);
                 } catch (NumberFormatException e){
-                    Util.log(ChatColor.RED + "Check enchantments.yml for add function usage: $[add(double, double, ...)]");
+                    Util.log(ChatColor.RED + "Check enchantments.yml: wrong 'add' function usage: $[add(value1, value2, ...)]");
                     return "-1";
                 }
             }
@@ -44,7 +44,7 @@ public enum FileFunction {
                     sub -= first ? -Double.parseDouble(value) : Double.parseDouble(value);
                     first = false;
                 } catch (NumberFormatException e){
-                    Util.log(ChatColor.RED + "Check enchantments.yml for sub function usage: $[sub(double, double, ...)]");
+                    Util.log(ChatColor.RED + "Check enchantments.yml: wrong 'sub' function usage: $[sub(value1, value2, ...)]");
                     return "-1";
                 }
             }
@@ -64,17 +64,66 @@ public enum FileFunction {
                 try {
                     mul *= Double.parseDouble(value);
                 } catch (NumberFormatException e){
-                    Util.error("Check enchantments.yml: wrong 'mul' function usage: $[mul(double, double, ...)]");
+                    Util.error("Check enchantments.yml: wrong 'mul' function usage: $[mul(value1, value2, ...)]");
                     return "-1";
                 }
             }
             return String.valueOf(mul);
         }
     },
+    DIV("div"){
+        @Override
+        public String execute(String... values) {
+            if (values.length == 0)
+                return "0";
+
+            try {
+                double div = Double.parseDouble(values[0]);
+                for (int i = 1; i < values.length; i++) {
+                    double val = Double.parseDouble(values[i]);
+                    if (val == 0) {
+                        Util.error("Division by zero in 'div' function: $[div(value1, value2, ...)]");
+                        return "-1";
+                    }
+                    div /= val;
+                }
+                return String.valueOf(div);
+            } catch (NumberFormatException e) {
+                Util.error("Check enchantments.yml: wrong 'div' function usage: $[div(value1, value2, ...)]");
+                return "-1";
+            }
+        }
+    },
     RANDOM("random"){
         @Override
         public String execute(String... values) {
             return String.valueOf(Math.random());
+        }
+    },
+    ROUND("round") {
+        @Override
+        public String execute(String... values) {
+            if (values.length < 1) {
+                Util.error("Check enchantments.yml: wrong 'round' function usage: $[round(value, decimalPlaces)]");
+                return "-1";
+            }
+
+            try {
+                double number = Double.parseDouble(values[0]);
+                int decimalPlaces = 0;
+
+                if (values.length > 1) {
+                    decimalPlaces = Integer.parseInt(values[1]);
+                }
+
+                double scale = Math.pow(10, decimalPlaces);
+                double roundedValue = Math.round(number * scale) / scale;
+
+                return String.valueOf(roundedValue);
+            } catch (NumberFormatException e) {
+                Util.error("Check enchantments.yml: wrong 'round' function usage: $[round(value, decimalPlaces)]");
+                return "-1";
+            }
         }
     };
 

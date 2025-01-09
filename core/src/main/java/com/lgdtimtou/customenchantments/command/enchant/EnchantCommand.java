@@ -1,21 +1,18 @@
 package com.lgdtimtou.customenchantments.command.enchant;
 
-import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandList;
+import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandInfo;
 import com.lgdtimtou.customenchantments.other.Util;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.EnchantSubCommand;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandAdd;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandRemove;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public class EnchantCommand extends Command {
 
     public EnchantCommand() {
-        super("customenchant", new SubCommandAdd(), new SubCommandRemove(), new SubCommandList());
+        super("customenchant", new SubCommandAdd(), new SubCommandRemove(), new SubCommandInfo());
     }
 
     @Override

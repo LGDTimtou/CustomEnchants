@@ -25,8 +25,6 @@ public class SubCommandAdd extends EnchantSubCommand {
         if (!(sender instanceof Player player))
             return null;
 
-
-
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() == Material.AIR || item.getItemMeta() == null)
             item = null;

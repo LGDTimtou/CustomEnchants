@@ -81,6 +81,10 @@ public class CustomEnchant extends CustomEnchantRecord {
         return triggerConditions.stream().anyMatch(condition -> type.compareConditions(condition, triggerParameter));
     }
 
+    public Map<EnchantTriggerType, Set<String>> getTriggers() {
+        return triggers;
+    }
+
 
     //Registering
     public static void register() {
