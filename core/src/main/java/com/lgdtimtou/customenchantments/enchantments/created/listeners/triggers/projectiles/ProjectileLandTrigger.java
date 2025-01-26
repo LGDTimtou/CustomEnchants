@@ -49,6 +49,7 @@ public class ProjectileLandTrigger extends Trigger {
         if (!(usedProjectile.getShooter() instanceof Player player))
             return;
 
+
         String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
         usedProjectile.addScoreboardTag(projectileUniqueTag);
 
@@ -58,6 +59,6 @@ public class ProjectileLandTrigger extends Trigger {
                 "projectile_y", String.valueOf(projectileLoc.getY()),
                 "projectile_z", String.valueOf(projectileLoc.getZ()),
                 "projectile_tag", projectileUniqueTag
-        ));
+        ), () -> usedProjectile.removeScoreboardTag(projectileUniqueTag));
     }
 }

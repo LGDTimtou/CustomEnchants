@@ -3,6 +3,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -21,15 +22,17 @@ public class KillMobTrigger extends Trigger {
     public void onMobKill(EntityDeathEvent e){
         if (!(e.getEntity() instanceof Monster))
             return;
+
+        Entity entity = e.getEntity();
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
-        e.getEntity().addScoreboardTag(uniqueTag);
+        entity.addScoreboardTag(uniqueTag);
         executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of(
                 "mob", e.getEntity().getType().name(),
                 "entity_tag", uniqueTag,
                 "entity_x", String.valueOf(e.getEntity().getLocation().getX()),
                 "entity_y", String.valueOf(e.getEntity().getLocation().getY()),
                 "entity_z", String.valueOf(e.getEntity().getLocation().getZ())
-        ));
+        ), () -> entity.removeScoreboardTag(uniqueTag));
     }
 
 }

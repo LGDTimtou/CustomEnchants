@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
@@ -20,14 +21,15 @@ public class KillAnimalTrigger extends Trigger {
         if (!(e.getEntity() instanceof Animals))
             return;
 
+        Entity entity = e.getEntity();
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
-        e.getEntity().addScoreboardTag(uniqueTag);
+        entity.addScoreboardTag(uniqueTag);
         executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of(
                 "animal", e.getEntity().getType().name(),
                 "entity_tag", uniqueTag,
                 "entity_x", String.valueOf(e.getEntity().getLocation().getX()),
                 "entity_y", String.valueOf(e.getEntity().getLocation().getY()),
                 "entity_z", String.valueOf(e.getEntity().getLocation().getZ())
-        ));
+        ), () -> entity.removeScoreboardTag(uniqueTag));
     }
 }

@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,8 +35,9 @@ public class ProjectileHitBlockTrigger extends Trigger {
         if (e.getHitBlock() == null)
             return;
 
+        Entity entity = e.getEntity();
         String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
-        e.getEntity().addScoreboardTag(projectileUniqueTag);
+        entity.addScoreboardTag(projectileUniqueTag);
 
         Location arrowLoc = e.getEntity().getLocation();
         executeCommands(e, player, e.getHitBlock().getType().name(), Map.of(
@@ -44,6 +46,6 @@ public class ProjectileHitBlockTrigger extends Trigger {
                 "projectile_y", String.valueOf(arrowLoc.getY()),
                 "projectile_z", String.valueOf(arrowLoc.getZ()),
                 "projectile_tag", projectileUniqueTag
-        ));
+        ), () -> entity.removeScoreboardTag(projectileUniqueTag));
     }
 }

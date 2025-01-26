@@ -23,11 +23,12 @@ public class TakeDamageFromMobTrigger extends Trigger {
         if (!(e.getDamager() instanceof Monster monster))
             return;
 
+
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
-        e.getDamager().addScoreboardTag(uniqueTag);
+        monster.addScoreboardTag(uniqueTag);
         executeCommands(e, player, monster.getType().name(), Map.of(
                 "mob", monster.getType().name(),
                 "entity_tag", uniqueTag
-        ));
+        ), () -> monster.removeScoreboardTag(uniqueTag));
     }
 }

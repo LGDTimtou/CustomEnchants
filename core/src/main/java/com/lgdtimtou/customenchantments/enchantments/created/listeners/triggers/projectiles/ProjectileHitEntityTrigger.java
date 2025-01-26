@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -36,11 +37,13 @@ public class ProjectileHitEntityTrigger extends Trigger {
         if (!(usedProjectile.getShooter() instanceof Player player))
             return;
 
+        Entity entity = e.getEntity();
+
         String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
         String entityUniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
 
         usedProjectile.addScoreboardTag(projectileUniqueTag);
-        e.getEntity().addScoreboardTag(entityUniqueTag);
+        entity.addScoreboardTag(entityUniqueTag);
 
         Location arrowLoc = usedProjectile.getLocation();
         executeCommands(e, player, e.getEntity().getType().name(), Map.of(
@@ -53,6 +56,9 @@ public class ProjectileHitEntityTrigger extends Trigger {
                 "projectile_y", String.valueOf(arrowLoc.getY()),
                 "projectile_z", String.valueOf(arrowLoc.getZ()),
                 "projectile_tag", projectileUniqueTag
-        ));
+        ), () -> {
+            usedProjectile.removeScoreboardTag(projectileUniqueTag);
+            entity.removeScoreboardTag(entityUniqueTag);
+        });
     }
 }

@@ -3,6 +3,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -20,8 +21,9 @@ public class DamageEntityTrigger extends Trigger {
         if (!(e.getDamager() instanceof Player player))
             return;
 
+        Entity entity = e.getEntity();
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
-        e.getEntity().addScoreboardTag(uniqueTag);
+        entity.addScoreboardTag(uniqueTag);
 
         executeCommands(e, player, e.getEntity().getType().name(), Map.of(
                 "entity", e.getEntity().getType().name(),
@@ -29,6 +31,6 @@ public class DamageEntityTrigger extends Trigger {
                 "entity_x", String.valueOf(e.getEntity().getLocation().getX()),
                 "entity_y", String.valueOf(e.getEntity().getLocation().getY()),
                 "entity_z", String.valueOf(e.getEntity().getLocation().getZ())
-        ));
+        ), () -> entity.removeScoreboardTag(uniqueTag));
     }
 }

@@ -42,9 +42,25 @@ public class Trigger implements CustomEnchantListener {
         executeCommands(e, player, Collections.emptySet(), triggerCondition, parameters);
     }
 
+    protected void executeCommands(Event e, Player player, String triggerCondition, Map<String, String> parameters, Runnable onComplete){
+        executeCommands(e, player, Collections.emptySet(), triggerCondition, parameters, onComplete);
+    }
+
     protected void executeCommands(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, String triggerCondition, Map<String, String> localParameters){
+        executeCommands(e, player, customEnchantedItemsSelection, triggerCondition, localParameters, () -> {});
+    }
+
+    protected void executeCommands(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, String triggerCondition, Map<String, String> localParameters, Runnable onComplete){
+        if (executeCommandsPreparation(e, player, customEnchantedItemsSelection, triggerCondition, localParameters)){
+            dispatchCommand(0, onComplete);
+        } else {
+            onComplete.run();
+        }
+    }
+
+    protected boolean executeCommandsPreparation(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, String triggerCondition, Map<String, String> localParameters){
         if (player == null)
-            return;
+            return false;
         PlayerInventory inv = player.getInventory();
         Location location = player.getLocation();
 
@@ -55,7 +71,7 @@ public class Trigger implements CustomEnchantListener {
             enchantedItem = Util.getEnchantedItem(customEnchantedItemsSelection, this.enchantment);
 
         if (enchantedItem == null)
-            return;
+            return false;
 
         //Get the level of the enchantment
         int level = Util.getLevel(enchantedItem, this.enchantment.getEnchantment());
@@ -73,17 +89,17 @@ public class Trigger implements CustomEnchantListener {
                         "time_left_full_out", Util.secondsToString(timeLeftSeconds, true)
                 ), enchantment.getCoolDownMessage()));
             }
-            return;
+            return false;
         }
 
         //Check if the trigger conditions are met
         if (triggerCondition != null && !this.enchantment.checkTriggerConditions(triggerCondition, type))
-            return;
+            return false;
 
 
         //Return if chance didn't trigger
         if (RG.nextInt(10001) > enchantment.getChance(level))
-            return;
+            return false;
 
 
         //Cancel event if specified to do so
@@ -113,22 +129,24 @@ public class Trigger implements CustomEnchantListener {
         try {
             commands = FileFunction.parse(commands);
         } catch (NumberFormatException exception){
-            return;
+            return false;
         }
 
-        //Execute the commands from the console
-        dispatchCommand(0);
+        return true;
     }
 
-    private void dispatchCommand(int index){
-        if (index == commands.size()) return;
+    private void dispatchCommand(int index, Runnable onComplete){
+        if (index == commands.size()) {
+            onComplete.run();
+            return;
+        }
         String command = commands.get(index);
         Matcher matcher = delayCommandPattern.matcher(command);
         if (matcher.matches())
-            Bukkit.getScheduler().runTaskLater(Main.getMain(), () -> dispatchCommand(index + 1), Integer.parseInt(matcher.group(1)) * 20L);
+            Bukkit.getScheduler().runTaskLater(Main.getMain(), () -> dispatchCommand(index + 1, onComplete), Integer.parseInt(matcher.group(1)) * 20L);
         else {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-            dispatchCommand(index + 1);
+            dispatchCommand(index + 1, onComplete);
         }
     }
 

@@ -1,5 +1,4 @@
 (api maken)
-fixen dat die scoreboard tags weggaan na tijd
 movement triggers
 reload shit
 killcounter enchantment
