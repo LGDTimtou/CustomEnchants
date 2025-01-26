@@ -11,8 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//TODO KillCounter enchant
-
 
 public final class Main extends JavaPlugin {
 

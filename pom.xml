@@ -13,6 +13,7 @@
         <module>spigot-1.21.1</module>
         <module>spigot-1.21.3</module>
         <module>dist</module>
+        <module>spigot-1.21.4</module>
     </modules>
 
     <properties>

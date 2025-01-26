@@ -10,6 +10,7 @@ public interface EnchantmentManager {
     void freezeRegistry();
 
     void unFreezeRegistry();
+
     Enchantment registerEnchantment(CustomEnchantRecord customEnchant);
 
     void addExclusives(String enchantId, Set<String> exclusives);

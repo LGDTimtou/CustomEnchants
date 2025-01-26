@@ -1,8 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners;
 
+import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.CustomEnchantListener;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,11 +12,23 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 public class Lumber implements CustomEnchantListener {
+
+
+    private static final int MAX_BROKEN_LOGS = 20;
+    private static final Map<Player, Integer> activeTasks = new HashMap<>();
+    private static final Map<Player, Set<Location>> breakingTree = new HashMap<>();
 
     @EventHandler
     public void logBreakEvent(BlockBreakEvent e) {
         Player player = e.getPlayer();
+
+        if (breakingTree.get(player) != null) return;
 
         if (!isLog(e.getBlock().getType()))
             return;
@@ -23,21 +37,37 @@ public class Lumber implements CustomEnchantListener {
         if (enchantedItem == null)
             return;
 
-        breakTreeUpwards(e.getBlock().getLocation(), enchantedItem);
+        breakingTree.put(player, new HashSet<>());
+        activeTasks.put(player, 0);
+        breakTreeUpwards(e.getBlock().getLocation(), player, 0);
     }
 
-    private void breakTreeUpwards(Location location, ItemStack tool) {
-        for (int x = -1; x <= 1; x++) {
-            for (int y = 0; y <= 1; y++) {
+    private void breakTreeUpwards(Location location, Player player, int counter) {
+        if (counter >= MAX_BROKEN_LOGS) return;
+
+        breakingTree.get(player).add(location);
+        activeTasks.put(player, activeTasks.get(player) + 1);
+        Bukkit.getScheduler().runTaskLater(Main.getMain(),
+                () -> runPlayerBreakLog(player, location),
+                counter * 2L
+        );
+        for (int y = 0; y <= 1; y++) {
+            for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     Location newLocation = location.clone().add(x, y, z);
-                    if (isLog(newLocation.getBlock().getType())) {
-                        newLocation.getBlock().breakNaturally(tool);
-                        breakTreeUpwards(newLocation, tool);
-                    }
+                    if (isLog(newLocation.getBlock().getType()) && !breakingTree.get(player).contains(newLocation))
+                        breakTreeUpwards(newLocation, player, counter+1);
                 }
             }
         }
+    }
+
+    private void runPlayerBreakLog(Player player, Location location) {
+        player.breakBlock(location.getBlock());
+        activeTasks.put(player, activeTasks.get(player) - 1);
+
+        if (activeTasks.get(player) == 0)
+            breakingTree.remove(player);
     }
 
     private boolean isLog(Material material) {

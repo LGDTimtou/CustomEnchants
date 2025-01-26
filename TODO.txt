@@ -2,5 +2,6 @@
 fixen dat die scoreboard tags weggaan na tijd
 movement triggers
 telikineses laten werken met lumber en excavator wrs ook
-health triggers aanpassen, want niet goed (ook toevoegen aan website)
 reload shit
+killcounter enchantment
+ce add conflicting enchantments
