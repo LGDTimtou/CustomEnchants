@@ -1,16 +1,15 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.projectiles;
 
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import org.bukkit.Location;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Map;
 import java.util.UUID;
