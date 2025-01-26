@@ -1,7 +1,5 @@
 (api maken)
 fixen dat die scoreboard tags weggaan na tijd
 movement triggers
-telikineses laten werken met lumber en excavator wrs ook
 reload shit
 killcounter enchantment
-ce add conflicting enchantments

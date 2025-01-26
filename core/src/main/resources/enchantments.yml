@@ -90,7 +90,7 @@ silencium:
       - armor_feet
 
   triggers:
-    sculk_sensor_activated: []
+    activate_sculk_sensor: []
   levels:
     1:
       chance: 30

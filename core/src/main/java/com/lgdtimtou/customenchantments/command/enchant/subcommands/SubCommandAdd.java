@@ -5,6 +5,7 @@ import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -101,7 +102,24 @@ public class SubCommandAdd extends EnchantSubCommand {
             return;
         }
 
-        if (!customEnchant.getEnchantment().canEnchantItem(item) && !Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()){
+        boolean unsafeEnchantmentsAllowed = Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean();
+
+        List<String> conflictingEnchantments = item.getEnchantments().keySet().stream()
+                .filter(ench -> ench.conflictsWith(customEnchant.getEnchantment()))
+                .map(ench -> ench.getKey().toString())
+                .toList();
+        if (!conflictingEnchantments.isEmpty() && !unsafeEnchantmentsAllowed) {
+            player.sendMessage(Util.getMessage("ConflictingEnchantment")
+                .replace("%enchantment%", customEnchant.getName())
+                .replace("%conflicting_enchantments%", conflictingEnchantments.toString())
+            );
+            player.sendMessage(Util.getMessageNoPrefix("Setting")
+                    .replace("%setting%", "allow_unsafe_enchantments"));
+            return;
+        }
+
+        boolean correctTool = customEnchant.getEnchantment().canEnchantItem(item);
+        if (!correctTool && !unsafeEnchantmentsAllowed){
             player.sendMessage(Util.getMessage("UnsafeEnchantment")
                     .replace("%enchant%", Util.title(customEnchant.getName()))
                     .replace("%targets%", customEnchant.getEnchantmentTargets().toString()));
