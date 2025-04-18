@@ -1,8 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.kill;
 
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -19,20 +21,19 @@ public class KillMobTrigger extends Trigger {
 
 
     @EventHandler
-    public void onMobKill(EntityDeathEvent e){
+    public void onMobKill(EntityDeathEvent e) {
         if (!(e.getEntity() instanceof Monster))
             return;
 
         Entity entity = e.getEntity();
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         entity.addScoreboardTag(uniqueTag);
-        executeCommands(e, e.getEntity().getKiller(), e.getEntity().getType().name(), Map.of(
-                "mob", e.getEntity().getType().name(),
-                "entity_tag", uniqueTag,
-                "entity_x", String.valueOf(e.getEntity().getLocation().getX()),
-                "entity_y", String.valueOf(e.getEntity().getLocation().getY()),
-                "entity_z", String.valueOf(e.getEntity().getLocation().getZ())
-        ), () -> entity.removeScoreboardTag(uniqueTag));
+        executeCommands(
+                e,
+                e.getEntity().getKiller(),
+                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "mob"), entity),
+                Map.of("entity_tag", () -> uniqueTag),
+                () -> entity.removeScoreboardTag(uniqueTag)
+        );
     }
-
 }

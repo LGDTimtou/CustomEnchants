@@ -1,8 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.block;
 
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockIgniteEvent;
 
@@ -14,10 +16,15 @@ public class BlockIgniteTrigger extends Trigger {
     }
 
     @EventHandler
-    public void onBlockIgnite(BlockIgniteEvent e){
-        if (e.getPlayer() == null)
-            return;
+    public void onBlockIgnite(BlockIgniteEvent e) {
+        if (e.getPlayer() == null) return;
 
-        executeCommands(e, e.getPlayer(), e.getCause().name(), Map.of("block", e.getBlock().getType().name(), "cause", e.getCause().name()));
+        executeCommands(e, e.getPlayer(), Map.of(
+                new ConditionKey(TriggerConditionType.BLOCK, ""),
+                e.getBlock(),
+                new ConditionKey(TriggerConditionType.CAUSE, "ignite"),
+                e.getCause()
+        ), Map.of());
     }
 }
+

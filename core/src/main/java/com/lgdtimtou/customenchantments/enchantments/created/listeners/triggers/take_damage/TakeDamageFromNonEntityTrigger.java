@@ -1,8 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.take_damage;
 
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -15,9 +17,15 @@ public class TakeDamageFromNonEntityTrigger extends Trigger {
     }
 
     @EventHandler
-    public void onTakeDamageFromNonEntity(EntityDamageEvent e){
+    public void onTakeDamageFromNonEntity(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player player))
             return;
-        executeCommands(e, player, e.getCause().name(), Map.of("cause", e.getCause().name()));
+
+        executeCommands(
+                e,
+                player,
+                Map.of(new ConditionKey(TriggerConditionType.CAUSE, "cause"), e.getCause()),
+                Map.of()
+        );
     }
 }

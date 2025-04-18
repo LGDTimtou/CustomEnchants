@@ -2,3 +2,23 @@
 movement triggers
 reload shit
 killcounter enchantment
+in_hand / in_inventory
+custom enchant builder upgraden (nieuwe versies en nieuwe triggers)
+repeat toevoegen
+chat trigger
+destroy item
+
+on succes/on fail commands
+
+global conditions: blok voeten, blok player, blok boven, armor...
+
+subcommand info weer verder aanvullen
+
+test als enchantment verdwijnt door bug bv en dan weer terugkomt als het nog op het item staat
+
+Op reddit zoeken naar goeie command scripters
+
+failed to save default_enchantments.yml when starting server with no files
+
+
+BIOME global condition type fixen

@@ -95,14 +95,22 @@ public class SubCommandAdd extends EnchantSubCommand {
 
         if (level <= 0 || customEnchant.getEnchantment().getMaxLevel() < level){
             player.sendMessage(Util.replaceParameters(Map.of(
-                    "max_level", String.valueOf(customEnchant.getEnchantment().getMaxLevel()),
-                    "enchant", customEnchant.getName()
+                    "max_level", () -> String.valueOf(customEnchant.getEnchantment().getMaxLevel()),
+                    "enchant", customEnchant::getName
             ), Util.getMessage("LevelRange")));
+            return;
+        }
+
+        // Same enchantment
+        if (item.containsEnchantment(customEnchant.getEnchantment())){
+            item.removeEnchantment(customEnchant.getEnchantment());
+            item.addUnsafeEnchantment(customEnchant.getEnchantment(), level);
             return;
         }
 
         boolean unsafeEnchantmentsAllowed = Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean();
 
+        // Conflicting enchantments
         List<String> conflictingEnchantments = item.getEnchantments().keySet().stream()
                 .filter(ench -> ench.conflictsWith(customEnchant.getEnchantment()))
                 .map(ench -> ench.getKey().toString())
@@ -117,6 +125,7 @@ public class SubCommandAdd extends EnchantSubCommand {
             return;
         }
 
+        // Correct tool
         boolean correctTool = customEnchant.getEnchantment().canEnchantItem(item);
         if (!correctTool && !unsafeEnchantmentsAllowed){
             player.sendMessage(Util.getMessage("UnsafeEnchantment")

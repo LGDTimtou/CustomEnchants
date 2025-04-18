@@ -1,8 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.take_damage;
 
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,18 +19,20 @@ public class TakeDamageFromMobTrigger extends Trigger {
     }
 
     @EventHandler
-    public void onTakeDamageFromMob(EntityDamageByEntityEvent e){
+    public void onTakeDamageFromMob(EntityDamageByEntityEvent e) {
         if (!(e.getEntity() instanceof Player player))
             return;
         if (!(e.getDamager() instanceof Monster monster))
             return;
 
-
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         monster.addScoreboardTag(uniqueTag);
-        executeCommands(e, player, monster.getType().name(), Map.of(
-                "mob", monster.getType().name(),
-                "entity_tag", uniqueTag
-        ), () -> monster.removeScoreboardTag(uniqueTag));
+        executeCommands(
+                e,
+                player,
+                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "mob"), monster),
+                Map.of("entity_tag", () -> uniqueTag),
+                () -> monster.removeScoreboardTag(uniqueTag)
+        );
     }
 }

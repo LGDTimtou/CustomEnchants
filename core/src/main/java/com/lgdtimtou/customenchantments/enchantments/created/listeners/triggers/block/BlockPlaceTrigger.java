@@ -1,9 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.block;
 
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
-import org.bukkit.Location;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -17,12 +18,13 @@ public class BlockPlaceTrigger extends Trigger {
     }
 
     @EventHandler
-    public void onPlaceBlock(BlockPlaceEvent e){
-        if (!e.canBuild())
-            return;
-        Location loc = e.getBlock().getLocation();
-        executeCommands(e, e.getPlayer(), e.getBlockPlaced().getType().name(), Map.of("block_x", String.valueOf(loc.getX()), "block_y", String.valueOf(loc.getY()), "block_z", String.valueOf(loc.getZ()), "block", e.getBlock().getType().name()));
+    public void onPlaceBlock(BlockPlaceEvent e) {
+        if (!e.canBuild()) return;
+        executeCommands(e, e.getPlayer(), Map.of(
+                new ConditionKey(TriggerConditionType.BLOCK, "placed"),
+                e.getBlockPlaced(),
+                new ConditionKey(TriggerConditionType.BLOCK, "against"),
+                e.getBlockAgainst()
+        ), Map.of());
     }
-
-
 }

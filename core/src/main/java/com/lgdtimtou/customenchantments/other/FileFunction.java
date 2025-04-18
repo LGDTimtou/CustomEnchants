@@ -140,25 +140,24 @@ public enum FileFunction {
     public abstract String execute(String... values);
 
 
-    public static List<String> parse(List<String> commands) throws NumberFormatException{
-        return commands.stream().map(c -> {
-            String updated = c;
-            Matcher m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
-            while (m.find()){
-                String find = m.group();
-                Matcher mFunction = Pattern.compile("[a-z_]+").matcher(find);
-                if (mFunction.find()){
-                    String functionName = mFunction.group();
-                    if (Arrays.stream(values()).noneMatch(v -> v.getName().equalsIgnoreCase(functionName))){
-                        Util.log(ChatColor.RED + functionName + " function does not exist, check your enchantments.yml file");
-                        return c;
-                    }
-                    FileFunction function = FileFunction.valueOf(functionName.toUpperCase());
-                    updated = updated.replace(find, function.execute(find.replaceAll("^[^(]+\\(", "").replaceAll("\\)]", "").split("[ ]*,[ ]*")));
+    public static String parse(String command) throws NumberFormatException{
+        String updated = command;
+        Matcher m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
+        while (m.find()){
+            String find = m.group();
+            Matcher mFunction = Pattern.compile("[a-z_]+").matcher(find);
+            if (mFunction.find()){
+                String functionName = mFunction.group();
+                if (Arrays.stream(values()).noneMatch(v -> v.getName().equalsIgnoreCase(functionName))){
+                    Util.log(ChatColor.RED + functionName + " function does not exist, check your enchantments.yml file");
+                    return command;
                 }
-                m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
+                FileFunction function = FileFunction.valueOf(functionName.toUpperCase());
+                updated = updated.replace(find, function.execute(find.replaceAll("^[^(]+\\(", "").replaceAll("\\)]", "").split("[ ]*,[ ]*")));
             }
-            return updated;
-        }).collect(Collectors.toList());
+            m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
+        }
+        return updated;
+
     }
 }

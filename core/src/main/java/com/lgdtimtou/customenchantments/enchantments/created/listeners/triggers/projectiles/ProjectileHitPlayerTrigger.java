@@ -5,7 +5,6 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -14,9 +13,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.Map;
 import java.util.UUID;
 
-public class ProjectileHitEntityTrigger extends Trigger {
-
-    public ProjectileHitEntityTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
+public class ProjectileHitPlayerTrigger extends Trigger {
+    public ProjectileHitPlayerTrigger(CustomEnchant customEnchant, EnchantTriggerType type) {
         super(customEnchant, type);
     }
 
@@ -26,27 +24,21 @@ public class ProjectileHitEntityTrigger extends Trigger {
             return;
         if (!(usedProjectile.getShooter() instanceof Player player))
             return;
-
-        Entity entity = e.getEntity();
+        if (!(e.getEntity() instanceof Player victim))
+            return;
 
         String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
-        String entityUniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
-
         usedProjectile.addScoreboardTag(projectileUniqueTag);
-        entity.addScoreboardTag(entityUniqueTag);
 
         executeCommands(
                 e,
                 player,
                 Map.of(
-                        new ConditionKey(TriggerConditionType.ENTITY, "entity"), entity,
+                        new ConditionKey(TriggerConditionType.PLAYER, "victim"), victim,
                         new ConditionKey(TriggerConditionType.ENTITY, "projectile"), usedProjectile
                 ),
-                Map.of("entity_tag", () -> entityUniqueTag, "projectile_tag", () -> projectileUniqueTag),
-                () -> {
-                    usedProjectile.removeScoreboardTag(projectileUniqueTag);
-                    entity.removeScoreboardTag(entityUniqueTag);
-                }
+                Map.of("projectile_tag", () -> projectileUniqueTag),
+                () -> usedProjectile.removeScoreboardTag(projectileUniqueTag)
         );
     }
 }

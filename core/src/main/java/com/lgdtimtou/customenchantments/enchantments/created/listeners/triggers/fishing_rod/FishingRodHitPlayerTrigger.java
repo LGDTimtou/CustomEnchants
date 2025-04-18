@@ -1,8 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.fishing_rod;
 
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -15,11 +17,15 @@ public class FishingRodHitPlayerTrigger extends Trigger {
     }
 
     @EventHandler
-    public void onPlayerHit(PlayerFishEvent e){
-        if (e.getState() != PlayerFishEvent.State.CAUGHT_ENTITY)
-            return;
-        if (!(e.getCaught() instanceof Player caught))
-            return;
-        executeCommands(e, e.getPlayer(), caught.getDisplayName(), Map.of("damaged", caught.getDisplayName()));
+    public void onPlayerHit(PlayerFishEvent e) {
+        if (e.getState() != PlayerFishEvent.State.CAUGHT_ENTITY) return;
+        if (!(e.getCaught() instanceof Player caught)) return;
+
+        executeCommands(
+                e,
+                e.getPlayer(),
+                Map.of(new ConditionKey(TriggerConditionType.PLAYER, "caught"), caught),
+                Map.of()
+        );
     }
 }
