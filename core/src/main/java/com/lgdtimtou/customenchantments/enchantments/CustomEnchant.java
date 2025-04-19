@@ -135,13 +135,13 @@ public class CustomEnchant extends CustomEnchantRecord {
         return levels.get(level - 1).getCommands();
     }
 
-    public boolean checkTriggerConditions(EnchantTriggerType type, ConditionKey conditionKey, Object triggerParameter) {
+    public boolean checkTriggerConditions(EnchantTriggerType type, ConditionKey conditionKey, Object triggerObject) {
         Set<String> conditions = triggers.get(type).get(conditionKey);
         if (conditions == null) return true;
         for (String condition : conditions)
-            if (!conditionKey.type().checkCondition(triggerParameter, condition))
-                return false;
-        return true;
+            if (conditionKey.type().checkCondition(triggerObject, condition))
+                return true;
+        return false;
     }
 
     public Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> getTriggers() {

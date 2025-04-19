@@ -2,6 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers
 
 
 import com.lgdtimtou.customenchantments.other.Util;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -108,19 +109,57 @@ public enum TriggerConditionType {
     ),
     BLOCK_FEET(
             BLOCK,
+            "feet",
             player -> player.getLocation().getBlock()
     ),
     BLOCK_UNDER(
             BLOCK,
+            "under",
             player -> player.getLocation().add(0, -1, 0).getBlock()
     ),
     BLOCK_HEAD(
             BLOCK,
+            "head",
             player -> player.getLocation().add(0, 1, 0).getBlock()
     ),
     BLOCK_ABOVE(
             BLOCK,
+            "above",
             player -> player.getLocation().add(0, 2, 0).getBlock()
+    ),
+    BOOTS(
+            ITEM,
+            "boots",
+            player -> player.getInventory().getBoots() != null ?
+                    player.getInventory().getBoots() : new ItemStack(Material.AIR)
+    ),
+    LEGGINGS(
+            ITEM,
+            "feet",
+            player -> player.getInventory().getLeggings() != null ?
+                    player.getInventory().getLeggings() : new ItemStack(Material.AIR)
+    ),
+    CHESTPLATE(
+            ITEM,
+            "chestplate",
+            player -> player.getInventory().getChestplate() != null ?
+                    player.getInventory().getChestplate() : new ItemStack(Material.AIR)
+    ),
+    HELMET(
+            ITEM,
+            "helmet",
+            player -> player.getInventory().getHelmet() != null ?
+                    player.getInventory().getHelmet() : new ItemStack(Material.AIR)
+    ),
+    HAND(
+            ITEM,
+            "hand",
+            player -> player.getInventory().getItemInMainHand()
+    ),
+    OFF_HAND(
+            ITEM,
+            "off_hand",
+            player -> player.getInventory().getItemInOffHand()
     );
 
     private Class<?> targetClass;
@@ -128,10 +167,13 @@ public enum TriggerConditionType {
     private BiPredicate<Object, String> checker = (obj, val) -> true;
     private BiFunction<String, Object, Map<String, Supplier<String>>> conditionParameters = (prefix, obj) -> Map.of();
 
-    <T> TriggerConditionType(TriggerConditionType childTriggerConditionType, Function<Player, T> getGlobalValue) {
+    <T> TriggerConditionType(TriggerConditionType childTriggerConditionType, String globalValuePrefix, Function<Player, T> getGlobalValue) {
         this.targetClass = childTriggerConditionType.targetClass;
         this.checker = childTriggerConditionType.checker;
-        this.conditionParameters = childTriggerConditionType.conditionParameters;
+        this.conditionParameters = (prefix, obj) -> childTriggerConditionType.conditionParameters.apply(
+                globalValuePrefix + "_" + prefix,
+                obj
+        );
         this.getGlobalValue = getGlobalValue == null ? null : getGlobalValue::apply;
     }
 
