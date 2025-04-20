@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -8,18 +8,42 @@
     <artifactId>CustomEnchantments</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <modules>
-        <module>core</module>
-        <module>spigot-1.21.1</module>
-        <module>spigot-1.21.3</module>
-        <module>dist</module>
-        <module>spigot-1.21.4</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>production</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <env>production</env>
+            </properties>
+            <modules>
+                <module>core</module>
+                <module>spigot-1.21.1</module>
+                <module>spigot-1.21.3</module>
+                <module>spigot-1.21.4</module>
+                <module>dist</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>development</id>
+            <properties>
+                <env>development</env>
+            </properties>
+            <modules>
+                <module>core</module>
+                <module>spigot-1.21.4</module>
+                <module>dist</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>

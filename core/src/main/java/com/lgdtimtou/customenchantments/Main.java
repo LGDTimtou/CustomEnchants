@@ -18,6 +18,17 @@ public final class Main extends JavaPlugin {
     private static EnchantmentManager enchantmentsManager;
     private static String minecraftVersion;
 
+    public static Main getMain() {
+        return plugin;
+    }
+
+    public static boolean isFirstBoot() {
+        return System.getProperty("RELOAD") == null;
+    }
+
+    public static EnchantmentManager getEnchantmentsManager() {
+        return enchantmentsManager;
+    }
 
     @Override
     public void onEnable() {
@@ -35,22 +46,13 @@ public final class Main extends JavaPlugin {
         System.setProperty("RELOAD", "TRUE");
     }
 
-
-    public static Main getMain(){
-        return plugin;
-    }
-
-    public static boolean isFirstBoot() {
-        return System.getProperty("RELOAD") == null;
-    }
-
-
     private String getMinecraftVersion() {
         if (minecraftVersion != null) {
             return minecraftVersion;
         } else {
             String bukkitGetVersionOutput = Bukkit.getVersion();
-            Matcher matcher = Pattern.compile("\\(MC: (?<version>[\\d]+\\.[\\d]+(\\.[\\d]+)?)\\)").matcher(bukkitGetVersionOutput);
+            Matcher matcher = Pattern.compile("\\(MC: (?<version>[\\d]+\\.[\\d]+(\\.[\\d]+)?)\\)")
+                                     .matcher(bukkitGetVersionOutput);
             if (matcher.find())
                 return minecraftVersion = matcher.group("version");
             else
@@ -72,8 +74,4 @@ public final class Main extends JavaPlugin {
             throw new RuntimeException(exception);
         }
     }
-    public static EnchantmentManager getEnchantmentsManager() {
-        return enchantmentsManager;
-    }
-
 }
