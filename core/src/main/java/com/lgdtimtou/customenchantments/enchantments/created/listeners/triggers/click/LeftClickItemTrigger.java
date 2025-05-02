@@ -16,8 +16,7 @@ public class LeftClickItemTrigger extends Trigger {
 
 
     @EventHandler
-    public void onLeftClickItem(PlayerInteractEvent e) {
-        if (e.getItem() == null) return;
+    public void onLeftClick(PlayerInteractEvent e) {
         if (!(e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)) return;
 
         executeCommands(e, e.getPlayer(), Map.of(), Map.of());

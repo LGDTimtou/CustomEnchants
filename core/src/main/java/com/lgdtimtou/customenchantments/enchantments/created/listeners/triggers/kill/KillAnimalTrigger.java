@@ -30,7 +30,7 @@ public class KillAnimalTrigger extends Trigger {
                 e,
                 e.getEntity().getKiller(),
                 Map.of(new ConditionKey(TriggerConditionType.ENTITY, "animal"), entity),
-                Map.of("entity_tag", () -> uniqueTag),
+                Map.of("animal_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );
     }

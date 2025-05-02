@@ -4,6 +4,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -56,7 +57,7 @@ public enum TriggerConditionType {
             "type",
             (item) -> item.getType().toString(),
             "name",
-            (item) -> item.getItemMeta() == null ? "null" : item.getItemMeta().getDisplayName(),
+            (item) -> item.getItemMeta() == null ? "" : item.getItemMeta().getDisplayName(),
             "amount",
             (item) -> String.valueOf(item.getAmount())
     )),
@@ -91,12 +92,12 @@ public enum TriggerConditionType {
             Map.of("name", World.Environment::name),
             player -> player.getWorld().getEnvironment()
     ),
-    //BIOME(
-    //        Biome.class,
-    //        (biome, condStr) -> checkPattern(biome.name(), condStr),
-    //        Map.of("name", Biome::name),
-    //        player -> player.getLocation().getBlock().getBiome()
-    //),
+    BIOME(
+            Biome.class,
+            (biome, condStr) -> checkPattern(biome.toString(), condStr),
+            Map.of("biome", Object::toString),
+            player -> player.getLocation().getBlock().getBiome()
+    ),
     TIME(
             Long.class,
             (ticks, condStr) -> Util.TimeOfDay.fromTicks(ticks)
@@ -135,7 +136,7 @@ public enum TriggerConditionType {
     ),
     LEGGINGS(
             ITEM,
-            "feet",
+            "leggings",
             player -> player.getInventory().getLeggings() != null ?
                     player.getInventory().getLeggings() : new ItemStack(Material.AIR)
     ),
@@ -171,7 +172,7 @@ public enum TriggerConditionType {
         this.targetClass = childTriggerConditionType.targetClass;
         this.checker = childTriggerConditionType.checker;
         this.conditionParameters = (prefix, obj) -> childTriggerConditionType.conditionParameters.apply(
-                globalValuePrefix + "_" + prefix,
+                globalValuePrefix,
                 obj
         );
         this.getGlobalValue = getGlobalValue == null ? null : getGlobalValue::apply;

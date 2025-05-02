@@ -21,11 +21,20 @@ public enum Files {
     private File file;
 
 
-    Files(String path){
+    Files(String path) {
         this.path = path;
     }
 
-    public void reloadConfig(){
+    public static void register() {
+        for (Files yamlFile : Files.values()) {
+            if (yamlFile.file == null)
+                yamlFile.file = new File(Main.getMain().getDataFolder(), yamlFile.path);
+            if (!yamlFile.file.exists())
+                Main.getMain().saveResource(yamlFile.path, false);
+        }
+    }
+
+    public void reloadConfig() {
         if (file == null)
             file = new File(Main.getMain().getDataFolder(), path);
 
@@ -33,7 +42,7 @@ public enum Files {
         save();
     }
 
-    public FileConfiguration getConfig(){
+    public FileConfiguration getConfig() {
         if (config == null)
             reloadConfig();
         return config;
@@ -49,18 +58,10 @@ public enum Files {
         }
     }
 
-    public static void register(){
-        for (Files yamlFile : Files.values()){
-            if (yamlFile.file == null)
-                yamlFile.file = new File(Main.getMain().getDataFolder(), yamlFile.path);
-            if (!yamlFile.file.exists())
-                Main.getMain().saveResource(yamlFile.path, false);
-        }
-    }
-
 
     public enum ConfigValue {
 
+        VERBOSE("verbose"),
         ALLOW_UNSAFE_ENCHANTMENTS("allow_unsafe_enchantments");
 
         private final String path;
@@ -72,9 +73,5 @@ public enum Files {
         public boolean getBoolean() {
             return Files.CONFIG.getConfig().getBoolean(this.path);
         }
-
     }
-
-
-
 }

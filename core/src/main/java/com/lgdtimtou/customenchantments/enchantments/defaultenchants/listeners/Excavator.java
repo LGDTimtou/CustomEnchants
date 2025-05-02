@@ -24,7 +24,7 @@ public class Excavator implements CustomEnchantListener {
         if (antiRecursion.contains(player))
             return;
 
-        if (Util.getEnchantedItem(player.getInventory(), DefaultCustomEnchant.EXCAVATOR.get()) == null)
+        if (Util.getEnchantedItem(player, DefaultCustomEnchant.EXCAVATOR.get()) == null)
             return;
 
         antiRecursion.add(player);
@@ -50,7 +50,4 @@ public class Excavator implements CustomEnchantListener {
 
         antiRecursion.remove(player);
     }
-
-
-
 }

@@ -1,33 +1,38 @@
 package com.lgdtimtou.customenchantments.command.enchant;
 
-import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandInfo;
-import com.lgdtimtou.customenchantments.other.Util;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.EnchantSubCommand;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandAdd;
+import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandEdit;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.SubCommandRemove;
+import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class EnchantCommand extends Command {
 
     public EnchantCommand() {
-        super("customenchant", new SubCommandAdd(), new SubCommandRemove(), new SubCommandInfo());
+        super(
+                "customenchant",
+                new SubCommandAdd(),
+                new SubCommandRemove(),
+                new SubCommandEdit()
+        );//, new SubCommandInfo());
     }
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)){
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(Util.getMessage("OnlyPlayers"));
             return false;
         }
-        if (args.length == 0){
+        if (args.length == 0) {
             sender.sendMessage(Util.getMessage("EnchantCommandUsage"));
             return false;
         }
 
         EnchantSubCommand subCommand = (EnchantSubCommand) this.getSubCommand(args[0].toLowerCase());
-        if (subCommand == null){
+        if (subCommand == null) {
             sender.sendMessage(Util.getMessage("EnchantCommandUsage"));
             return false;
         }

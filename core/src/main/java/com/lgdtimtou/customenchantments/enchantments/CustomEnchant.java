@@ -8,8 +8,11 @@ import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCust
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class CustomEnchant extends CustomEnchantRecord {
@@ -18,16 +21,20 @@ public class CustomEnchant extends CustomEnchantRecord {
 
     private static final Map<String, CustomEnchant> enchantments = new HashMap<>();
 
+    private final boolean defaultEnchantment;
+    private final List<CustomEnchantedItemLocation> customEnchantedItemLocations;
     private final List<CustomEnchantBuilder.CustomEnchantLevel> levels;
-    private final Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> triggers;
+    private final Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers;
     private final Enchantment enchantment;
 
 
-    public CustomEnchant(String name, CustomEnchantDefinition definition, Map<String, Boolean> tags, String coolDownMessage, List<CustomEnchantBuilder.CustomEnchantLevel> levels, Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> triggers) {
+    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations, Map<String, Boolean> tags, String coolDownMessage, List<CustomEnchantBuilder.CustomEnchantLevel> levels, Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers) {
         super(Util.getPrettyName(name), definition, tags, coolDownMessage);
 
+        this.defaultEnchantment = defaultEnchantment;
+        this.customEnchantedItemLocations = customEnchantedItemLocations;
         this.levels = levels;
-        this.triggers = triggers;
+        this.registeredTriggers = registeredTriggers;
 
         if (Main.isFirstBoot())
             this.enchantment = Main.getEnchantmentsManager().registerEnchantment(this);
@@ -41,7 +48,7 @@ public class CustomEnchant extends CustomEnchantRecord {
             return;
         }
 
-        triggers.keySet().forEach(type -> Util.registerListener(type.getTrigger(this)));
+        registeredTriggers.keySet().forEach(type -> Util.registerListener(type.getTrigger(this)));
         enchantments.put(this.namespacedName, this);
     }
 
@@ -60,11 +67,11 @@ public class CustomEnchant extends CustomEnchantRecord {
 
         //Build CustomEnchantments from enchantments.yml
         for (String enchant : Files.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
-            new CustomEnchantBuilder(enchant).build();
+            new CustomEnchantBuilder(enchant).build(false);
 
         //Register the default custom enchantments
         for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
-            new CustomEnchantBuilder(defaultCustomEnchant).build();
+            new CustomEnchantBuilder(defaultCustomEnchant).build(true);
 
         //Register the conflicting enchantments
         for (CustomEnchant customEnchant : getCustomEnchantSet())
@@ -80,11 +87,11 @@ public class CustomEnchant extends CustomEnchantRecord {
     private static void registerReload() {
         //Build CustomEnchantments from enchantments.yml
         for (String enchant : Files.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
-            new CustomEnchantBuilder(enchant).build();
+            new CustomEnchantBuilder(enchant).build(false);
 
         //Register the default custom enchantments
         for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
-            new CustomEnchantBuilder(defaultCustomEnchant).build();
+            new CustomEnchantBuilder(defaultCustomEnchant).build(true);
 
         Util.log("Registered enchantments: " + getCustomEnchantSet().stream()
                                                                     .map(CustomEnchant::getNamespacedName)
@@ -111,6 +118,10 @@ public class CustomEnchant extends CustomEnchantRecord {
         return enchantment;
     }
 
+    public boolean isDefaultEnchantment() {
+        return defaultEnchantment;
+    }
+
     public int getCooldown(int level) {
         if (level <= 0 || level > levels.size())
             return -1;
@@ -135,16 +146,53 @@ public class CustomEnchant extends CustomEnchantRecord {
         return levels.get(level - 1).getCommands();
     }
 
-    public boolean checkTriggerConditions(EnchantTriggerType type, ConditionKey conditionKey, Object triggerObject) {
-        Set<String> conditions = triggers.get(type).get(conditionKey);
-        if (conditions == null) return true;
-        for (String condition : conditions)
-            if (conditionKey.type().checkCondition(triggerObject, condition))
-                return true;
-        return false;
+    public boolean checkTriggerConditions(EnchantTriggerType type, Map<ConditionKey, Object> triggerConditionMap) {
+        registeredTriggers.get(type).forEach((conditionKey, strings) -> {
+            if (!triggerConditionMap.containsKey(conditionKey))
+                Util.warn(namespacedName + ": " + conditionKey.toString()
+                                                              .toUpperCase() + " is not a valid condition for " + type);
+        });
+
+        for (Map.Entry<ConditionKey, Object> entry : triggerConditionMap.entrySet()) {
+            ConditionKey conditionKey = entry.getKey();
+            Object triggerObject = entry.getValue();
+            Set<String> conditions = registeredTriggers.get(type).get(conditionKey);
+            if (conditions != null)
+                for (String condition : conditions)
+                    if (!conditionKey.type().checkCondition(triggerObject, condition))
+                        return false;
+        }
+        return true;
     }
 
-    public Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> getTriggers() {
-        return triggers;
+    public ItemStack getEnchantedItem(Player player, Set<ItemStack> priorityItems) {
+        Set<ItemStack> customSelectedItems = this.customEnchantedItemLocations.stream()
+                                                                              .flatMap(location -> location.getCustomEnchantedItems(
+                                                                                      player).stream())
+                                                                              .filter(Objects::nonNull)
+                                                                              .collect(Collectors.toSet());
+
+        if (!priorityItems.isEmpty())
+            Util.debug("Priority Items: " + priorityItems);
+
+        if (!customEnchantedItemLocations.isEmpty() && !customSelectedItems.isEmpty())
+            Util.debug("Custom Enchanted Items found in " + customEnchantedItemLocations + ": " + customSelectedItems);
+
+        // Priority items that aren't standard
+        for (ItemStack item : priorityItems)
+            if (item.containsEnchantment(this.enchantment)) return item;
+        if (!priorityItems.isEmpty()) return null;
+
+        // Manually selected item locations
+        for (ItemStack item : customSelectedItems)
+            if (item.containsEnchantment(this.enchantment)) return item;
+        if (!customEnchantedItemLocations.isEmpty()) return null;
+
+        // Default items
+        return Util.getEnchantedItem(player, this);
+    }
+
+    public Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> getRegisteredTriggers() {
+        return registeredTriggers;
     }
 }

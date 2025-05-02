@@ -3,16 +3,17 @@ package com.lgdtimtou.customenchantments.other;
 import com.google.common.collect.Sets;
 import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
@@ -53,10 +54,32 @@ public final class Util {
         log(ChatColor.YELLOW + message);
     }
 
+    public static void debug(String message) {
+        if (Files.ConfigValue.VERBOSE.getBoolean())
+            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[DEBUG] " + message);
+    }
+
     public static String title(String text) {
         return Arrays.stream(text.split(" "))
                      .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
                      .collect(Collectors.joining(" "));
+    }
+
+    public static <E extends Enum<E>> String findClosestMatch(String input, Class<E> enumClass) {
+        LevenshteinDistance distance = new LevenshteinDistance();
+        String closest = null;
+        int minDistance = Integer.MAX_VALUE;
+
+        for (E constant : enumClass.getEnumConstants()) {
+            String valid = constant.name();
+            int dist = distance.apply(input.toUpperCase(), valid);
+            if (dist < minDistance) {
+                minDistance = dist;
+                closest = valid;
+            }
+        }
+
+        return (minDistance <= 3) ? closest : null;
     }
 
     public static String getMessage(String name) {
@@ -85,25 +108,6 @@ public final class Util {
         return item;
     }
 
-    public static ItemStack getEnchantedItem(Set<ItemStack> customEnchantedItemsSelection, CustomEnchant customEnchant) {
-        for (ItemStack item : customEnchantedItemsSelection)
-            if (containsEnchant(item, customEnchant.getEnchantment())) return item;
-        return null;
-    }
-
-    public static ItemStack getEnchantedItem(PlayerInventory inventory, CustomEnchant customEnchant) {
-        Set<EquipmentSlot> slots = targetsToSlots(customEnchant.getEnchantmentTargets());
-        for (EquipmentSlot slot : slots) {
-            ItemStack item = inventory.getItem(slot);
-            if (containsEnchant(item, customEnchant.getEnchantment())) return item;
-        }
-        return null;
-    }
-
-    public static boolean containsEnchant(ItemStack item, Enchantment enchantment) {
-        if (item == null) return false;
-        return item.containsEnchantment(enchantment);
-    }
 
     public static int getLevel(ItemStack item, Enchantment enchantment) {
         if (item == null)
@@ -170,6 +174,18 @@ public final class Util {
         Set<Material> materials = new HashSet<>();
         targets.forEach(enchantmentTarget -> materials.addAll(targetToMats(enchantmentTarget)));
         return materials;
+    }
+
+    public static ItemStack getEnchantedItem(Player player, CustomEnchant customEnchant) {
+        Set<EquipmentSlot> validEquipmentSlots = Util.targetsToSlots(customEnchant.getEnchantmentTargets());
+        for (EquipmentSlot slot : validEquipmentSlots) {
+            ItemStack item = player.getInventory().getItem(slot);
+            if (item != null && item.containsEnchantment(customEnchant.getEnchantment())) {
+                Util.debug("Found Item in default equipmentslot " + validEquipmentSlots + ": " + item);
+                return item;
+            }
+        }
+        return null;
     }
 
     private static Set<Material> targetToMats(EnchantmentTarget target) {

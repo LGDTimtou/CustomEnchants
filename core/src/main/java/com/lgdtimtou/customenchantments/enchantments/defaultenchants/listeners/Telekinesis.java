@@ -20,13 +20,13 @@ public class Telekinesis implements CustomEnchantListener {
     @EventHandler
     public void blockBreak(BlockDropItemEvent e) {
         PlayerInventory inv = e.getPlayer().getInventory();
-        if (Util.getEnchantedItem(inv, DefaultCustomEnchant.TELEKINESIS.get()) == null)
+        if (Util.getEnchantedItem(e.getPlayer(), DefaultCustomEnchant.TELEKINESIS.get()) == null)
             return;
 
         e.setCancelled(true);
-        for (Item item : e.getItems()){
+        for (Item item : e.getItems()) {
             ItemStack leftover = inv.addItem(item.getItemStack()).get(0);
-            if (leftover != null){
+            if (leftover != null) {
                 Location location = e.getBlock().getLocation();
                 location.getWorld().dropItemNaturally(location, leftover);
             }
@@ -34,14 +34,13 @@ public class Telekinesis implements CustomEnchantListener {
     }
 
     @EventHandler
-    public void killEnemy(EntityDeathEvent e){
+    public void killEnemy(EntityDeathEvent e) {
         Player killer = e.getEntity().getKiller();
         if (killer == null)
             return;
 
-
         PlayerInventory inv = killer.getInventory();
-        if (Util.getEnchantedItem(inv, DefaultCustomEnchant.TELEKINESIS.get()) == null)
+        if (Util.getEnchantedItem(killer, DefaultCustomEnchant.TELEKINESIS.get()) == null)
             return;
 
         Set<ItemStack> set = new HashSet<>();

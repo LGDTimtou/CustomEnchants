@@ -16,7 +16,7 @@ public class RightClickItemTrigger extends Trigger {
 
 
     @EventHandler
-    public void onLeftClickItem(PlayerInteractEvent e) {
+    public void onRightClick(PlayerInteractEvent e) {
         if (e.getItem() == null) return;
         if (!(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 

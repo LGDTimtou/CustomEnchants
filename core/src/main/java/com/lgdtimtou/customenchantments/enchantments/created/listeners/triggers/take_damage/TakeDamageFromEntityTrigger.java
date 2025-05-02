@@ -27,10 +27,11 @@ public class TakeDamageFromEntityTrigger extends Trigger {
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         e.getDamager().addScoreboardTag(uniqueTag);
 
-        executeCommands(
-                e,
-                player,
-                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "damager"), entity),
+        executeCommands(e, player,
+                Map.of(
+                        new ConditionKey(TriggerConditionType.ENTITY, "entity"), entity,
+                        new ConditionKey(TriggerConditionType.CAUSE, "damage"), e.getCause()
+                ),
                 Map.of("entity_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );

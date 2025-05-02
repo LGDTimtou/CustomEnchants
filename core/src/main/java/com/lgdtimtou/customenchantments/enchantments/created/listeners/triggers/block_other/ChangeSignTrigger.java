@@ -23,7 +23,7 @@ public class ChangeSignTrigger extends Trigger {
                 e,
                 e.getPlayer(),
                 Map.of(new ConditionKey(TriggerConditionType.STRING, "lines"), lines),
-                Map.of("lines", () -> lines)
+                Map.of()
         );
     }
 }

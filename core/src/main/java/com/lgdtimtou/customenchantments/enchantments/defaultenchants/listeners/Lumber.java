@@ -33,7 +33,7 @@ public class Lumber implements CustomEnchantListener {
         if (!isLog(e.getBlock().getType()))
             return;
 
-        ItemStack enchantedItem = Util.getEnchantedItem(player.getInventory(), DefaultCustomEnchant.LUMBER.get());
+        ItemStack enchantedItem = Util.getEnchantedItem(player, DefaultCustomEnchant.LUMBER.get());
         if (enchantedItem == null)
             return;
 
@@ -47,7 +47,8 @@ public class Lumber implements CustomEnchantListener {
 
         breakingTree.get(player).add(location);
         activeTasks.put(player, activeTasks.get(player) + 1);
-        Bukkit.getScheduler().runTaskLater(Main.getMain(),
+        Bukkit.getScheduler().runTaskLater(
+                Main.getMain(),
                 () -> runPlayerBreakLog(player, location),
                 counter * 2L
         );
@@ -56,7 +57,7 @@ public class Lumber implements CustomEnchantListener {
                 for (int z = -1; z <= 1; z++) {
                     Location newLocation = location.clone().add(x, y, z);
                     if (isLog(newLocation.getBlock().getType()) && !breakingTree.get(player).contains(newLocation))
-                        breakTreeUpwards(newLocation, player, counter+1);
+                        breakTreeUpwards(newLocation, player, counter + 1);
                 }
             }
         }
@@ -73,6 +74,4 @@ public class Lumber implements CustomEnchantListener {
     private boolean isLog(Material material) {
         return material.name().endsWith("_LOG");
     }
-
-
 }

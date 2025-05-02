@@ -31,12 +31,11 @@ public class Replenish implements CustomEnchantListener {
     );
 
 
-
     @EventHandler
-    public void blockBreak(BlockBreakEvent e){
+    public void blockBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
 
-        if (Util.getEnchantedItem(player.getInventory(), DefaultCustomEnchant.REPLENISH.get()) == null)
+        if (Util.getEnchantedItem(player, DefaultCustomEnchant.REPLENISH.get()) == null)
             return;
 
         Inventory inv = player.getInventory();
@@ -52,10 +51,10 @@ public class Replenish implements CustomEnchantListener {
             return;
 
         //Removing seed from inventory
-        if (e.getPlayer().getGameMode() == GameMode.SURVIVAL){
+        if (e.getPlayer().getGameMode() == GameMode.SURVIVAL) {
             for (int i = 0; i < inv.getSize(); i++) {
                 ItemStack item = inv.getItem(i);
-                if (item != null && item.getType() == seed){
+                if (item != null && item.getType() == seed) {
                     item.setAmount(item.getAmount() - 1);
                     e.getPlayer().getInventory().setItem(i, item);
                     break;
@@ -65,6 +64,4 @@ public class Replenish implements CustomEnchantListener {
 
         Bukkit.getScheduler().runTaskLater(Main.getMain(), () -> b.setType(crop), 2L);
     }
-
-
 }

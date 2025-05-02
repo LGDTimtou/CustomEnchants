@@ -1,8 +1,10 @@
 package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.projectiles;
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
@@ -40,7 +42,9 @@ public class ProjectileLandTrigger extends Trigger {
         String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
         usedProjectile.addScoreboardTag(projectileUniqueTag);
 
-        executeCommands(e, player, Map.of(), Map.of(
+        executeCommands(e, player, Map.of(
+                new ConditionKey(TriggerConditionType.ENTITY, "projectile"), usedProjectile
+        ), Map.of(
                 "projectile_tag", () -> projectileUniqueTag
         ), () -> usedProjectile.removeScoreboardTag(projectileUniqueTag));
     }

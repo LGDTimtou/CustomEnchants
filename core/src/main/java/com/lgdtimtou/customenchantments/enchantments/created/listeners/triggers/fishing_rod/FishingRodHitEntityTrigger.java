@@ -29,8 +29,8 @@ public class FishingRodHitEntityTrigger extends Trigger {
         executeCommands(
                 e,
                 e.getPlayer(),
-                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "caught"), entity),
-                Map.of("entity_tag", () -> uniqueTag),
+                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "hit"), entity),
+                Map.of("hit_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );
     }

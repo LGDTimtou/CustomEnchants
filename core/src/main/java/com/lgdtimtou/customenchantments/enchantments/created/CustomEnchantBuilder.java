@@ -2,6 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created;
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchantDefinition;
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchantedItemLocation;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
@@ -23,6 +24,7 @@ public class CustomEnchantBuilder {
     private final Map<String, Boolean> tags = new HashMap<>();
     private final Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> triggers = new HashMap<>();
     private final List<CustomEnchantLevel> levels = new ArrayList<>();
+    private final List<CustomEnchantedItemLocation> customEnchantedItemLocations = new ArrayList<>();
     private boolean error;
     private boolean enabled;
     private int enchantmentTableWeight;
@@ -47,22 +49,25 @@ public class CustomEnchantBuilder {
         if (!enabled) return;
 
         //Parsing the definition
-        if (!parseDefinition(config, namespacedName, false))
-            return;
+        parseDefinition(config, namespacedName, false);
+
+        //Parsing the custom locations for the enchanted item
+        List<String> locations = config.getStringList(namespacedName + ".custom_locations");
+        for (String location : locations) {
+            try {
+                customEnchantedItemLocations.add(CustomEnchantedItemLocation.valueOf(location.trim().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                String closest = Util.findClosestMatch(location, CustomEnchantedItemLocation.class);
+                String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
+                Util.warn(namespacedName + ": " + location.toUpperCase() + " is not a valid custom enchanted item location" + closest_message + " Skipping...");
+            }
+        }
 
         //Parse the triggers and its condition parameters
         ConfigurationSection triggerSection = config.getConfigurationSection(namespacedName + ".triggers");
-        if (triggerSection == null) {
-            Util.error(namespacedName + ": no 'triggers' section was found");
-            error = true;
-            return;
-        }
-
-        if (!parseTriggerMap(triggerSection)) {
-            error = true;
-            return;
-        }
-
+        parseTriggerMap(triggerSection);
+        if (triggers.isEmpty())
+            Util.error(namespacedName + ": no triggers defined; this enchantment will never activate.");
         removeOverriddenTriggers();
 
         //Parsing optional cool down message
@@ -72,7 +77,7 @@ public class CustomEnchantBuilder {
         for (int i = 1; i <= maxLvl; i++) {
             ConfigurationSection section = config.getConfigurationSection(namespacedName + ".levels." + i);
             if (section == null) {
-                Util.error(namespacedName + ": error when parsing level " + i);
+                Util.error(namespacedName + ": no definition found for level " + i);
                 error = true;
                 return;
             }
@@ -108,27 +113,24 @@ public class CustomEnchantBuilder {
     }
 
 
-    private boolean parseDefinition(FileConfiguration config, String enchantId, boolean defaultEnchantment) {
+    private void parseDefinition(FileConfiguration config, String enchantId, boolean defaultEnchantment) {
         String path = enchantId + ".definition.";
 
         //Parsing the max level of the enchantment
         if (!defaultEnchantment) {
             maxLvl = config.getInt(path + "max_level");
             if (maxLvl <= 0) {
-                Util.error(namespacedName + ": 'max_level' must be greater than 0");
-                error = true;
-                return false;
+                Util.error(namespacedName + ": 'max_level' must be greater than 0; using default value 1");
+                maxLvl = 1;
             }
         }
 
         //Parsing the enchantment table weight
         enchantmentTableWeight = config.getInt(path + "enchanting_table.weight");
-        if (enchantmentTableWeight < 0 || enchantmentTableWeight > 1024) {
-            Util.error(namespacedName + ": 'enchanting_table.weight' must be withing range [1:1024]");
-            error = true;
-            return false;
-        } else if (enchantmentTableWeight == 0)
+        if (enchantmentTableWeight <= 0 || enchantmentTableWeight > 1024) {
+            Util.warn(namespacedName + ": 'enchanting_table.weight' must be in the range [1–1024]; using default value 5");
             enchantmentTableWeight = 5;
+        }
 
         //Parsing the min cost
         minCostBase = config.getInt(path + "enchanting_table.min_cost_base", -1);
@@ -176,55 +178,51 @@ public class CustomEnchantBuilder {
         //Parse the conflicting enchantments
         this.conflictingEnchantments = Util.yamlListToStream(config.getString(path + "conflicts_with"))
                                            .collect(Collectors.toSet());
-
-        return true;
     }
 
-    private boolean parseTriggerMap(ConfigurationSection triggerSection) {
+    private void parseTriggerMap(ConfigurationSection triggerSection) {
+        if (triggerSection == null) return;
         for (String triggerKey : triggerSection.getKeys(false)) {
             // Parse the trigger type
             EnchantTriggerType triggerType;
             try {
                 triggerType = EnchantTriggerType.valueOf(triggerKey.toUpperCase());
             } catch (IllegalArgumentException e) {
-                Util.error(namespacedName + ": " + triggerKey.toUpperCase() + " is not a valid trigger");
-                return false;
+                String closest = Util.findClosestMatch(triggerKey, EnchantTriggerType.class);
+                String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
+                Util.warn(namespacedName + ": " + triggerKey.toUpperCase() + " is not a valid trigger" + closest_message + " Skipping...");
+                continue;
             }
 
-            List<Map<?, ?>> conditionList = triggerSection.getMapList(triggerKey);
+            ConfigurationSection triggerConditionSection = triggerSection.getConfigurationSection(triggerKey);
+            if (triggerConditionSection == null) continue;
+
             Map<ConditionKey, Set<String>> conditions = new HashMap<>();
-
             // Parse the trigger conditions types and its possible values
-            for (Map<?, ?> conditionMap : conditionList) {
-                for (Map.Entry<?, ?> entry : conditionMap.entrySet()) {
-                    String conditionKeyString = entry.getKey().toString().toLowerCase();
-                    Object value = entry.getValue();
+            for (String conditionKeyString : triggerConditionSection.getKeys(false)) {
+                List<String> values = triggerConditionSection.getStringList(conditionKeyString);
 
-                    ConditionKey conditionKey;
-                    try {
-                        String[] parts = conditionKeyString.split("\\^");
-                        TriggerConditionType conditionType = TriggerConditionType.valueOf(parts[0].trim()
-                                                                                                  .toUpperCase());
-                        String prefix = parts.length > 1 ? parts[1].trim().toLowerCase() : "";
-                        conditionKey = new ConditionKey(conditionType, prefix);
-                    } catch (IllegalArgumentException e) {
-                        Util.error(namespacedName + ": " + conditionKeyString + " is not a valid trigger condition type");
-                        return false;
-                    }
-
-                    Set<String> valueSet = new HashSet<>();
-                    if (value instanceof List<?>)
-                        for (Object item : (List<?>) value)
-                            valueSet.add(item.toString());
-                    else valueSet.add(value.toString());
-
-                    conditions.put(conditionKey, valueSet);
+                ConditionKey conditionKey;
+                String[] parts = conditionKeyString.split("\\^");
+                String triggerConditionTypeString = parts[0].trim().toUpperCase();
+                String prefix = parts.length > 1 ? parts[1].trim().toLowerCase() : "";
+                try {
+                    TriggerConditionType conditionType = TriggerConditionType.valueOf(triggerConditionTypeString);
+                    conditionKey = new ConditionKey(conditionType, prefix);
+                } catch (IllegalArgumentException e) {
+                    String closest = Util.findClosestMatch(triggerConditionTypeString, TriggerConditionType.class);
+                    String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
+                    Util.warn(namespacedName + ": " + triggerConditionTypeString + " is not a valid trigger condition type" + closest_message + " Skipping...");
+                    continue;
                 }
+
+                conditions.put(conditionKey, new HashSet<>(values));
             }
 
             this.triggers.put(triggerType, conditions);
         }
-        return true;
+
+        Util.debug(this.triggers.toString());
     }
 
     private void removeOverriddenTriggers() {
@@ -243,7 +241,7 @@ public class CustomEnchantBuilder {
         }
     }
 
-    public void build() {
+    public void build(boolean defaultEnchantment) {
         if (error)
             Util.error(namespacedName + ": error during building process, fix above errors before building again");
         else if (enabled) {
@@ -256,7 +254,16 @@ public class CustomEnchantBuilder {
                     targets,
                     conflictingEnchantments
             );
-            new CustomEnchant(namespacedName, definition, tags, coolDownMessage, levels, triggers);
+            new CustomEnchant(
+                    namespacedName,
+                    defaultEnchantment,
+                    definition,
+                    customEnchantedItemLocations,
+                    tags,
+                    coolDownMessage,
+                    levels,
+                    triggers
+            );
         }
     }
 

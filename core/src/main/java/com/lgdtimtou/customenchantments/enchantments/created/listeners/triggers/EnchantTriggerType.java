@@ -9,6 +9,8 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.block_other.BellRungTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.block_other.ChangeSignTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.block_other.PrimeTNTTrigger;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.chat.PlayerChatTrigger;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.chat.PlayerReceiveChatTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.click.LeftClickItemTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.click.RightClickItemTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.damage.DamageAnimalTrigger;
@@ -30,6 +32,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.movement.PlayerSneakTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.projectiles.ProjectileHitBlockTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.projectiles.ProjectileHitEntityTrigger;
+import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.projectiles.ProjectileHitPlayerTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.projectiles.ProjectileLandTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.take_damage.TakeDamageFromEntityTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.take_damage.TakeDamageFromMobTrigger;
@@ -43,11 +46,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum EnchantTriggerType {
-
-    //Projectiles
-    PROJECTILE_LAND(ProjectileLandTrigger.class),
-    PROJECTILE_HIT_BLOCK(ProjectileHitBlockTrigger.class, PROJECTILE_LAND),
-    PROJECTILE_HIT_ENTITY(ProjectileHitEntityTrigger.class, PROJECTILE_LAND),
 
     //Armor
     ARMOR_EQUIP(ArmorEquipTrigger.class),
@@ -66,6 +64,10 @@ public enum EnchantTriggerType {
     BLOCK_BREAK(BlockBreakTrigger.class),
     BLOCK_PLACE(BlockPlaceTrigger.class),
     BLOCK_DAMAGED(BlockDamagedTrigger.class, BLOCK_BREAK),
+
+    //Chat
+    PLAYER_CHAT(PlayerChatTrigger.class),
+    PLAYER_RECEIVE_CHAT(PlayerReceiveChatTrigger.class),
 
     //Kill
     KILL_ENTITY(KillEntityTrigger.class),
@@ -96,12 +98,18 @@ public enum EnchantTriggerType {
     HEALTH_DECREASE(PlayerHealthDecreaseTrigger.class, HEALTH_CHANGE),
 
     //Click
-    LEFT_CLICK_ITEM(LeftClickItemTrigger.class),
-    RIGHT_CLICK_ITEM(RightClickItemTrigger.class),
+    LEFT_CLICK(LeftClickItemTrigger.class),
+    RIGHT_CLICK(RightClickItemTrigger.class),
 
     //Movement
     PLAYER_SNEAK(PlayerSneakTrigger.class),
-    PLAYER_MOVE(PlayerMoveTrigger.class);
+    PLAYER_MOVE(PlayerMoveTrigger.class),
+
+    //Projectiles
+    PROJECTILE_LAND(ProjectileLandTrigger.class),
+    PROJECTILE_HIT_BLOCK(ProjectileHitBlockTrigger.class, PROJECTILE_LAND),
+    PROJECTILE_HIT_ENTITY(ProjectileHitEntityTrigger.class, PROJECTILE_LAND),
+    PROJECTILE_HIT_PLAYER(ProjectileHitPlayerTrigger.class, PROJECTILE_HIT_ENTITY);
 
     private final Set<EnchantTriggerType> overriddenBy;
     private Constructor<?> constructor;

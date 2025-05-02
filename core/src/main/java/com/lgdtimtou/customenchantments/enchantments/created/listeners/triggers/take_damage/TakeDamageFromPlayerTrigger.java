@@ -22,6 +22,9 @@ public class TakeDamageFromPlayerTrigger extends Trigger {
             return;
         if (!(e.getDamager() instanceof Player damager))
             return;
-        executeCommands(e, player, Map.of(new ConditionKey(TriggerConditionType.PLAYER, "damager"), damager), Map.of());
+        executeCommands(e, player, Map.of(
+                new ConditionKey(TriggerConditionType.PLAYER, "damager"), damager,
+                new ConditionKey(TriggerConditionType.CAUSE, "damage"), e.getCause()
+        ), Map.of());
     }
 }

@@ -32,7 +32,7 @@ public class KillMobTrigger extends Trigger {
                 e,
                 e.getEntity().getKiller(),
                 Map.of(new ConditionKey(TriggerConditionType.ENTITY, "mob"), entity),
-                Map.of("entity_tag", () -> uniqueTag),
+                Map.of("mob_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );
     }

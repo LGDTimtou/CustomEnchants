@@ -27,11 +27,13 @@ public class TakeDamageFromMobTrigger extends Trigger {
 
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         monster.addScoreboardTag(uniqueTag);
-        executeCommands(
-                e,
-                player,
-                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "mob"), monster),
-                Map.of("entity_tag", () -> uniqueTag),
+
+        executeCommands(e, player,
+                Map.of(
+                        new ConditionKey(TriggerConditionType.ENTITY, "mob"), monster,
+                        new ConditionKey(TriggerConditionType.CAUSE, "damage"), e.getCause()
+                ),
+                Map.of("mob_tag", () -> uniqueTag),
                 () -> monster.removeScoreboardTag(uniqueTag)
         );
     }

@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -74,17 +73,11 @@ public class Trigger implements CustomEnchantListener {
         }
     }
 
-    protected boolean executeCommandsPreparation(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, Map<ConditionKey, Object> triggerConditionMap) {
+    protected boolean executeCommandsPreparation(Event e, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionMap) {
         if (player == null)
             return false;
-        PlayerInventory inv = player.getInventory();
 
-        ItemStack enchantedItem;
-        if (customEnchantedItemsSelection.isEmpty())
-            enchantedItem = Util.getEnchantedItem(inv, this.enchantment);
-        else
-            enchantedItem = Util.getEnchantedItem(customEnchantedItemsSelection, this.enchantment);
-
+        ItemStack enchantedItem = this.enchantment.getEnchantedItem(player, priorityItems);
         if (enchantedItem == null)
             return false;
 
@@ -108,9 +101,8 @@ public class Trigger implements CustomEnchantListener {
         }
 
         //Check if the trigger conditions are met
-        for (Map.Entry<ConditionKey, Object> entry : triggerConditionMap.entrySet())
-            if (!this.enchantment.checkTriggerConditions(type, entry.getKey(), entry.getValue()))
-                return false;
+        if (!this.enchantment.checkTriggerConditions(type, triggerConditionMap))
+            return false;
 
         //Return if chance didn't trigger
         if (RG.nextInt(10001) > enchantment.getChance(level))

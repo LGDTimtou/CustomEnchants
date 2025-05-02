@@ -6,7 +6,9 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +20,7 @@ public class ArmorDeEquipTrigger extends Trigger {
 
     @EventHandler
     public void onArmorDeEquip(ArmorEquipEvent e) {
-        String armorType = e.getType().name();
+        if (e.getOldArmorPiece() == null) return;
 
         executeCommands(
                 e,
@@ -26,11 +28,11 @@ public class ArmorDeEquipTrigger extends Trigger {
                 Set.of(e.getOldArmorPiece()),
                 Map.of(
                         new ConditionKey(TriggerConditionType.ITEM, "new_armor"),
-                        e.getNewArmorPiece(),
+                        e.getNewArmorPiece() == null ? new ItemStack(Material.AIR) : e.getNewArmorPiece(),
                         new ConditionKey(TriggerConditionType.ITEM, "old_armor"),
                         e.getOldArmorPiece()
                 ),
-                Map.of("armor_type", () -> armorType)
+                Map.of()
         );
     }
 }

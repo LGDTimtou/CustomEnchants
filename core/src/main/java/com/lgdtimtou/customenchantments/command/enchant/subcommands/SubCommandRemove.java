@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SubCommandRemove extends EnchantSubCommand{
+public class SubCommandRemove extends EnchantSubCommand {
     public SubCommandRemove() {
-        super("remove",1, "EnchantSubCommandRemoveUsage");
+        super("remove", 2, "EnchantSubCommandRemoveUsage");
     }
 
     @Override
@@ -25,11 +25,15 @@ public class SubCommandRemove extends EnchantSubCommand{
         if (item.getType() == Material.AIR || item.getItemMeta() == null)
             item = null;
 
-        if (args.length == 2){
+        if (args.length == 2) {
             ItemStack finalItem = item;
             Stream<CustomEnchant> filtered = CustomEnchant.getCustomEnchantSet().stream()
-                    .filter(ce -> ce.getName().toLowerCase().startsWith(args[1].toLowerCase()))
-                    .filter(ce -> finalItem == null || finalItem.getItemMeta().getEnchants().containsKey(ce.getEnchantment()));
+                                                          .filter(ce -> ce.getName()
+                                                                          .toLowerCase()
+                                                                          .startsWith(args[1].toLowerCase()))
+                                                          .filter(ce -> finalItem == null || finalItem.getItemMeta()
+                                                                                                      .getEnchants()
+                                                                                                      .containsKey(ce.getEnchantment()));
             return filtered.map(CustomEnchant::getNamespacedName).collect(Collectors.toList());
         } else return null;
     }
@@ -48,14 +52,14 @@ public class SubCommandRemove extends EnchantSubCommand{
         }
 
         //Speler heeft niets vast
-        if (player.getInventory().getItemInMainHand().getType() == Material.AIR){
+        if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
             player.sendMessage(Util.getMessage("EmptyHand"));
             return;
         }
 
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (!item.containsEnchantment(customEnchant.getEnchantment())){
+        if (!item.containsEnchantment(customEnchant.getEnchantment())) {
             player.sendMessage(Util.getMessage("DoesntHaveEnchant").replace("%enchant%", customEnchant.getName()));
             return;
         }
