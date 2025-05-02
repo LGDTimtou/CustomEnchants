@@ -1,2 +1,2 @@
 verbose: true
-allow_unsafe_enchantments: false
+allow_unsafe_enchantments: true

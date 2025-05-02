@@ -19,7 +19,10 @@ public class CustomEnchantRecord {
         this.namespacedName = Util.getNamedspacedName(name);
         this.customEnchantDefinition = customEnchantDefinition;
         this.tags = tags;
-        this.cooldownMessage = cooldownMessage != null ? ChatColor.translateAlternateColorCodes('&', cooldownMessage) : null;
+        this.cooldownMessage = cooldownMessage != null ? ChatColor.translateAlternateColorCodes(
+                '&',
+                cooldownMessage
+        ) : null;
     }
 
     public String getName() {
@@ -68,5 +71,13 @@ public class CustomEnchantRecord {
 
     public Set<String> getConflictingEnchantments() {
         return customEnchantDefinition.conflictingEnchantments();
+    }
+
+    public Double getDestroyItemChance() {
+        return customEnchantDefinition.destroyItemChance();
+    }
+
+    public Double getRemoveEnchantmentChance() {
+        return customEnchantDefinition.removeEnchantmentChance();
     }
 }

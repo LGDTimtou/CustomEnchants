@@ -11,7 +11,10 @@ public record CustomEnchantDefinition(
         CustomEnchantCost maxCost,
         int anvilCost,
         Set<EnchantmentTarget> enchantmentTargets,
-        Set<String> conflictingEnchantments
+        Set<String> conflictingEnchantments,
+        double destroyItemChance,
+        double removeEnchantmentChance
 ) {
-    public record CustomEnchantCost(int base, int perLevelAboveFirst){}
+    public record CustomEnchantCost(int base, int perLevelAboveFirst) {
+    }
 }

@@ -39,7 +39,10 @@ sneak:
       min_cost_incr: 1
       max_cost_base: 5
       max_cost_incr: 1
-  custom_locations: [ armor_slots ]
+  custom_locations:
+    - ender_chest
+  destroy_item_chance: 0
+  remove_enchantment_chance: 0
   triggers:
     player_sneak:
       block_under:
@@ -67,8 +70,8 @@ sneak:
         - particle minecraft:smoke %x% $[add(%y%, 1)] %z% 0.5 1 0.5 0.0 50 force
     3:
       cancel_event: false
-      cooldown: 30
-      chance: 100
+      cooldown: 2
+      chance: 50
       commands:
         - effect give %player% minecraft:invisibility 10 1
         - particle minecraft:smoke %x% $[add(%y%, 1)] %z% 0.5 1 0.5 0.0 50 force

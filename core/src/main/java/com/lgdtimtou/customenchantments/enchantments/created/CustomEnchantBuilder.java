@@ -27,6 +27,8 @@ public class CustomEnchantBuilder {
     private final List<CustomEnchantedItemLocation> customEnchantedItemLocations = new ArrayList<>();
     private boolean error;
     private boolean enabled;
+    private double destroyItemChance;
+    private double removeEnchantmentChance;
     private int enchantmentTableWeight;
     private int maxLvl;
     private int minCostBase;
@@ -62,6 +64,10 @@ public class CustomEnchantBuilder {
                 Util.warn(namespacedName + ": " + location.toUpperCase() + " is not a valid custom enchanted item location" + closest_message + " Skipping...");
             }
         }
+
+        //Parsing whether the enchantment should destroy the enchanted item
+        destroyItemChance = config.getDouble(namespacedName + ".destroy_item_chance", 0);
+        removeEnchantmentChance = config.getDouble(namespacedName + ".remove_enchantment_chance", 0);
 
         //Parse the triggers and its condition parameters
         ConfigurationSection triggerSection = config.getConfigurationSection(namespacedName + ".triggers");
@@ -134,25 +140,25 @@ public class CustomEnchantBuilder {
 
         //Parsing the min cost
         minCostBase = config.getInt(path + "enchanting_table.min_cost_base", -1);
-        if (minCostBase == -1)
+        if (minCostBase < 0)
             minCostBase = 1;
 
         minCostIncr = config.getInt(path + "enchanting_table.min_cost_incr", -1);
-        if (minCostIncr == -1)
+        if (minCostIncr < 0)
             minCostIncr = 5;
 
         //Parsing the max cost
         maxCostBase = config.getInt(path + "enchanting_table.max_cost_base", -1);
-        if (maxCostBase == -1)
+        if (maxCostBase < 0)
             maxCostBase = 10;
 
         maxCostIncr = config.getInt(path + "enchanting_table.max_cost_incr", -1);
-        if (maxCostIncr == -1)
+        if (maxCostIncr < 0)
             maxCostIncr = 5;
 
         //Parsing the anvil cost
         anvilCost = config.getInt(path + "anvil_cost", -1);
-        if (anvilCost == -1)
+        if (anvilCost < 0)
             anvilCost = 2;
 
         //Parse the tags
@@ -252,7 +258,9 @@ public class CustomEnchantBuilder {
                     new CustomEnchantDefinition.CustomEnchantCost(maxCostBase, maxCostIncr),
                     anvilCost,
                     targets,
-                    conflictingEnchantments
+                    conflictingEnchantments,
+                    destroyItemChance,
+                    removeEnchantmentChance
             );
             new CustomEnchant(
                     namespacedName,

@@ -105,7 +105,9 @@ public class Trigger implements CustomEnchantListener {
             return false;
 
         //Return if chance didn't trigger
-        if (RG.nextInt(10001) > enchantment.getChance(level))
+        double randomNumberEnchantment = Math.random() * 100;
+        Util.debug("Random Number: " + randomNumberEnchantment + ", Enchantment Chance: " + enchantment.getChance(level));
+        if (randomNumberEnchantment < enchantment.getChance(level))
             return false;
 
         //Cancel event if specified to do so
@@ -122,6 +124,18 @@ public class Trigger implements CustomEnchantListener {
                           enchantment.getCooldown(level) * 20L
                   );
         }
+
+        //Remove enchantment if chance triggered
+        double randomNumberRemoveEnchantment = Math.random() * 100;
+        Util.debug("Random Number: " + randomNumberRemoveEnchantment + ", Remove Enchantment Chance: " + enchantment.getRemoveEnchantmentChance());
+        if (randomNumberRemoveEnchantment < enchantment.getRemoveEnchantmentChance())
+            enchantedItem.removeEnchantment(enchantment.getEnchantment());
+
+        //Destroy item if chance triggered
+        double randomNumberDestroyItem = Math.random() * 100;
+        Util.debug("Random Number: " + randomNumberDestroyItem + ", Destroy Item Chance: " + enchantment.getDestroyItemChance());
+        if (randomNumberDestroyItem < enchantment.getDestroyItemChance())
+            enchantedItem.setAmount(0);
 
         //Set commands
         commands = enchantment.getCommands(level);

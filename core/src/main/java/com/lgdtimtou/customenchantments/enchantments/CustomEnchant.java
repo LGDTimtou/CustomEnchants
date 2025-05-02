@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class CustomEnchant extends CustomEnchantRecord {
@@ -131,7 +130,7 @@ public class CustomEnchant extends CustomEnchantRecord {
     public int getChance(int level) {
         if (level <= 0 || level > levels.size())
             return -1;
-        return (int) levels.get(level - 1).getChance() * 100;
+        return (int) levels.get(level - 1).getChance();
     }
 
     public boolean isCancelled(int level) {
@@ -166,29 +165,33 @@ public class CustomEnchant extends CustomEnchantRecord {
     }
 
     public ItemStack getEnchantedItem(Player player, Set<ItemStack> priorityItems) {
-        Set<ItemStack> customSelectedItems = this.customEnchantedItemLocations.stream()
-                                                                              .flatMap(location -> location.getCustomEnchantedItems(
+        //Handling priority items
+        if (!priorityItems.isEmpty()) {
+            Util.debug("Priority Items: " + priorityItems);
+            for (ItemStack item : priorityItems)
+                if (item.containsEnchantment(this.enchantment)) return item;
+            return null;
+        }
+
+        // Handle manually selected item locations
+        if (!customEnchantedItemLocations.isEmpty()) {
+            List<ItemStack> customSelectedItems = customEnchantedItemLocations.stream()
+                                                                              .flatMap(loc -> loc.getCustomEnchantedItems(
                                                                                       player).stream())
                                                                               .filter(Objects::nonNull)
-                                                                              .collect(Collectors.toSet());
+                                                                              .filter(item -> item.containsEnchantment(
+                                                                                      this.enchantment))
+                                                                              .toList();
 
-        if (!priorityItems.isEmpty())
-            Util.debug("Priority Items: " + priorityItems);
+            if (!customSelectedItems.isEmpty()) {
+                Util.debug("Custom Enchanted Items found in " + customEnchantedItemLocations + ": " + customSelectedItems);
+                return customSelectedItems.getFirst();
+            }
 
-        if (!customEnchantedItemLocations.isEmpty() && !customSelectedItems.isEmpty())
-            Util.debug("Custom Enchanted Items found in " + customEnchantedItemLocations + ": " + customSelectedItems);
+            return null;
+        }
 
-        // Priority items that aren't standard
-        for (ItemStack item : priorityItems)
-            if (item.containsEnchantment(this.enchantment)) return item;
-        if (!priorityItems.isEmpty()) return null;
-
-        // Manually selected item locations
-        for (ItemStack item : customSelectedItems)
-            if (item.containsEnchantment(this.enchantment)) return item;
-        if (!customEnchantedItemLocations.isEmpty()) return null;
-
-        // Default items
+        // Fallback: default item
         return Util.getEnchantedItem(player, this);
     }
 
