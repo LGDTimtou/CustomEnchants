@@ -189,7 +189,9 @@ public enum TriggerConditionType {
         this.conditionParameters = (prefix, obj) -> parameters.entrySet()
                                                               .stream()
                                                               .collect(Collectors.toMap(
-                                                                      entry -> prefix.isEmpty() ? entry.getKey() : prefix + "_" + entry.getKey(),
+                                                                      entry -> prefix.isEmpty() ? entry.getKey()
+                                                                              : entry.getKey().isEmpty() ? prefix
+                                                                              : prefix + "_" + entry.getKey(),
                                                                       entry -> () -> entry.getValue()
                                                                                           .apply(targetClass.cast(obj))
                                                               ));

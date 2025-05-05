@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Trigger implements CustomEnchantListener {
 
@@ -49,6 +50,8 @@ public class Trigger implements CustomEnchantListener {
     }
 
     protected void executeCommands(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
+        if (player == null) return;
+
         // Add all global conditions
         Map<ConditionKey, Object> mutableTriggerConditionMap = new HashMap<>(triggerConditionMap);
         mutableTriggerConditionMap.putAll(TriggerConditionType.getGlobalConditionMap(player));
@@ -107,7 +110,7 @@ public class Trigger implements CustomEnchantListener {
         //Return if chance didn't trigger
         double randomNumberEnchantment = Math.random() * 100;
         Util.debug("Random Number: " + randomNumberEnchantment + ", Enchantment Chance: " + enchantment.getChance(level));
-        if (randomNumberEnchantment < enchantment.getChance(level))
+        if (enchantment.getChance(level) < randomNumberEnchantment)
             return false;
 
         //Cancel event if specified to do so
@@ -135,7 +138,7 @@ public class Trigger implements CustomEnchantListener {
         double randomNumberDestroyItem = Math.random() * 100;
         Util.debug("Random Number: " + randomNumberDestroyItem + ", Destroy Item Chance: " + enchantment.getDestroyItemChance());
         if (randomNumberDestroyItem < enchantment.getDestroyItemChance())
-            enchantedItem.setAmount(0);
+            enchantedItem.setAmount(enchantedItem.getAmount() - 1);
 
         //Set commands
         commands = enchantment.getCommands(level);
@@ -144,6 +147,8 @@ public class Trigger implements CustomEnchantListener {
     }
 
     private void dispatchCommand(int index, Map<String, Supplier<String>> parameters, Runnable onComplete) {
+        Util.debug(parameters.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue().get()).collect(
+                Collectors.toSet()).toString());
         if (index == commands.size()) {
             onComplete.run();
             return;

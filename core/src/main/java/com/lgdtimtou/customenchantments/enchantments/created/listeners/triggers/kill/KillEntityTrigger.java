@@ -6,6 +6,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
@@ -19,12 +20,13 @@ public class KillEntityTrigger extends Trigger {
 
     @EventHandler
     public void onEntityKill(EntityDeathEvent e) {
+        if (!(e.getEntity().getKiller() instanceof Player killer)) return;
         Entity entity = e.getEntity();
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         entity.addScoreboardTag(uniqueTag);
         executeCommands(
                 e,
-                e.getEntity().getKiller(),
+                killer,
                 Map.of(new ConditionKey(TriggerConditionType.ENTITY, "entity"), entity),
                 Map.of("entity_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)

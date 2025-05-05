@@ -7,6 +7,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
@@ -22,6 +23,7 @@ public class KillMobTrigger extends Trigger {
 
     @EventHandler
     public void onMobKill(EntityDeathEvent e) {
+        if (!(e.getEntity().getKiller() instanceof Player killer)) return;
         if (!(e.getEntity() instanceof Monster))
             return;
 
@@ -30,7 +32,7 @@ public class KillMobTrigger extends Trigger {
         entity.addScoreboardTag(uniqueTag);
         executeCommands(
                 e,
-                e.getEntity().getKiller(),
+                killer,
                 Map.of(new ConditionKey(TriggerConditionType.ENTITY, "mob"), entity),
                 Map.of("mob_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
