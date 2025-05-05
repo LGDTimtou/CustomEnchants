@@ -1,7 +1,10 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,15 +18,37 @@ public class SubCommandInfo extends EnchantSubCommand {
 
     @Override
     public void execute(Player player, String[] args) {
-        TextComponent message = new TextComponent("§6§bLoaded Custom Enchantments:");
+        // Default enchantments (not editable)
+        TextComponent defaultHeader = new TextComponent("§6§lDefault Enchantments:\n");
         for (CustomEnchant customEnchant : CustomEnchant.getCustomEnchantSet()) {
-            String enchantName = customEnchant.getName();
-            TextComponent enchantComponent = new TextComponent("\n§e- " + enchantName);
-            message.addExtra(enchantComponent);
+            if (!customEnchant.isDefaultEnchantment()) continue;
+
+            TextComponent defaultEnchant = new TextComponent("§7- " + customEnchant.getName() + "\n");
+            defaultHeader.addExtra(defaultEnchant);
         }
 
-        player.spigot().sendMessage(message);
+        // Editable custom enchantments
+        TextComponent customHeader = new TextComponent("\n§6§lCustom Enchantments:\n");
+        for (CustomEnchant customEnchant : CustomEnchant.getCustomEnchantSet()) {
+            if (customEnchant.isDefaultEnchantment()) continue;
+
+            String enchantName = customEnchant.getNamespacedName();
+
+            TextComponent enchantComponent = new TextComponent("§e- " + customEnchant.getName() + "\n");
+            enchantComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ce edit " + enchantName));
+            enchantComponent.setHoverEvent(new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    new Text("§7Click to edit §e" + customEnchant.getName())
+            ));
+
+            customHeader.addExtra(enchantComponent);
+        }
+
+        defaultHeader.addExtra(customHeader);
+
+        player.spigot().sendMessage(defaultHeader);
     }
+
 
     @Override
     public List<String> getTabValues(CommandSender sender, String[] args) {

@@ -39,11 +39,12 @@ public class SubCommandEdit extends EnchantSubCommand {
         // Default enchantments
         if (customEnchant.isDefaultEnchantment()) {
             player.sendMessage(Util.getMessage("EditDefaultEnchant"));
+            return;
         }
 
         String yaml = getYamlForEnchant(customEnchant);
         if (yaml == null) {
-            player.sendMessage("&e" + customEnchant.getNamespacedName() + " was not found in enchantments.yml. This should not be possible! Report this bug");
+            player.sendMessage("§c" + customEnchant.getNamespacedName() + " was not found in §eenchantments.yml.§c This should not be possible! Report this bug");
             return;
         }
 
