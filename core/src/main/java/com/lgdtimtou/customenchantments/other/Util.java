@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,15 +44,15 @@ public final class Util {
     }
 
     public static void log(String message) {
-        Bukkit.getConsoleSender().sendMessage("[CustomEnchants] " + message);
+        Bukkit.getLogger().info("[CustomEnchants] " + message);
     }
 
     public static void error(String message) {
-        log(ChatColor.RED + message);
+        Bukkit.getLogger().log(Level.SEVERE, "[CustomEnchants] " + message);
     }
 
     public static void warn(String message) {
-        log(ChatColor.YELLOW + message);
+        Bukkit.getLogger().warning("[CustomEnchants] " + message);
     }
 
     public static void debug(String message) {

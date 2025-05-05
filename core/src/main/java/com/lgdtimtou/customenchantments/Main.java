@@ -5,6 +5,7 @@ import com.lgdtimtou.customenchantments.customevents.CustomEvent;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.nms.EnchantmentManager;
 import com.lgdtimtou.customenchantments.other.Files;
+import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,8 +33,15 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (!isFirstBoot())
+            Util.warn("Reloading this plugin WILL severely break its vanilla functionality. Use /restart instead!");
+
         plugin = this;
         enchantmentsManager = createEnchantmentManager();
+        if (enchantmentsManager == null) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         Files.register();
         CustomEnchant.register();
@@ -68,10 +76,12 @@ public final class Main extends JavaPlugin {
             Class<? extends EnchantmentManager> clazz = (Class<? extends EnchantmentManager>) Class.forName(clazzName);
             return clazz.getConstructor().newInstance();
         } catch (ClassNotFoundException exception) {
-            throw new RuntimeException("This version of minecraft (" + getMinecraftVersion() +
-                    ") is not supported by this version of CustomEnchantments)", exception);
+            Util.error("Minecraft " + getMinecraftVersion() +
+                    " is not supported by this version of CustomEnchantments)");
+            Util.error("Download our latest update for newer versions!");
+            return null;
         } catch (ReflectiveOperationException exception) {
-            throw new RuntimeException(exception);
+            return null;
         }
     }
 }
