@@ -35,22 +35,30 @@ import java.util.function.BiConsumer;
 
 public class EnchantmentManagerImpl implements EnchantmentManager {
 
-    private final MappedRegistry<Enchantment> ENCHANTS;
-    private final MappedRegistry<Item> ITEMS;
-
-    private final Map<String, TagKey<Enchantment>> enchantmentTags = new HashMap<>();
-
     private static final String REGISTRY_FROZEN_TAGS_FIELD = "j"; // frozenTags
     private static final String REGISTRY_ALL_TAGS_FIELD = "k"; // allTags
     private static final String TAG_SET_UNBOUND_METHOD = "a"; // .unbound()
-    private static final String TAG_SET_MAP_FIELD = "val$map";
+    private static final String TAG_SET_MAP_FIELD = usingMojangMappings() ? "val$map" : "a";
+    private final MappedRegistry<Enchantment> ENCHANTS;
+    private final MappedRegistry<Item> ITEMS;
+    private final Map<String, TagKey<Enchantment>> enchantmentTags = new HashMap<>();
 
     public EnchantmentManagerImpl() {
+        Util.debug("Using " + (usingMojangMappings() ? "mojang" : "spigot") + "-mappings");
         MinecraftServer SERVER = ((CraftServer) Bukkit.getServer()).getServer();
         ENCHANTS = (MappedRegistry<Enchantment>) SERVER.registryAccess().lookup(Registries.ENCHANTMENT).orElseThrow();
         ITEMS = (MappedRegistry<Item>) SERVER.registryAccess().lookup(Registries.ITEM).orElseThrow();
 
         fillEnchantmentTags();
+    }
+
+    private static boolean usingMojangMappings() {
+        try {
+            Class.forName("net.minecraft.core.MappedRegistry");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     @NotNull
@@ -126,13 +134,17 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
     }
 
     private <T> void unbound(@NotNull MappedRegistry<T> registry) {
-        Class<?> tagSetClass = Reflex.getInnerClass(MappedRegistry.class.getName(), "TagSet");
+        Class<?> tagSetClass = Reflex.getInnerClass(
+                MappedRegistry.class.getName(),
+                usingMojangMappings() ? "TagSet" : "a"
+        );
 
         Method unboundMethod = Reflex.getMethod(tagSetClass, TAG_SET_UNBOUND_METHOD);
         Object unboundTagSet = Reflex.invokeMethod(unboundMethod, registry); // new TagSet object.
 
         Reflex.setFieldValue(registry, REGISTRY_ALL_TAGS_FIELD, unboundTagSet);
     }
+
     public org.bukkit.enchantments.Enchantment registerEnchantment(CustomEnchantRecord customEnchant) {
         String enchantId = customEnchant.getNamespacedName();
         Component component = Component.literal(customEnchant.getName());
@@ -144,7 +156,11 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
 
         EquipmentSlotGroup[] slots = getSlots(enchantmentTargets);
 
-        Enchantment.EnchantmentDefinition definition = getEnchantmentDefinition(customEnchant, Util.targetsToMats(enchantmentTargets), slots);
+        Enchantment.EnchantmentDefinition definition = getEnchantmentDefinition(
+                customEnchant,
+                Util.targetsToMats(enchantmentTargets),
+                slots
+        );
         Enchantment enchantment = new Enchantment(component, definition, exclusiveSet, effects);
 
         Holder.Reference<Enchantment> reference = ENCHANTS.createIntrusiveHolder(enchantment);
@@ -155,8 +171,7 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                 addInTag(tagKey, reference);
                 if (tagName.equalsIgnoreCase("treasure"))
                     removeFromTag(EnchantmentTags.NON_TREASURE, reference);
-            }
-            else {
+            } else {
                 removeFromTag(tagKey, reference);
                 if (tagName.equalsIgnoreCase("treasure"))
                     addInTag(EnchantmentTags.NON_TREASURE, reference);
@@ -171,15 +186,32 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         int maxLevel = customEnchant.getMaxLevel();
         int anvilCost = customEnchant.getAnvilCost();
 
-        HolderSet.Named<Item> supportedItems = createItemSet("enchant_supported", customEnchant.getNamespacedName(), targetItems);
-        HolderSet.Named<Item> primaryItems = createItemSet("enchant_primary", customEnchant.getNamespacedName(), targetItems);
+        HolderSet.Named<Item> supportedItems = createItemSet(
+                "enchant_supported",
+                customEnchant.getNamespacedName(),
+                targetItems
+        );
+        HolderSet.Named<Item> primaryItems = createItemSet(
+                "enchant_primary",
+                customEnchant.getNamespacedName(),
+                targetItems
+        );
 
         CustomEnchantDefinition.CustomEnchantCost customMinCost = customEnchant.getMinCost();
         CustomEnchantDefinition.CustomEnchantCost customMaxCost = customEnchant.getMaxCost();
         Enchantment.Cost minCost = new Enchantment.Cost(customMinCost.base(), customMinCost.perLevelAboveFirst());
         Enchantment.Cost maxCost = new Enchantment.Cost(customMaxCost.base(), customMaxCost.perLevelAboveFirst());
 
-        return Enchantment.definition(supportedItems, primaryItems, weight, maxLevel, minCost, maxCost, anvilCost, slots);
+        return Enchantment.definition(
+                supportedItems,
+                primaryItems,
+                weight,
+                maxLevel,
+                minCost,
+                maxCost,
+                anvilCost,
+                slots
+        );
     }
 
     @NotNull
@@ -201,11 +233,18 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
     }
 
     private EquipmentSlotGroup[] getSlots(Set<EnchantmentTarget> targets) {
-        for (EnchantmentTarget target : Set.of(EnchantmentTarget.ARMOR, EnchantmentTarget.ARMOR_FEET, EnchantmentTarget.ARMOR_LEGS, EnchantmentTarget.ARMOR_TORSO, EnchantmentTarget.ARMOR_HEAD, EnchantmentTarget.WEARABLE))
+        for (EnchantmentTarget target : Set.of(
+                EnchantmentTarget.ARMOR,
+                EnchantmentTarget.ARMOR_FEET,
+                EnchantmentTarget.ARMOR_LEGS,
+                EnchantmentTarget.ARMOR_TORSO,
+                EnchantmentTarget.ARMOR_HEAD,
+                EnchantmentTarget.WEARABLE
+        ))
             if (targets.contains(target))
-                return new EquipmentSlotGroup[] {EquipmentSlotGroup.ARMOR};
+                return new EquipmentSlotGroup[]{EquipmentSlotGroup.ARMOR};
 
-        return new EquipmentSlotGroup[] {EquipmentSlotGroup.HAND};
+        return new EquipmentSlotGroup[]{EquipmentSlotGroup.HAND};
     }
 
 
@@ -263,12 +302,10 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                     String value = location.toString();
                     if (!value.contains("exclusive") && !value.equals("non_treasure"))
                         enchantmentTags.put(value.replaceAll("/", "_"), tagKey);
-                } catch(IllegalAccessException e){
+                } catch (IllegalAccessException e) {
                     // Ignore
                 }
             }
         }
     }
-
-
 }

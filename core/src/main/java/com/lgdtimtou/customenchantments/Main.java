@@ -35,15 +35,15 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         if (!isFirstBoot())
             Util.warn("Reloading this plugin WILL severely break its vanilla functionality. Use /restart instead!");
-
         plugin = this;
+        Files.register();
+
         enchantmentsManager = createEnchantmentManager();
         if (enchantmentsManager == null) {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
-        Files.register();
         CustomEnchant.register();
         CustomEvent.register();
         new EnchantCommand();

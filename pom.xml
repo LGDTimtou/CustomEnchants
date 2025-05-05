@@ -29,6 +29,7 @@
                 <module>spigot-1.21.1</module>
                 <module>spigot-1.21.3</module>
                 <module>spigot-1.21.4</module>
+                <module>spigot-1.21.5</module>
                 <module>dist</module>
             </modules>
         </profile>
@@ -40,7 +41,7 @@
             </properties>
             <modules>
                 <module>core</module>
-                <module>spigot-1.21.4</module>
+                <module>spigot-1.21.5</module>
                 <module>dist</module>
             </modules>
         </profile>

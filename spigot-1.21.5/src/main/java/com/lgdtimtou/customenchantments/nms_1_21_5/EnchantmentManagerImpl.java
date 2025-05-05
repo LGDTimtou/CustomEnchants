@@ -1,4 +1,4 @@
-package com.lgdtimtou.customenchantments.nms_1_21_3;
+package com.lgdtimtou.customenchantments.nms_1_21_5;
 
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchantDefinition;
@@ -23,8 +23,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R2.util.CraftNamespacedKey;
+import org.bukkit.craftbukkit.v1_21_R4.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R4.util.CraftNamespacedKey;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.jetbrains.annotations.NotNull;
 

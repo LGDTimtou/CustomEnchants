@@ -14,5 +14,4 @@ public interface EnchantmentManager {
     Enchantment registerEnchantment(CustomEnchantRecord customEnchant);
 
     void addExclusives(String enchantId, Set<String> exclusives);
-
 }

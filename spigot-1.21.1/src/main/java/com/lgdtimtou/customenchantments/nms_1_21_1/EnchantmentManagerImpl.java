@@ -31,14 +31,12 @@ import java.util.function.BiConsumer;
 
 public class EnchantmentManagerImpl implements EnchantmentManager {
 
-    private final Map<String, TagKey<Enchantment>> enchantmentTags = new HashMap<>();
-
-    private final MinecraftServer SERVER;
-    private final Registry<Enchantment> ENCHANTMENT_REGISTRY;
-
     private static final String HOLDER_SET_NAMED_CONTENTS_FIELD = "c"; // 'contents' field of the HolderSet.Named
     private static final String HOLDER_REFERENCE_TAGS_FIELD = "b"; // 'tags' field of the Holder.Reference
     private static final String HOLDER_SET_DIRECT_CONTENTS_FIELD = "b";
+    private final Map<String, TagKey<Enchantment>> enchantmentTags = new HashMap<>();
+    private final MinecraftServer SERVER;
+    private final Registry<Enchantment> ENCHANTMENT_REGISTRY;
 
 
     public EnchantmentManagerImpl() {
@@ -68,7 +66,11 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
 
         EquipmentSlotGroup[] slots = getSlots(enchantmentTargets);
 
-        Enchantment.EnchantmentDefinition definition = getEnchantmentDefinition(customEnchant, Util.targetsToMats(enchantmentTargets), slots);
+        Enchantment.EnchantmentDefinition definition = getEnchantmentDefinition(
+                customEnchant,
+                Util.targetsToMats(enchantmentTargets),
+                slots
+        );
         Enchantment enchantment = new Enchantment(component, definition, exclusiveSet, effects);
 
         Holder.Reference<Enchantment> reference = ENCHANTMENT_REGISTRY.createIntrusiveHolder(enchantment);
@@ -79,8 +81,7 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                 addInTag(tagKey, reference);
                 if (tagName.equalsIgnoreCase("treasure"))
                     removeFromTag(EnchantmentTags.NON_TREASURE, reference);
-            }
-            else {
+            } else {
                 removeFromTag(tagKey, reference);
                 if (tagName.equalsIgnoreCase("treasure"))
                     addInTag(EnchantmentTags.NON_TREASURE, reference);
@@ -95,25 +96,48 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         int maxLevel = customEnchant.getMaxLevel();
         int anvilCost = customEnchant.getAnvilCost();
 
-        HolderSet.Named<Item> supportedItems = createItemSet("enchant_supported", customEnchant.getNamespacedName(), targetItems);
-        HolderSet.Named<Item> primaryItems = createItemSet("enchant_primary", customEnchant.getNamespacedName(), targetItems);
+        HolderSet.Named<Item> supportedItems = createItemSet(
+                "enchant_supported",
+                customEnchant.getNamespacedName(),
+                targetItems
+        );
+        HolderSet.Named<Item> primaryItems = createItemSet(
+                "enchant_primary",
+                customEnchant.getNamespacedName(),
+                targetItems
+        );
 
         CustomEnchantDefinition.CustomEnchantCost customMinCost = customEnchant.getMinCost();
         CustomEnchantDefinition.CustomEnchantCost customMaxCost = customEnchant.getMaxCost();
         Enchantment.Cost minCost = new Enchantment.Cost(customMinCost.base(), customMinCost.perLevelAboveFirst());
         Enchantment.Cost maxCost = new Enchantment.Cost(customMaxCost.base(), customMaxCost.perLevelAboveFirst());
 
-        return Enchantment.definition(supportedItems, primaryItems, weight, maxLevel, minCost, maxCost, anvilCost, slots);
+        return Enchantment.definition(
+                supportedItems,
+                primaryItems,
+                weight,
+                maxLevel,
+                minCost,
+                maxCost,
+                anvilCost,
+                slots
+        );
     }
 
     private ResourceKey<Enchantment> key(String name) {
-        return ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.withDefaultNamespace(Util.getNamedspacedName(name)));
+        return ResourceKey.create(
+                Registries.ENCHANTMENT,
+                ResourceLocation.withDefaultNamespace(Util.getNamedspacedName(name))
+        );
     }
 
     @SuppressWarnings("unchecked")
     private HolderSet.Named<Item> createItemSet(String prefix, String enchantId, Set<Material> materials) {
         Registry<Item> items = SERVER.registryAccess().registry(Registries.ITEM).orElseThrow();
-        TagKey<Item> customKey = TagKey.create(Registries.ITEM, ResourceLocation.withDefaultNamespace(prefix + "/" + enchantId));
+        TagKey<Item> customKey = TagKey.create(
+                Registries.ITEM,
+                ResourceLocation.withDefaultNamespace(prefix + "/" + enchantId)
+        );
         HolderSet.Named<Item> customItems = items.getOrCreateTag(customKey);
         List<Holder<Item>> holders = new ArrayList<>();
 
@@ -125,7 +149,10 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
             // We must reassign the 'tags' field value because of the HolderSet#contains(Holder<T> holder) behavior.
             // It checks if Holder.Reference.is(this.key) -> Holder.Reference.tags.contains(key). Where 'key' is our custom key created above.
             // So, even if our HolderSet content is filled with items, we have to include their tag to the actual items in registry.
-            Set<TagKey<Item>> holderTags = new HashSet<>((Set<TagKey<Item>>) Reflex.getFieldValue(holder, HOLDER_REFERENCE_TAGS_FIELD));
+            Set<TagKey<Item>> holderTags = new HashSet<>((Set<TagKey<Item>>) Reflex.getFieldValue(
+                    holder,
+                    HOLDER_REFERENCE_TAGS_FIELD
+            ));
             holderTags.add(customKey);
             Reflex.setFieldValue(holder, HOLDER_REFERENCE_TAGS_FIELD, holderTags);
 
@@ -138,13 +165,19 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
     }
 
     private EquipmentSlotGroup[] getSlots(Set<EnchantmentTarget> targets) {
-        for (EnchantmentTarget target : Set.of(EnchantmentTarget.ARMOR, EnchantmentTarget.ARMOR_FEET, EnchantmentTarget.ARMOR_LEGS, EnchantmentTarget.ARMOR_TORSO, EnchantmentTarget.ARMOR_HEAD, EnchantmentTarget.WEARABLE))
+        for (EnchantmentTarget target : Set.of(
+                EnchantmentTarget.ARMOR,
+                EnchantmentTarget.ARMOR_FEET,
+                EnchantmentTarget.ARMOR_LEGS,
+                EnchantmentTarget.ARMOR_TORSO,
+                EnchantmentTarget.ARMOR_HEAD,
+                EnchantmentTarget.WEARABLE
+        ))
             if (targets.contains(target))
-                return new EquipmentSlotGroup[] {EquipmentSlotGroup.ARMOR};
+                return new EquipmentSlotGroup[]{EquipmentSlotGroup.ARMOR};
 
-        return new EquipmentSlotGroup[] {EquipmentSlotGroup.HAND};
+        return new EquipmentSlotGroup[]{EquipmentSlotGroup.HAND};
     }
-
 
     private void addInTag(TagKey<Enchantment> tagKey, Holder.Reference<Enchantment> reference) {
         modfiyTag(tagKey, reference, List::add);
@@ -161,10 +194,7 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
     ) {
         // Get HolderSet of the TagKey
         HolderSet.Named<Enchantment> holders = ENCHANTMENT_REGISTRY.getTag(tagKey).orElse(null);
-        if (holders == null) {
-            Bukkit.getLogger().warning(tagKey + ": Could not modify HolderSet. HolderSet is NULL.");
-            return;
-        }
+        if (holders == null) return;
 
         modfiyHolderSetContents(holders, reference, consumer);
     }
@@ -176,18 +206,21 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
             BiConsumer<List<Holder<T>>, Holder.Reference<T>> consumer
     ) {
         // We must use reflection to get a mutable Holder list from the HolderSet.
-        List<Holder<T>> contents = new ArrayList<>((List<Holder<T>>) Reflex.getFieldValue(holders, HOLDER_SET_NAMED_CONTENTS_FIELD));
+        List<Holder<T>> contents = new ArrayList<>((List<Holder<T>>) Reflex.getFieldValue(
+                holders,
+                HOLDER_SET_NAMED_CONTENTS_FIELD
+        ));
         // Do something with it.
         consumer.accept(contents, reference);
         // Assign it back to the HolderSet.
         Reflex.setFieldValue(holders, HOLDER_SET_NAMED_CONTENTS_FIELD, contents);
     }
 
-
     public void addExclusives(String enchantId, Set<String> exclusives) {
         Enchantment enchantment = ENCHANTMENT_REGISTRY.get(key(enchantId));
         if (enchantment == null) {
-            Bukkit.getLogger().warning(enchantId + ": Could not set exclusive item list. Enchantment is not registered.");
+            Bukkit.getLogger()
+                  .warning(enchantId + ": Could not set exclusive item list. Enchantment is not registered.");
             return;
         }
 
@@ -215,14 +248,10 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                     String value = location.toString();
                     if (!value.contains("exclusive") && !value.equals("non_treasure"))
                         enchantmentTags.put(value.replaceAll("/", "_"), tagKey);
-                } catch(IllegalAccessException e){
+                } catch (IllegalAccessException e) {
                     // Ignore
                 }
             }
         }
     }
-
-
-
-
 }

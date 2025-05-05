@@ -1,7 +1,6 @@
 package com.lgdtimtou.customenchantments.other;
 
 import com.lgdtimtou.customenchantments.Main;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -54,7 +53,7 @@ public enum Files {
         try {
             getConfig().save(file);
         } catch (IOException e) {
-            Util.log(ChatColor.RED + "Could not save file: " + path);
+            Util.error("Could not save file: " + path);
         }
     }
 
