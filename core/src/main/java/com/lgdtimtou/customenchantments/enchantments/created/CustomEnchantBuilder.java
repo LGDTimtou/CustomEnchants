@@ -87,10 +87,7 @@ public class CustomEnchantBuilder {
                 error = true;
                 return;
             }
-            this.levels.add(new CustomEnchantLevel(
-                    section,
-                    i == 1 ? new CustomEnchantLevel() : this.levels.get(this.levels.size() - 1)
-            ));
+            this.levels.add(new CustomEnchantLevel(section, i == 1 ? new CustomEnchantLevel() : this.levels.getLast()));
         }
     }
 
@@ -133,10 +130,8 @@ public class CustomEnchantBuilder {
 
         //Parsing the enchantment table weight
         enchantmentTableWeight = config.getInt(path + "enchanting_table.weight");
-        if (enchantmentTableWeight <= 0 || enchantmentTableWeight > 1024) {
-            Util.warn(namespacedName + ": 'enchanting_table.weight' must be in the range [1–1024]; using default value 5");
+        if (enchantmentTableWeight <= 0 || enchantmentTableWeight > 1024)
             enchantmentTableWeight = 5;
-        }
 
         //Parsing the min cost
         minCostBase = config.getInt(path + "enchanting_table.min_cost_base", -1);
@@ -287,8 +282,10 @@ public class CustomEnchantBuilder {
             double chance = section.getDouble("chance", previous.chance);
             if (chance > 100 || chance <= 0) chance = 100;
             boolean cancelEvent = section.getBoolean("cancel_event", previous.cancelEvent);
-            List<String> commands = section.getStringList("commands");
-            if (commands.isEmpty()) commands = previous.commands;
+            List<?> unparsedCommands = section.getList("commands");
+            List<String> commands = unparsedCommands == null || unparsedCommands.isEmpty() ?
+                    previous.commands :
+                    parseCommands(unparsedCommands);
 
             this.cooldown = cooldown;
             this.chance = chance;
@@ -301,6 +298,33 @@ public class CustomEnchantBuilder {
             this.chance = 100;
             this.cancelEvent = false;
             this.commands = Collections.emptyList();
+        }
+
+        @SuppressWarnings("unchecked")
+        private List<String> parseCommands(List<?> rawList) {
+            List<String> result = new ArrayList<>();
+            for (Object item : rawList) {
+                if (item instanceof String) {
+                    result.add((String) item);
+                } else if (item instanceof Map) {
+                    Map<String, Object> map = (Map<String, Object>) item;
+                    map.forEach((key, value) -> {
+                        if (key.startsWith("repeat_") && value instanceof List) {
+                            int times;
+                            try {
+                                times = Integer.parseInt(key.substring("repeat_".length()));
+                            } catch (NumberFormatException e) {
+                                times = 0;
+                            }
+                            List<String> nestedCommands = parseCommands((List<?>) value);
+                            for (int i = 0; i < times; i++) {
+                                result.addAll(nestedCommands);
+                            }
+                        }
+                    });
+                }
+            }
+            return result;
         }
 
 
