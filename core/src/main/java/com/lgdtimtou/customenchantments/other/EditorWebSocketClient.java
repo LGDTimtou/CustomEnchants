@@ -1,5 +1,6 @@
 package com.lgdtimtou.customenchantments.other;
 
+import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -8,6 +9,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
@@ -36,6 +38,14 @@ public class EditorWebSocketClient extends WebSocketClient {
 
         connections.add(this);
         sendMessage(Util.getMessage("EditorConnecting"));
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!isOpen())
+                    sendMessage(Util.getMessage("EditorConnectingSlow"));
+            }
+        }.runTaskLater(Main.getMain(), 200);
     }
 
     private static URI buildUri() {
