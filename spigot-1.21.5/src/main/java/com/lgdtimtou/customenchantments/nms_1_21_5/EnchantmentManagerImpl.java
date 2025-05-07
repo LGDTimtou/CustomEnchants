@@ -33,6 +33,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+
 public class EnchantmentManagerImpl implements EnchantmentManager {
 
     private static final String REGISTRY_FROZEN_TAGS_FIELD = "j"; // frozenTags
@@ -60,6 +61,7 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
             return false;
         }
     }
+
 
     @NotNull
     private <T> ResourceKey<T> getResourceKey(@NotNull Registry<T> registry, @NotNull String name) {

@@ -172,7 +172,7 @@ public class Trigger implements CustomEnchantListener {
                 command = FileFunction.parse(command);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             } catch (NumberFormatException exception) {
-                Util.error("Error when trying to parse the functions the following command: " + command);
+                Util.error("Error when trying to parse the functions of the following command: " + command);
             }
             dispatchCommand(index + 1, parameters, onComplete);
         }

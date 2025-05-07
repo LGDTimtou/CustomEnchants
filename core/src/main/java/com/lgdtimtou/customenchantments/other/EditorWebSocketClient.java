@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
@@ -27,6 +28,7 @@ public class EditorWebSocketClient extends WebSocketClient {
     private static final String url = "wss://timonc-backend.onrender.com/ws/plugin/";
     private final CustomEnchant customEnchant;
     private final String yaml;
+    private final BukkitTask runnable;
     private CommandSender commandSender;
     private String secret;
 
@@ -39,13 +41,13 @@ public class EditorWebSocketClient extends WebSocketClient {
         connections.add(this);
         sendMessage(Util.getMessage("EditorConnecting"));
 
-        new BukkitRunnable() {
+        this.runnable = new BukkitRunnable() {
             @Override
             public void run() {
                 if (!isOpen())
                     sendMessage(Util.getMessage("EditorConnectingSlow"));
             }
-        }.runTaskLater(Main.getMain(), 200);
+        }.runTaskLater(Main.getMain(), 100);
     }
 
     private static URI buildUri() {
@@ -108,6 +110,7 @@ public class EditorWebSocketClient extends WebSocketClient {
         editingEnchantments.getOrDefault(commandSender, new HashMap<>()).remove(customEnchant);
         creatingEnchantments.put(commandSender, null);
         connections.remove(this);
+        runnable.cancel();
         CloseReason closeReason = Arrays.stream(CloseReason.values())
                                         .filter(cr -> cr.code == code)
                                         .findFirst()
@@ -168,11 +171,25 @@ public class EditorWebSocketClient extends WebSocketClient {
             return;
         }
 
-        if (customEnchant != null)
-            Files.ENCHANTMENTS.getConfig().set(customEnchant.getNamespacedName(), null);
-        Files.ENCHANTMENTS.getConfig().set(newName, yaml.get(newName));
-        Files.ENCHANTMENTS.save();
+        boolean isNewName = customEnchant != null && !newName.equals(customEnchant.getNamespacedName());
+        if (isNewName)
+            sendMessage(Util.getMessage("EditorCannotChangeName"));
 
+        String duplicateName = newName;
+        int i = 1;
+        while (customEnchant == null && Files.ENCHANTMENTS.getConfig().get(duplicateName) != null)
+            duplicateName = newName + i++;
+
+        if (!duplicateName.equalsIgnoreCase(newName))
+            sendMessage(Util.getMessage("EditorDuplicateName")
+                            .replace("%existing%", newName)
+                            .replace("%new%", duplicateName));
+
+        String name = isNewName ? customEnchant.getNamespacedName() : duplicateName;
+        Object yamlContent = yaml.get(newName);
+
+        Files.ENCHANTMENTS.getConfig().set(name, yamlContent);
+        Files.ENCHANTMENTS.save();
         close(CloseReason.SUCCESS);
     }
 

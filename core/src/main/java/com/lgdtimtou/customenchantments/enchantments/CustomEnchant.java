@@ -7,6 +7,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +25,9 @@ public class CustomEnchant extends CustomEnchantRecord {
     private final List<CustomEnchantedItemLocation> customEnchantedItemLocations;
     private final List<CustomEnchantBuilder.CustomEnchantLevel> levels;
     private final Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers;
-    private final Enchantment enchantment;
+    private Enchantment enchantment;
+
+    private boolean newlyRegistered = false;
 
 
     public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations, Map<String, Boolean> tags, String coolDownMessage, List<CustomEnchantBuilder.CustomEnchantLevel> levels, Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers) {
@@ -35,16 +38,14 @@ public class CustomEnchant extends CustomEnchantRecord {
         this.levels = levels;
         this.registeredTriggers = registeredTriggers;
 
-        if (Main.isFirstBoot())
+        this.enchantment = Util.getEnchantmentByName(this.getNamespacedName());
+        if (Main.isFirstBoot() || this.enchantment == null) {
             this.enchantment = Main.getEnchantmentsManager().registerEnchantment(this);
-        else
-            this.enchantment = Util.getEnchantmentByName(this.namespacedName);
+            newlyRegistered = true;
 
-        if (this.enchantment == null) {
-            Util.error("Failed to register enchantment: " + this.namespacedName);
-            Util.error(
-                    "Avoid using /reload when adding new enchantments or modifying vanilla behavior — restart the server instead!");
-            return;
+            if (!Main.isFirstBoot())
+                for (Player player : Bukkit.getOnlinePlayers())
+                    player.kickPlayer(Util.getMessageNoPrefix("EditorNewEnchantmentKickMessage"));
         }
 
         registeredTriggers.keySet().forEach(type -> Util.registerListener(type.getTrigger(this)));
@@ -53,15 +54,6 @@ public class CustomEnchant extends CustomEnchantRecord {
 
     //Registering
     public static void register() {
-        if (Main.isFirstBoot())
-            registerFirstBoot();
-        else
-            registerReload();
-    }
-
-    //Info for each level
-
-    private static void registerFirstBoot() {
         Main.getEnchantmentsManager().unFreezeRegistry();
 
         //Build CustomEnchantments from enchantments.yml
@@ -72,30 +64,19 @@ public class CustomEnchant extends CustomEnchantRecord {
         for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
             new CustomEnchantBuilder(defaultCustomEnchant).build(true);
 
-        //Register the conflicting enchantments
         for (CustomEnchant customEnchant : getCustomEnchantSet())
-            Main.getEnchantmentsManager()
-                .addExclusives(customEnchant.getNamespacedName(), customEnchant.getConflictingEnchantments());
+            if (customEnchant.isNewlyRegistered())
+                Main.getEnchantmentsManager()
+                    .addExclusives(customEnchant.getNamespacedName(), customEnchant.getConflictingEnchantments());
 
         Main.getEnchantmentsManager().freezeRegistry();
-        Util.log("Registered enchantments: " + getCustomEnchantSet().stream()
-                                                                    .map(CustomEnchant::getNamespacedName)
-                                                                    .toList());
-    }
-
-    private static void registerReload() {
-        //Build CustomEnchantments from enchantments.yml
-        for (String enchant : Files.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
-            new CustomEnchantBuilder(enchant).build(false);
-
-        //Register the default custom enchantments
-        for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
-            new CustomEnchantBuilder(defaultCustomEnchant).build(true);
 
         Util.log("Registered enchantments: " + getCustomEnchantSet().stream()
                                                                     .map(CustomEnchant::getNamespacedName)
                                                                     .toList());
     }
+
+    //Info for each level
 
     public static CustomEnchant get(String name) {
         if (!enchantments.containsKey(name))
@@ -111,6 +92,10 @@ public class CustomEnchant extends CustomEnchantRecord {
         if (level < 1 || level > roman.length)
             return "error";
         return roman[level - 1];
+    }
+
+    private boolean isNewlyRegistered() {
+        return newlyRegistered;
     }
 
     public Enchantment getEnchantment() {

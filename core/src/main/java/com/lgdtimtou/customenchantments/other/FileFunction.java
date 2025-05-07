@@ -1,11 +1,8 @@
 package com.lgdtimtou.customenchantments.other;
 
-import org.bukkit.ChatColor;
-
-import java.util.*;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public enum FileFunction {
 
@@ -18,11 +15,11 @@ public enum FileFunction {
                 return values[0];
 
             double sum = 0;
-            for (String value : values){
+            for (String value : values) {
                 try {
                     sum += Double.parseDouble(value);
-                } catch (NumberFormatException e){
-                    Util.log(ChatColor.RED + "Check enchantments.yml: wrong 'add' function usage: $[add(value1, value2, ...)]");
+                } catch (NumberFormatException e) {
+                    Util.error("Invalid value '" + value + "' in 'add' function. Ensure all values are numeric: $[add(value1, value2, ...)]");
                     return "-1";
                 }
             }
@@ -39,19 +36,19 @@ public enum FileFunction {
 
             double sub = 0;
             boolean first = true;
-            for (String value : values){
+            for (String value : values) {
                 try {
                     sub -= first ? -Double.parseDouble(value) : Double.parseDouble(value);
                     first = false;
-                } catch (NumberFormatException e){
-                    Util.log(ChatColor.RED + "Check enchantments.yml: wrong 'sub' function usage: $[sub(value1, value2, ...)]");
+                } catch (NumberFormatException e) {
+                    Util.error("Invalid value '" + value + "' in 'sub' function. Ensure all values are numeric: $[sub(value1, value2, ...)]");
                     return "-1";
                 }
             }
             return String.valueOf(sub);
         }
     },
-    MUL("mul"){
+    MUL("mul") {
         @Override
         public String execute(String... values) {
             if (values.length == 0)
@@ -60,41 +57,44 @@ public enum FileFunction {
                 return values[0];
 
             double mul = 1;
-            for (String value : values){
+            for (String value : values) {
                 try {
                     mul *= Double.parseDouble(value);
-                } catch (NumberFormatException e){
-                    Util.error("Check enchantments.yml: wrong 'mul' function usage: $[mul(value1, value2, ...)]");
+                } catch (NumberFormatException e) {
+                    Util.error("Invalid value '" + value + "' in 'mul' function. Ensure all values are numeric: $[mul(value1, value2, ...)]");
                     return "-1";
                 }
             }
             return String.valueOf(mul);
         }
     },
-    DIV("div"){
+    DIV("div") {
         @Override
         public String execute(String... values) {
             if (values.length == 0)
                 return "0";
 
+            String stringValue = values[0];
             try {
-                double div = Double.parseDouble(values[0]);
+                double div = Double.parseDouble(stringValue);
                 for (int i = 1; i < values.length; i++) {
-                    double val = Double.parseDouble(values[i]);
+                    stringValue = values[i];
+                    double val = Double.parseDouble(stringValue);
                     if (val == 0) {
-                        Util.error("Division by zero in 'div' function: $[div(value1, value2, ...)]");
+                        Util.error(
+                                "Division by zero in 'div' function. Ensure no divisor is zero: $[div(value1, value2, ...)]");
                         return "-1";
                     }
                     div /= val;
                 }
                 return String.valueOf(div);
             } catch (NumberFormatException e) {
-                Util.error("Check enchantments.yml: wrong 'div' function usage: $[div(value1, value2, ...)]");
+                Util.error("Invalid value '" + stringValue + "' in 'div' function. Ensure all values are numeric: $[div(value1, value2, ...)]");
                 return "-1";
             }
         }
     },
-    RANDOM("random"){
+    RANDOM("random") {
         @Override
         public String execute(String... values) {
             return String.valueOf(Math.random());
@@ -104,16 +104,19 @@ public enum FileFunction {
         @Override
         public String execute(String... values) {
             if (values.length < 1) {
-                Util.error("Check enchantments.yml: wrong 'round' function usage: $[round(value, decimalPlaces)]");
+                Util.error("Missing value in 'round' function. Usage: $[round(value, decimalPlaces)]");
                 return "-1";
             }
 
+            String stringValue = values[0];
+
             try {
-                double number = Double.parseDouble(values[0]);
+                double number = Double.parseDouble(stringValue);
                 int decimalPlaces = 0;
 
                 if (values.length > 1) {
-                    decimalPlaces = Integer.parseInt(values[1]);
+                    stringValue = values[1];
+                    decimalPlaces = Integer.parseInt(stringValue);
                 }
 
                 double scale = Math.pow(10, decimalPlaces);
@@ -121,7 +124,7 @@ public enum FileFunction {
 
                 return String.valueOf(roundedValue);
             } catch (NumberFormatException e) {
-                Util.error("Check enchantments.yml: wrong 'round' function usage: $[round(value, decimalPlaces)]");
+                Util.error("Invalid value '" + stringValue + "' in 'round' function. Ensure the first value is numeric and the second (if present) is an integer: $[round(value, decimalPlaces)]");
                 return "-1";
             }
         }
@@ -129,8 +132,31 @@ public enum FileFunction {
 
     private final String functionName;
 
-    FileFunction(String functionName){
+    FileFunction(String functionName) {
         this.functionName = functionName;
+    }
+
+    public static String parse(String command) {
+        String updated = command;
+        Matcher m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
+        while (m.find()) {
+            String find = m.group();
+            Matcher mFunction = Pattern.compile("[a-z_]+").matcher(find);
+            if (mFunction.find()) {
+                String functionName = mFunction.group();
+                if (Arrays.stream(values()).noneMatch(v -> v.getName().equalsIgnoreCase(functionName))) {
+                    Util.error("Unknown function '" + functionName + "' in 'parse'. Check your enchantments.yml file.");
+                    return command;
+                }
+                FileFunction function = FileFunction.valueOf(functionName.toUpperCase());
+                updated = updated.replace(
+                        find,
+                        function.execute(find.replaceAll("^[^(]+\\(", "").replaceAll("\\)]", "").split("[ ]*,[ ]*"))
+                );
+            }
+            m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
+        }
+        return updated;
     }
 
     public String getName() {
@@ -138,26 +164,4 @@ public enum FileFunction {
     }
 
     public abstract String execute(String... values);
-
-
-    public static String parse(String command) throws NumberFormatException{
-        String updated = command;
-        Matcher m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
-        while (m.find()){
-            String find = m.group();
-            Matcher mFunction = Pattern.compile("[a-z_]+").matcher(find);
-            if (mFunction.find()){
-                String functionName = mFunction.group();
-                if (Arrays.stream(values()).noneMatch(v -> v.getName().equalsIgnoreCase(functionName))){
-                    Util.log(ChatColor.RED + functionName + " function does not exist, check your enchantments.yml file");
-                    return command;
-                }
-                FileFunction function = FileFunction.valueOf(functionName.toUpperCase());
-                updated = updated.replace(find, function.execute(find.replaceAll("^[^(]+\\(", "").replaceAll("\\)]", "").split("[ ]*,[ ]*")));
-            }
-            m = Pattern.compile("\\$\\[[^]$]*]").matcher(updated);
-        }
-        return updated;
-
-    }
 }

@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 public final class Main extends JavaPlugin {
 
+
     private static Main plugin;
     private static EnchantmentManager enchantmentsManager;
     private static String minecraftVersion;
@@ -32,10 +33,11 @@ public final class Main extends JavaPlugin {
         return enchantmentsManager;
     }
 
+
     @Override
     public void onEnable() {
         if (!isFirstBoot())
-            Util.warn("Reloading this plugin WILL severely break its vanilla functionality. Use /restart instead!");
+            Util.warn("Reloading is discouraged! Please use /restart instead.");
         plugin = this;
         Files.register();
 
@@ -52,7 +54,12 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        EditorWebSocketClient.shutdown();
+        try {
+            Class.forName("com.lgdtimtou.customenchantments.other.EditorWebSocketClient");
+            EditorWebSocketClient.shutdown();
+        } catch (ClassNotFoundException ignored) {
+        }
+
         System.setProperty("RELOAD", "TRUE");
     }
 
