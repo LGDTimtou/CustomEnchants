@@ -5,6 +5,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.Trigger;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -28,10 +29,21 @@ public class DamageMobTrigger extends Trigger {
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         entity.addScoreboardTag(uniqueTag);
 
+        double health = entity instanceof Damageable damageable ? damageable.getHealth() : 0;
+        double damage = e.getDamage();
+
         executeCommands(
                 e,
                 player,
-                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "mob"), entity),
+                Map.of(
+                        new ConditionKey(TriggerConditionType.ENTITY, "mob"), entity,
+                        new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "mob_health"), health,
+                        new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "mob_health"), health,
+                        new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "mob_health"), health,
+                        new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "damage"), damage,
+                        new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "damage"), damage,
+                        new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "damage"), damage
+                ),
                 Map.of("mob_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );

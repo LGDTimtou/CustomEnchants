@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -31,7 +32,9 @@ public enum TriggerConditionType {
             "y",
             (player) -> String.valueOf(player.getLocation().getY()),
             "z",
-            (player) -> String.valueOf(player.getLocation().getZ())
+            (player) -> String.valueOf(player.getLocation().getZ()),
+            "health",
+            (player) -> String.valueOf(player.getHealth())
     )),
     BLOCK(Block.class, (block, condStr) -> checkPattern(block.getType().toString(), condStr), Map.of(
             "block",
@@ -51,7 +54,9 @@ public enum TriggerConditionType {
             "y",
             (entity) -> String.valueOf(entity.getLocation().getY()),
             "z",
-            (entity) -> String.valueOf(entity.getLocation().getZ())
+            (entity) -> String.valueOf(entity.getLocation().getZ()),
+            "health",
+            (entity) -> String.valueOf(entity instanceof Damageable damageable ? damageable.getHealth() : 0)
     )),
     ITEM(ItemStack.class, (item, condStr) -> checkPattern(item.getType().toString(), condStr), Map.of(
             "type",
@@ -161,6 +166,21 @@ public enum TriggerConditionType {
             ITEM,
             "off_hand",
             player -> player.getInventory().getItemInOffHand()
+    ),
+    PLAYER_HEALTH_EQUALS(
+            DOUBLE_EQUALS,
+            "player_health",
+            Damageable::getHealth
+    ),
+    PLAYER_HEALTH_LESS_THAN(
+            DOUBLE_LESS_THAN,
+            "player_health",
+            Damageable::getHealth
+    ),
+    PLAYER_HEALTH_GREATER_THAN(
+            DOUBLE_GREATER_THAN,
+            "player_health",
+            Damageable::getHealth
     );
 
     private Class<?> targetClass;

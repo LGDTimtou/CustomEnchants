@@ -60,9 +60,10 @@ public class Trigger implements CustomEnchantListener {
             // Add global parameters to parameter map
             HashMap<String, Supplier<String>> parameters = new HashMap<>(localParameters);
             parameters.put("player", player::getDisplayName);
-            parameters.put("x", () -> String.valueOf(player.getLocation().getX()));
-            parameters.put("y", () -> String.valueOf(player.getLocation().getY()));
-            parameters.put("z", () -> String.valueOf(player.getLocation().getZ()));
+            parameters.put("player_x", () -> String.valueOf(player.getLocation().getX()));
+            parameters.put("player_y", () -> String.valueOf(player.getLocation().getY()));
+            parameters.put("player_z", () -> String.valueOf(player.getLocation().getZ()));
+            parameters.put("player_health", () -> String.valueOf(player.getHealth()));
 
             // Add condition type parameters to parameter map
             mutableTriggerConditionMap.forEach((conditionKey, obj) -> parameters.putAll(conditionKey.type()
