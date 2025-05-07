@@ -13,7 +13,7 @@ public class EnchantCommand extends Command {
                 new SubCommandAdd(),
                 new SubCommandRemove(),
                 new SubCommandEdit(),
-                new SubCommandInfo(),
+                new SubCommandList(),
                 new SubCommandCreate()
         );
     }

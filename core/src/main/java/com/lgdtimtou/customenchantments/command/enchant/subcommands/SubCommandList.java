@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class SubCommandInfo extends EnchantSubCommand {
+public class SubCommandList extends EnchantSubCommand {
 
-    public SubCommandInfo() {
-        super("info", 1, "EnchantSubCommandInfoUsage");
+    public SubCommandList() {
+        super("list", 1, "EnchantSubCommandListUsage");
     }
 
     @Override

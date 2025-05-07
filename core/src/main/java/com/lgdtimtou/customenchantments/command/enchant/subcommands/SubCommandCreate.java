@@ -9,7 +9,7 @@ public class SubCommandCreate extends EnchantSubCommand {
 
 
     public SubCommandCreate() {
-        super("create", 1, "Usage: /ce create");
+        super("create", 1, "EnchantSubCommandCreateUsage");
     }
 
     @Override
