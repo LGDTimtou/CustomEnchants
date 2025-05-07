@@ -1,7 +1,7 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchantments.command.SubCommand;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 public abstract class EnchantSubCommand implements SubCommand {
 
@@ -15,7 +15,7 @@ public abstract class EnchantSubCommand implements SubCommand {
         this.usageMessageID = usageMessageID;
     }
 
-    public String getLabel(){
+    public String getLabel() {
         return label;
     }
 
@@ -27,6 +27,5 @@ public abstract class EnchantSubCommand implements SubCommand {
         return usageMessageID;
     }
 
-    public abstract void execute(Player player, String[] args);
-
+    public abstract void execute(CommandSender commandSender, String[] args);
 }

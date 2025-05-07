@@ -62,7 +62,11 @@ public class SubCommandAdd extends EnchantSubCommand {
     }
 
     @Override
-    public void execute(Player player, String[] args) {
+    public void execute(CommandSender commandSender, String[] args) {
+        if (!(commandSender instanceof Player player)) {
+            commandSender.sendMessage(Util.getMessage("OnlyPlayers"));
+            return;
+        }
         String enchantName = args[1].toLowerCase();
         int level = 1;
         if (args.length > 2) {

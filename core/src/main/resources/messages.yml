@@ -1,4 +1,4 @@
-Prefix: ""  #&4&l[&6&lCustomEnchants&4&l]&r "
+Prefix: "&4&l[&6&lCustomEnchants&4&l]&r "
 OnlyPlayers: "&cOnly players can use this command"
 Setting: "&cUpdate %setting% in config.yml to alter this behaviour"
 
@@ -16,3 +16,25 @@ ConflictingEnchantment: "&c%enchantment% conflicts with %conflicting_enchantment
 LevelRange: "&cThe level of %enchant% should be in range: [1:%max_level%]"
 ConflictingEnchant: "&cThis enchant conflicts with %conflicting%, remove them first"
 EditDefaultEnchant: "&7You can configure default enchantment settings in the &edefault_enchantments.yml &7file located in this plugin's folder."
+
+
+
+
+# Editing and Creating Enchantments
+EditorConnecting: "&7Connecting to websocket server..."
+EditorURLConsoleEdit: "&7Click this URL to edit &b%enchant%&7:\n&9%url%"
+EditorClickToEdit: "&b&lClick Here &7to edit &b%enchant%"
+EditorURLConsoleCreate: "&7Click this URL to create a new enchantment"
+EditorClickToCreate: "&b&lClick Here &7to create a new enchantment"
+EditorURLHover: "&7Open the &bCustom Enchant Editor &7in your browser"
+EditorYAMLSuccess: "&aEnchantment successfully updated!"
+EditorRestartServer: "&7Please &orestart the server &7to apply changes."
+EditorYAMLParseFail: "&cCouldn't parse the incoming YAML. Please check for formatting errors."
+EditorInvalidMessage: "&cReceived an invalid or improperly formatted message."
+EditorServerShutdown: "&eWebSocket connection closed due to server shutdown."
+EditorSessionExpired: "&eWebSocket connection expired after 30 minutes of inactivity"
+EditorRemoteClosed: "&cWebSocket connection closed due to remote server shutdown"
+EditorNewSession: "&eWebSocket connection closed due to starting a new session"
+EditorDisconnected: "&cWebSocket connection closed due to unknown reason"
+EditorRemoteOffline: "&cRemote server is offline"
+EditorNoYaml: "&cThis enchantment is missing from enchantments.yml — did you rename it without restarting the server?"

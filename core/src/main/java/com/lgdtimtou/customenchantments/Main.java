@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.command.enchant.EnchantCommand;
 import com.lgdtimtou.customenchantments.customevents.CustomEvent;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.nms.EnchantmentManager;
+import com.lgdtimtou.customenchantments.other.EditorWebSocketClient;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
@@ -51,6 +52,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        EditorWebSocketClient.shutdown();
         System.setProperty("RELOAD", "TRUE");
     }
 

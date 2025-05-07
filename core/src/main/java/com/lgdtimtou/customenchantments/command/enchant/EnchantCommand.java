@@ -4,7 +4,6 @@ import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.*;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class EnchantCommand extends Command {
 
@@ -14,16 +13,13 @@ public class EnchantCommand extends Command {
                 new SubCommandAdd(),
                 new SubCommandRemove(),
                 new SubCommandEdit(),
-                new SubCommandInfo()
+                new SubCommandInfo(),
+                new SubCommandCreate()
         );
     }
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Util.getMessage("OnlyPlayers"));
-            return false;
-        }
         if (args.length == 0) {
             sender.sendMessage(Util.getMessage("EnchantCommandUsage"));
             return false;
@@ -40,7 +36,7 @@ public class EnchantCommand extends Command {
             return false;
         }
 
-        subCommand.execute(player, args);
+        subCommand.execute(sender, args);
         return true;
     }
 }

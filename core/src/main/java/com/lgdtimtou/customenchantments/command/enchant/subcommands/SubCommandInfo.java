@@ -1,6 +1,7 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.other.Util;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -17,7 +18,11 @@ public class SubCommandInfo extends EnchantSubCommand {
     }
 
     @Override
-    public void execute(Player player, String[] args) {
+    public void execute(CommandSender commandSender, String[] args) {
+        if (!(commandSender instanceof Player player)) {
+            commandSender.sendMessage(Util.getMessage("OnlyPlayers"));
+            return;
+        }
         // Default enchantments (not editable)
         TextComponent defaultHeader = new TextComponent("§6§lDefault Enchantments:\n");
         for (CustomEnchant customEnchant : CustomEnchant.getCustomEnchantSet()) {

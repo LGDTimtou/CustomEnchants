@@ -158,8 +158,10 @@ public class CustomEnchant extends CustomEnchantRecord {
             Set<String> conditions = registeredTriggers.get(type).get(conditionKey);
             if (conditions != null)
                 for (String condition : conditions)
-                    if (!conditionKey.type().checkCondition(triggerObject, condition))
+                    if (!conditionKey.type().checkCondition(triggerObject, condition)) {
+                        Util.debug(conditionKey + ":" + triggerObject + ", did not match any of the following " + conditions);
                         return false;
+                    }
         }
         return true;
     }
