@@ -40,7 +40,7 @@ public final class Util {
     );
 
     public static String getWebBuilderUrl(String query, String value) {
-        return "http://localhost:3000/custom_enchants/custom_enchant_builder?" + query + "=" + value;
+        return "https://www.timonc.be/custom_enchants/custom_enchant_builder?" + query + "=" + value;
     }
 
     public static void registerListener(Listener listener) {

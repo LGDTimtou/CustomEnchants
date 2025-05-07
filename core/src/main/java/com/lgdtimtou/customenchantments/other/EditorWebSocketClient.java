@@ -22,7 +22,7 @@ public class EditorWebSocketClient extends WebSocketClient {
     public static final Map<CommandSender, EditorWebSocketClient> creatingEnchantments = new HashMap<>();
     private static final Set<EditorWebSocketClient> connections = new HashSet<>();
 
-    private static final String url = "ws://localhost:8000/ws/plugin/";
+    private static final String url = "wss://timonc-backend.onrender.com/ws/plugin/";
     private final CustomEnchant customEnchant;
     private final String yaml;
     private CommandSender commandSender;
