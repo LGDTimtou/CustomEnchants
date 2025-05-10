@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.permissions.Permissible;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -38,6 +39,10 @@ public final class Util {
             EquipmentSlot.CHEST,
             EquipmentSlot.HEAD
     );
+
+    public static boolean hasPermission(Permissible permissible, String permission) {
+        return permissible.hasPermission("customenchantments." + permission) || permissible.hasPermission("ce." + permission);
+    }
 
     public static String getWebBuilderUrl(String query, String value) {
         return "https://www.timonc.be/custom_enchants/custom_enchant_builder?" + query + "=" + value;

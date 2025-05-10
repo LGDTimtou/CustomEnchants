@@ -1,5 +1,7 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
+import com.lgdtimtou.customenchantments.command.Command;
+import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.other.EditorWebSocketClient;
 import com.lgdtimtou.customenchantments.other.Files;
@@ -13,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SubCommandEdit extends EnchantSubCommand {
+public class SubCommandEdit extends SubCommand {
 
-    public SubCommandEdit() {
-        super("edit", 2, "EnchantSubCommandEditUsage");
+    public SubCommandEdit(Command command) {
+        super(command, "edit", 2, "EnchantSubCommandEditUsage");
     }
 
     @Override
@@ -55,7 +57,7 @@ public class SubCommandEdit extends EnchantSubCommand {
     }
 
     @Override
-    public List<String> getTabValues(CommandSender sender, String[] args) {
+    public List<String> getTabValues(CommandSender commandSender, String[] args) {
         if (args.length == 2)
             return CustomEnchant.getCustomEnchantSet().stream()
                                 .filter(ce -> !ce.isDefaultEnchantment())

@@ -1,6 +1,7 @@
 Prefix: "&4&l[&6&lCustomEnchants&4&l]&r "
 OnlyPlayers: "&cOnly players can use this command"
 Setting: "&cUpdate %setting% in config.yml to alter this behaviour"
+NoPermission: "&cYou don't have permission to execute this command"
 
 EnchantCommandUsage: "&7Usage: /ce <add | remove | create | edit | list>"
 EnchantSubCommandAddUsage: "&7Usage: /ce add <enchantment> [level]"

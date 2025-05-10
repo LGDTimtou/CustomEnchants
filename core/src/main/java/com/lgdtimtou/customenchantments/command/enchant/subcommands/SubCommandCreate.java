@@ -1,15 +1,17 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
+import com.lgdtimtou.customenchantments.command.Command;
+import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.other.EditorWebSocketClient;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class SubCommandCreate extends EnchantSubCommand {
+public class SubCommandCreate extends SubCommand {
 
 
-    public SubCommandCreate() {
-        super("create", 1, "EnchantSubCommandCreateUsage");
+    public SubCommandCreate(Command command) {
+        super(command, "create", 1, "EnchantSubCommandCreateUsage");
     }
 
     @Override
@@ -23,7 +25,7 @@ public class SubCommandCreate extends EnchantSubCommand {
     }
 
     @Override
-    public List<String> getTabValues(CommandSender sender, String[] args) {
+    public List<String> getTabValues(CommandSender commandSender, String[] args) {
         return null;
     }
 }

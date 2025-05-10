@@ -1,5 +1,7 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
+import com.lgdtimtou.customenchantments.command.Command;
+import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.other.Util;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -11,10 +13,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class SubCommandList extends EnchantSubCommand {
+public class SubCommandList extends SubCommand {
 
-    public SubCommandList() {
-        super("list", 1, "EnchantSubCommandListUsage");
+    public SubCommandList(Command command) {
+        super(command, "list", 1, "EnchantSubCommandListUsage");
     }
 
     @Override
@@ -56,7 +58,7 @@ public class SubCommandList extends EnchantSubCommand {
 
 
     @Override
-    public List<String> getTabValues(CommandSender sender, String[] args) {
+    public List<String> getTabValues(CommandSender commandSender, String[] args) {
         return null;
     }
 }

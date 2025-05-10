@@ -1,5 +1,7 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
+import com.lgdtimtou.customenchantments.command.Command;
+import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Material;
@@ -11,14 +13,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SubCommandRemove extends EnchantSubCommand {
-    public SubCommandRemove() {
-        super("remove", 2, "EnchantSubCommandRemoveUsage");
+public class SubCommandRemove extends SubCommand {
+    public SubCommandRemove(Command command) {
+        super(command, "remove", 2, "EnchantSubCommandRemoveUsage");
     }
 
     @Override
-    public List<String> getTabValues(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player))
+    public List<String> getTabValues(CommandSender commandSender, String[] args) {
+        if (!(commandSender instanceof Player player))
             return null;
 
         ItemStack item = player.getInventory().getItemInMainHand();

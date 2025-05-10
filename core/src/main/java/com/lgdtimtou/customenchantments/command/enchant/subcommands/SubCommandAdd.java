@@ -1,5 +1,7 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
+import com.lgdtimtou.customenchantments.command.Command;
+import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
@@ -14,15 +16,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class SubCommandAdd extends EnchantSubCommand {
+public class SubCommandAdd extends SubCommand {
 
-    public SubCommandAdd() {
-        super("add", 2, "EnchantSubCommandAddUsage");
+    public SubCommandAdd(Command command) {
+        super(command, "add", 2, "EnchantSubCommandAddUsage");
     }
 
     @Override
-    public List<String> getTabValues(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player))
+    public List<String> getTabValues(CommandSender commandSender, String[] args) {
+        if (!(commandSender instanceof Player player))
             return null;
 
         ItemStack item = player.getInventory().getItemInMainHand();
