@@ -96,7 +96,9 @@ public class CustomEnchant extends CustomEnchantRecord {
     }
 
     public boolean hasPermission(Permissible permissible) {
-        return !needPermission() || Util.hasPermission(permissible, "enchantment." + getNamespacedName());
+        return !needPermission()
+                || Util.hasPermission(permissible, "enchantment." + getNamespacedName())
+                || Util.hasPermission(permissible, "enchantment.*");
     }
 
     private boolean isNewlyRegistered() {
