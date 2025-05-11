@@ -1,4 +1,4 @@
-package com.lgdtimtou.customenchantments.enchantments;
+package com.lgdtimtou.customenchantments.enchantments.created.values;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

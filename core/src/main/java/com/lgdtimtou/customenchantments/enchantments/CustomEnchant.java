@@ -4,6 +4,9 @@ import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.created.CustomEnchantBuilder;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantInstruction;
+import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantLevel;
+import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantedItemLocation;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
@@ -24,14 +27,14 @@ public class CustomEnchant extends CustomEnchantRecord {
 
     private final boolean defaultEnchantment;
     private final List<CustomEnchantedItemLocation> customEnchantedItemLocations;
-    private final List<CustomEnchantBuilder.CustomEnchantLevel> levels;
+    private final List<CustomEnchantLevel> levels;
     private final Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers;
     private Enchantment enchantment;
 
     private boolean newlyRegistered = false;
 
 
-    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations, Map<String, Boolean> tags, String coolDownMessage, List<CustomEnchantBuilder.CustomEnchantLevel> levels, Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers) {
+    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations, Map<String, Boolean> tags, String coolDownMessage, List<CustomEnchantLevel> levels, Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers) {
         super(Util.getPrettyName(name), definition, tags, coolDownMessage);
 
         this.defaultEnchantment = defaultEnchantment;
@@ -96,9 +99,7 @@ public class CustomEnchant extends CustomEnchantRecord {
     }
 
     public boolean hasPermission(Permissible permissible) {
-        return !needPermission()
-                || Util.hasPermission(permissible, "enchantment." + getNamespacedName())
-                || Util.hasPermission(permissible, "enchantment.*");
+        return !needPermission() || Util.hasPermission(permissible, "enchantment." + getNamespacedName());
     }
 
     private boolean isNewlyRegistered() {
@@ -116,25 +117,25 @@ public class CustomEnchant extends CustomEnchantRecord {
     public int getCooldown(int level) {
         if (level <= 0 || level > levels.size())
             return -1;
-        return levels.get(level - 1).getCooldown();
+        return levels.get(level - 1).cooldown();
     }
 
     public int getChance(int level) {
         if (level <= 0 || level > levels.size())
             return -1;
-        return (int) levels.get(level - 1).getChance();
+        return (int) levels.get(level - 1).chance();
     }
 
     public boolean isCancelled(int level) {
         if (level <= 0 || level > levels.size())
             return false;
-        return levels.get(level - 1).isEventCancelled();
+        return levels.get(level - 1).cancelEvent();
     }
 
-    public List<String> getCommands(int level) {
+    public Queue<CustomEnchantInstruction> getInstructions(int level) {
         if (level <= 0 || level > levels.size())
-            return Collections.emptyList();
-        return levels.get(level - 1).getCommands();
+            return new ArrayDeque<>();
+        return levels.get(level - 1).instructions();
     }
 
     public boolean checkTriggerConditions(EnchantTriggerType type, Map<ConditionKey, Object> triggerConditionMap) {

@@ -8,5 +8,4 @@ description: A MineCraft plugin that adds new handy and fun enchantments to your
 
 commands:
   customenchant:
-    permission: customenchantments.command.customenchant
     aliases: [ ce, cenchant, custome ]

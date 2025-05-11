@@ -24,7 +24,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     }
 
     protected boolean hasPermission(Permissible permissible) {
-        return Util.hasPermission(permissible, permission);
+        return Util.hasPermission(permissible, permission) || Util.hasPermission(permissible, permission + ".*");
     }
 
     protected Set<SubCommand> getSubCommands() {

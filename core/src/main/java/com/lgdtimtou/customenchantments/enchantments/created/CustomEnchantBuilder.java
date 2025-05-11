@@ -2,10 +2,11 @@ package com.lgdtimtou.customenchantments.enchantments.created;
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchantDefinition;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchantedItemLocation;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.TriggerConditionType;
+import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantLevel;
+import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantedItemLocation;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
@@ -91,7 +92,10 @@ public class CustomEnchantBuilder {
                 error = true;
                 return;
             }
-            this.levels.add(new CustomEnchantLevel(section, i == 1 ? new CustomEnchantLevel() : this.levels.getLast()));
+            this.levels.add(new CustomEnchantLevelBuilder(
+                    section,
+                    i == 1 ? new CustomEnchantLevelBuilder().build() : this.levels.getLast()
+            ).build());
         }
     }
 
@@ -275,81 +279,6 @@ public class CustomEnchantBuilder {
                     levels,
                     triggers
             );
-        }
-    }
-
-    public static class CustomEnchantLevel {
-
-        private final int cooldown;
-        private final double chance;
-        private final boolean cancelEvent;
-        private final List<String> commands;
-
-        public CustomEnchantLevel(ConfigurationSection section, CustomEnchantLevel previous) {
-            int cooldown = section.getInt("cooldown", previous.cooldown);
-            double chance = section.getDouble("chance", previous.chance);
-            if (chance > 100 || chance <= 0) chance = 100;
-            boolean cancelEvent = section.getBoolean("cancel_event", previous.cancelEvent);
-            List<?> unparsedCommands = section.getList("commands");
-            List<String> commands = unparsedCommands == null || unparsedCommands.isEmpty() ?
-                    previous.commands :
-                    parseCommands(unparsedCommands);
-
-            this.cooldown = cooldown;
-            this.chance = chance;
-            this.cancelEvent = cancelEvent;
-            this.commands = commands;
-        }
-
-        CustomEnchantLevel() {
-            this.cooldown = 0;
-            this.chance = 100;
-            this.cancelEvent = false;
-            this.commands = Collections.emptyList();
-        }
-
-        @SuppressWarnings("unchecked")
-        private List<String> parseCommands(List<?> rawList) {
-            List<String> result = new ArrayList<>();
-            for (Object item : rawList) {
-                if (item instanceof String) {
-                    result.add((String) item);
-                } else if (item instanceof Map) {
-                    Map<String, Object> map = (Map<String, Object>) item;
-                    map.forEach((key, value) -> {
-                        if (key.startsWith("repeat_") && value instanceof List) {
-                            int times;
-                            try {
-                                times = Integer.parseInt(key.substring("repeat_".length()));
-                            } catch (NumberFormatException e) {
-                                times = 0;
-                            }
-                            List<String> nestedCommands = parseCommands((List<?>) value);
-                            for (int i = 0; i < times; i++) {
-                                result.addAll(nestedCommands);
-                            }
-                        }
-                    });
-                }
-            }
-            return result;
-        }
-
-
-        public int getCooldown() {
-            return cooldown;
-        }
-
-        public double getChance() {
-            return chance;
-        }
-
-        public boolean isEventCancelled() {
-            return cancelEvent;
-        }
-
-        public List<String> getCommands() {
-            return commands;
         }
     }
 }

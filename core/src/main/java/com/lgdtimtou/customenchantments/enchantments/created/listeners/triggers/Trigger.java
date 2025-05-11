@@ -3,7 +3,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers
 import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.created.listeners.CustomEnchantListener;
-import com.lgdtimtou.customenchantments.other.FileFunction;
+import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantInstruction;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
@@ -15,9 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Trigger implements CustomEnchantListener {
 
@@ -31,7 +29,7 @@ public class Trigger implements CustomEnchantListener {
 
     private final EnchantTriggerType type;
 
-    private List<String> commands;
+    private Queue<CustomEnchantInstruction> instructions;
 
     public Trigger(CustomEnchant customEnchant, EnchantTriggerType type) {
         this.enchantment = customEnchant;
@@ -50,14 +48,13 @@ public class Trigger implements CustomEnchantListener {
         executeCommands(e, player, customEnchantedItemsSelection, triggerConditionMap, localParameters, () -> {});
     }
 
-    protected void executeCommands(Event e, Player player, Set<ItemStack> customEnchantedItemsSelection, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
-        if (player == null) return;
+    protected void executeCommands(Event e, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
 
         // Add all global conditions
         Map<ConditionKey, Object> mutableTriggerConditionMap = new HashMap<>(triggerConditionMap);
         mutableTriggerConditionMap.putAll(TriggerConditionType.getGlobalConditionMap(player));
 
-        if (executeCommandsPreparation(e, player, customEnchantedItemsSelection, mutableTriggerConditionMap)) {
+        if (executeCommandsPreparation(e, player, priorityItems, mutableTriggerConditionMap)) {
             // Add global parameters to parameter map
             HashMap<String, Supplier<String>> parameters = new HashMap<>(localParameters);
             parameters.put("player", player::getDisplayName);
@@ -72,7 +69,13 @@ public class Trigger implements CustomEnchantListener {
                                                                                                             conditionKey.prefix(),
                                                                                                             obj
                                                                                                     )));
-            dispatchCommand(0, parameters, onComplete);
+            CustomEnchantInstruction.executeInstructionQueue(
+                    new ArrayDeque<>(instructions),
+                    player,
+                    this.enchantment,
+                    parameters,
+                    onComplete
+            );
         } else {
             onComplete.run();
         }
@@ -83,7 +86,6 @@ public class Trigger implements CustomEnchantListener {
         if (!enchantment.hasPermission(player))
             return false;
 
-        // Get the item that contains the enchantment
         ItemStack enchantedItem = this.enchantment.getEnchantedItem(player, priorityItems);
         if (enchantedItem == null)
             return false;
@@ -145,39 +147,39 @@ public class Trigger implements CustomEnchantListener {
             enchantedItem.setAmount(enchantedItem.getAmount() - 1);
 
         //Set commands
-        commands = enchantment.getCommands(level);
+        instructions = enchantment.getInstructions(level);
 
         return true;
     }
 
     private void dispatchCommand(int index, Map<String, Supplier<String>> parameters, Runnable onComplete) {
-        Util.debug(parameters.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue().get()).collect(
-                Collectors.toSet()).toString());
-        if (index == commands.size()) {
-            onComplete.run();
-            return;
-        }
-        String command = commands.get(index);
-        Matcher matcher = delayCommandPattern.matcher(command);
-        if (matcher.matches())
-            Bukkit.getScheduler()
-                  .runTaskLater(
-                          Main.getMain(),
-                          () -> dispatchCommand(index + 1, parameters, onComplete),
-                          Integer.parseInt(matcher.group(1)) * 20L
-                  );
-        else {
-            //Replace parameters
-            command = Util.replaceParameters(parameters, command);
-
-            //Execute file functions
-            try {
-                command = FileFunction.parse(command);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-            } catch (NumberFormatException exception) {
-                Util.error("Error when trying to parse the functions of the following command: " + command);
-            }
-            dispatchCommand(index + 1, parameters, onComplete);
-        }
+        //Util.debug(parameters.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue().get()).collect(
+        //        Collectors.toSet()).toString());
+        //if (index == instructions.size()) {
+        //    onComplete.run();
+        //    return;
+        //}
+        //String command = instructions.get(index);
+        //Matcher matcher = delayCommandPattern.matcher(command);
+        //if (matcher.matches())
+        //    Bukkit.getScheduler()
+        //          .runTaskLater(
+        //                  Main.getMain(),
+        //                  () -> dispatchCommand(index + 1, parameters, onComplete),
+        //                  Integer.parseInt(matcher.group(1)) * 20L
+        //          );
+        //else {
+        //    //Replace parameters
+        //    command = Util.replaceParameters(parameters, command);
+//
+        //    //Execute file functions
+        //    try {
+        //        command = FileFunction.parse(command);
+        //        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        //    } catch (NumberFormatException exception) {
+        //        Util.error("Error when trying to parse the functions of the following command: " + command);
+        //    }
+        //    dispatchCommand(index + 1, parameters, onComplete);
+        //}
     }
 }

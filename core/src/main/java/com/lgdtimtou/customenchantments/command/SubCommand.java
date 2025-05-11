@@ -2,6 +2,7 @@ package com.lgdtimtou.customenchantments.command;
 
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permissible;
 
 import java.util.List;
 
@@ -35,7 +36,10 @@ public abstract class SubCommand {
 
     public abstract void execute(CommandSender commandSender, String[] args);
 
-    public boolean hasPermission(CommandSender commandSender) {
-        return Util.hasPermission(commandSender, permission + "." + getLabel());
+    public boolean hasPermission(Permissible permissible) {
+        return Util.hasPermission(permissible, permission + "." + getLabel()) || Util.hasPermission(
+                permissible,
+                permission + ".*"
+        );
     }
 }
