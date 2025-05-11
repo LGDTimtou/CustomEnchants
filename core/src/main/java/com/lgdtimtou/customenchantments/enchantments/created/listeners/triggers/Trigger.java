@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -77,10 +78,12 @@ public class Trigger implements CustomEnchantListener {
         }
     }
 
-    protected boolean executeCommandsPreparation(Event e, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionMap) {
-        if (player == null)
+    protected boolean executeCommandsPreparation(@NotNull Event e, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<ConditionKey, Object> triggerConditionMap) {
+        // Check if the player has permission to trigger this enchantment
+        if (!enchantment.hasPermission(player))
             return false;
 
+        // Get the item that contains the enchantment
         ItemStack enchantedItem = this.enchantment.getEnchantedItem(player, priorityItems);
         if (enchantedItem == null)
             return false;

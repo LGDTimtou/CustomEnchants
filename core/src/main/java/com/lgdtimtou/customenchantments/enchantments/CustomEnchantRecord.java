@@ -65,6 +65,10 @@ public class CustomEnchantRecord {
         return customEnchantDefinition.anvilCost();
     }
 
+    public boolean needPermission() {
+        return customEnchantDefinition.needPermission();
+    }
+
     public Set<EnchantmentTarget> getEnchantmentTargets() {
         return customEnchantDefinition.enchantmentTargets();
     }

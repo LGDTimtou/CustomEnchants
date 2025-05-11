@@ -34,8 +34,11 @@ public class Replenish implements CustomEnchantListener {
     @EventHandler
     public void blockBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
+        DefaultCustomEnchant defaultCustomEnchant = DefaultCustomEnchant.REPLENISH;
 
-        if (Util.getEnchantedItem(player, DefaultCustomEnchant.REPLENISH.get()) == null)
+        if (!defaultCustomEnchant.check(player)) return;
+
+        if (Util.getEnchantedItem(player, defaultCustomEnchant.get()) == null)
             return;
 
         Inventory inv = player.getInventory();

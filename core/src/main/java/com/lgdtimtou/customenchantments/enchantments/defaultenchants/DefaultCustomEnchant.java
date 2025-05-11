@@ -6,6 +6,7 @@ import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.E
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Lumber;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Replenish;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Telekinesis;
+import org.bukkit.permissions.Permissible;
 
 public enum DefaultCustomEnchant {
 
@@ -22,13 +23,13 @@ public enum DefaultCustomEnchant {
     private CustomEnchant enchantment;
 
 
-    DefaultCustomEnchant(String namespacedName, int maxLevel, CustomEnchantListener listener){
+    DefaultCustomEnchant(String namespacedName, int maxLevel, CustomEnchantListener listener) {
         this.namespacedName = namespacedName;
         this.maxLevel = maxLevel;
         this.listener = listener;
     }
 
-    public CustomEnchant get(){
+    public CustomEnchant get() {
         if (enchantment == null)
             this.enchantment = CustomEnchant.get(this.namespacedName);
         return enchantment;
@@ -44,5 +45,9 @@ public enum DefaultCustomEnchant {
 
     public CustomEnchantListener getListener() {
         return listener;
+    }
+
+    public boolean check(Permissible permissible) {
+        return get() != null && get().hasPermission(permissible);
     }
 }

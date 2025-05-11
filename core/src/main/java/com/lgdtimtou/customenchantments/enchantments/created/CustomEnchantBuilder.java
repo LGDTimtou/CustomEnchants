@@ -27,6 +27,7 @@ public class CustomEnchantBuilder {
     private final List<CustomEnchantedItemLocation> customEnchantedItemLocations = new ArrayList<>();
     private boolean error;
     private boolean enabled;
+    private boolean needsPermission;
     private double destroyItemChance;
     private double removeEnchantmentChance;
     private int enchantmentTableWeight;
@@ -64,6 +65,9 @@ public class CustomEnchantBuilder {
                 Util.warn(namespacedName + ": " + location.toUpperCase() + " is not a valid custom enchanted item location" + closest_message + " Skipping...");
             }
         }
+
+        //Parsing whether the permission should be loaded for this enchantment
+        needsPermission = config.getBoolean(namespacedName + ".needs_permission", false);
 
         //Parsing whether the enchantment should destroy the enchanted item
         destroyItemChance = config.getDouble(namespacedName + ".destroy_item_chance", 0);
@@ -104,6 +108,9 @@ public class CustomEnchantBuilder {
         //Parsing the enabled option
         enabled = config.getBoolean(namespacedName + ".enabled");
         if (!enabled) return;
+
+        //Parsing whether the permission should be loaded for this enchantment
+        needsPermission = config.getBoolean(namespacedName + ".needs_permission", false);
 
         //Setting max level
         maxLvl = defaultCustomEnchant.getMaxLevel();
@@ -254,6 +261,7 @@ public class CustomEnchantBuilder {
                     anvilCost,
                     targets,
                     conflictingEnchantments,
+                    needsPermission,
                     destroyItemChance,
                     removeEnchantmentChance
             );

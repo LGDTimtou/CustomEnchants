@@ -20,12 +20,11 @@ public class Excavator implements CustomEnchantListener {
     @EventHandler
     public void onBreakBlock(BlockBreakEvent e) {
         Player player = e.getPlayer();
+        DefaultCustomEnchant defaultCustomEnchant = DefaultCustomEnchant.EXCAVATOR;
 
-        if (antiRecursion.contains(player))
-            return;
-
-        if (Util.getEnchantedItem(player, DefaultCustomEnchant.EXCAVATOR.get()) == null)
-            return;
+        if (antiRecursion.contains(player)) return;
+        if (!defaultCustomEnchant.check(player)) return;
+        if (Util.getEnchantedItem(player, defaultCustomEnchant.get()) == null) return;
 
         antiRecursion.add(player);
 

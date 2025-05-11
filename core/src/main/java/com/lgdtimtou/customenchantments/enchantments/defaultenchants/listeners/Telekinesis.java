@@ -17,10 +17,16 @@ import java.util.Set;
 
 public class Telekinesis implements CustomEnchantListener {
 
+
     @EventHandler
     public void blockBreak(BlockDropItemEvent e) {
-        PlayerInventory inv = e.getPlayer().getInventory();
-        if (Util.getEnchantedItem(e.getPlayer(), DefaultCustomEnchant.TELEKINESIS.get()) == null)
+        Player player = e.getPlayer();
+        DefaultCustomEnchant defaultCustomEnchant = DefaultCustomEnchant.TELEKINESIS;
+
+        if (!defaultCustomEnchant.check(player)) return;
+
+        PlayerInventory inv = player.getInventory();
+        if (Util.getEnchantedItem(player, defaultCustomEnchant.get()) == null)
             return;
 
         e.setCancelled(true);

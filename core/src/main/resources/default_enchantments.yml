@@ -14,7 +14,7 @@ replenish:
       tradeable: true
     targets:
       - tool
-    conflicts_with: [excavator]
+    conflicts_with: [ excavator ]
 
 telekinesis:
   enabled: true
@@ -33,7 +33,7 @@ telekinesis:
     targets:
       - tool
       - weapon
-    conflicts_with: []
+    conflicts_with: [ ]
 
 excavator:
   enabled: true
@@ -51,7 +51,7 @@ excavator:
       tradeable: true
     targets:
       - tool
-    conflicts_with: [replenish, lumber]
+    conflicts_with: [ replenish, lumber ]
 
 lumber:
   enabled: true
@@ -69,5 +69,5 @@ lumber:
       tradeable: true
     targets:
       - tool
-    conflicts_with: [excavator]
+    conflicts_with: [ excavator ]
 

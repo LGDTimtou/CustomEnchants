@@ -12,6 +12,7 @@ public record CustomEnchantDefinition(
         int anvilCost,
         Set<EnchantmentTarget> enchantmentTargets,
         Set<String> conflictingEnchantments,
+        boolean needPermission,
         double destroyItemChance,
         double removeEnchantmentChance
 ) {

@@ -24,16 +24,17 @@ public class Lumber implements CustomEnchantListener {
     private static final Map<Player, Integer> activeTasks = new HashMap<>();
     private static final Map<Player, Set<Location>> breakingTree = new HashMap<>();
 
+
     @EventHandler
     public void logBreakEvent(BlockBreakEvent e) {
         Player player = e.getPlayer();
+        DefaultCustomEnchant defaultCustomEnchant = DefaultCustomEnchant.LUMBER;
 
+        if (!defaultCustomEnchant.check(player)) return;
         if (breakingTree.get(player) != null) return;
+        if (!isLog(e.getBlock().getType())) return;
 
-        if (!isLog(e.getBlock().getType()))
-            return;
-
-        ItemStack enchantedItem = Util.getEnchantedItem(player, DefaultCustomEnchant.LUMBER.get());
+        ItemStack enchantedItem = Util.getEnchantedItem(player, defaultCustomEnchant.get());
         if (enchantedItem == null)
             return;
 

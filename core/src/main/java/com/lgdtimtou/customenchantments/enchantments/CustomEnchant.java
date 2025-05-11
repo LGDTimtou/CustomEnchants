@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.Permissible;
 
 import java.util.*;
 
@@ -76,13 +77,13 @@ public class CustomEnchant extends CustomEnchantRecord {
                                                                     .toList());
     }
 
-    //Info for each level
-
     public static CustomEnchant get(String name) {
         if (!enchantments.containsKey(name))
             throw new IllegalArgumentException(name + " enchantment does not exist");
         return enchantments.get(name);
     }
+
+    //Info for each level
 
     public static Set<CustomEnchant> getCustomEnchantSet() {
         return new HashSet<>(enchantments.values());
@@ -92,6 +93,10 @@ public class CustomEnchant extends CustomEnchantRecord {
         if (level < 1 || level > roman.length)
             return "error";
         return roman[level - 1];
+    }
+
+    public boolean hasPermission(Permissible permissible) {
+        return !needPermission() || Util.hasPermission(permissible, "enchantment." + getNamespacedName());
     }
 
     private boolean isNewlyRegistered() {
