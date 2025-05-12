@@ -1,12 +1,8 @@
 package com.lgdtimtou.customenchantments.enchantments;
 
 import com.lgdtimtou.customenchantments.Main;
-import com.lgdtimtou.customenchantments.enchantments.created.CustomEnchantBuilder;
-import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.ConditionKey;
-import com.lgdtimtou.customenchantments.enchantments.created.listeners.triggers.EnchantTriggerType;
-import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantInstruction;
-import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantLevel;
-import com.lgdtimtou.customenchantments.enchantments.created.values.CustomEnchantedItemLocation;
+import com.lgdtimtou.customenchantments.enchantments.created.builders.CustomEnchantBuilder;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantedItemLocation;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
@@ -27,20 +23,16 @@ public class CustomEnchant extends CustomEnchantRecord {
 
     private final boolean defaultEnchantment;
     private final List<CustomEnchantedItemLocation> customEnchantedItemLocations;
-    private final List<CustomEnchantLevel> levels;
-    private final Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers;
     private Enchantment enchantment;
 
     private boolean newlyRegistered = false;
 
 
-    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations, Map<String, Boolean> tags, String coolDownMessage, List<CustomEnchantLevel> levels, Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> registeredTriggers) {
-        super(Util.getPrettyName(name), definition, tags, coolDownMessage);
+    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations, Map<String, Boolean> tags) {
+        super(Util.getPrettyName(name), definition, tags);
 
         this.defaultEnchantment = defaultEnchantment;
         this.customEnchantedItemLocations = customEnchantedItemLocations;
-        this.levels = levels;
-        this.registeredTriggers = registeredTriggers;
 
         this.enchantment = Util.getEnchantmentByName(this.getNamespacedName());
         if (Main.isFirstBoot() || this.enchantment == null) {
@@ -52,7 +44,6 @@ public class CustomEnchant extends CustomEnchantRecord {
                     player.kickPlayer(Util.getMessageNoPrefix("EditorNewEnchantmentKickMessage"));
         }
 
-        registeredTriggers.keySet().forEach(type -> Util.registerListener(type.getTrigger(this)));
         enchantments.put(this.namespacedName, this);
     }
 
@@ -114,51 +105,6 @@ public class CustomEnchant extends CustomEnchantRecord {
         return defaultEnchantment;
     }
 
-    public int getCooldown(int level) {
-        if (level <= 0 || level > levels.size())
-            return -1;
-        return levels.get(level - 1).cooldown();
-    }
-
-    public int getChance(int level) {
-        if (level <= 0 || level > levels.size())
-            return -1;
-        return (int) levels.get(level - 1).chance();
-    }
-
-    public boolean isCancelled(int level) {
-        if (level <= 0 || level > levels.size())
-            return false;
-        return levels.get(level - 1).cancelEvent();
-    }
-
-    public Queue<CustomEnchantInstruction> getInstructions(int level) {
-        if (level <= 0 || level > levels.size())
-            return new ArrayDeque<>();
-        return levels.get(level - 1).instructions();
-    }
-
-    public boolean checkTriggerConditions(EnchantTriggerType type, Map<ConditionKey, Object> triggerConditionMap) {
-        registeredTriggers.get(type).forEach((conditionKey, strings) -> {
-            if (!triggerConditionMap.containsKey(conditionKey))
-                Util.warn(namespacedName + ": " + conditionKey.toString()
-                                                              .toUpperCase() + " is not a valid condition for " + type);
-        });
-
-        for (Map.Entry<ConditionKey, Object> entry : triggerConditionMap.entrySet()) {
-            ConditionKey conditionKey = entry.getKey();
-            Object triggerObject = entry.getValue();
-            Set<String> conditions = registeredTriggers.get(type).get(conditionKey);
-            if (conditions != null)
-                for (String condition : conditions)
-                    if (!conditionKey.type().checkCondition(triggerObject, condition)) {
-                        Util.debug(conditionKey + ":" + triggerObject + ", did not match any of the following " + conditions);
-                        return false;
-                    }
-        }
-        return true;
-    }
-
     public ItemStack getEnchantedItem(Player player, Set<ItemStack> priorityItems) {
         //Handling priority items
         if (!priorityItems.isEmpty()) {
@@ -188,9 +134,5 @@ public class CustomEnchant extends CustomEnchantRecord {
 
         // Fallback: default item
         return Util.getEnchantedItem(player, this);
-    }
-
-    public Map<EnchantTriggerType, Map<ConditionKey, Set<String>>> getRegisteredTriggers() {
-        return registeredTriggers;
     }
 }

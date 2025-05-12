@@ -2,17 +2,19 @@ package com.lgdtimtou.customenchantments.enchantments;
 
 import org.bukkit.enchantments.EnchantmentTarget;
 
+import java.util.Map;
 import java.util.Set;
 
 public record CustomEnchantDefinition(
         int enchantmentTableWeight,
         int maxLevel,
+        boolean needPermission,
         CustomEnchantCost minCost,
         CustomEnchantCost maxCost,
         int anvilCost,
         Set<EnchantmentTarget> enchantmentTargets,
         Set<String> conflictingEnchantments,
-        boolean needPermission,
+        Map<String, Boolean> tags,
         double destroyItemChance,
         double removeEnchantmentChance
 ) {

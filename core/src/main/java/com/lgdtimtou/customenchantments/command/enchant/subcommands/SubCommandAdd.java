@@ -45,14 +45,17 @@ public class SubCommandAdd extends SubCommand {
                                                               .filter(ce -> finalItem == null || Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()
                                                                       || ce.getEnchantmentTargets()
                                                                            .stream()
-                                                                           .anyMatch(target -> target.includes(finalItem)));
+                                                                           .anyMatch(target -> target.includes(
+                                                                                   finalItem)));
                 yield filtered.map(CustomEnchant::getNamespacedName).collect(Collectors.toList());
             }
             // Checks if the given enchant exists
             // Return a list of all possible levels for that enchant otherwise -1
             case 3 -> {
                 String enchant = args[1].toLowerCase();
-                if (CustomEnchant.getCustomEnchantSet().stream().anyMatch(v -> v.getNamespacedName().equals(enchant))) {
+                if (CustomEnchant.getCustomEnchantSet()
+                                 .stream()
+                                 .anyMatch(v -> v.getNamespacedName().equals(enchant))) {
                     int maxLvl = CustomEnchant.get(enchant).getEnchantment().getMaxLevel();
                     yield IntStream.range(1, maxLvl + 1).mapToObj(Integer::toString).collect(Collectors.toList());
                 } else {

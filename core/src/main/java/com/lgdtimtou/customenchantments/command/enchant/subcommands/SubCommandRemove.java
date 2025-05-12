@@ -35,7 +35,8 @@ public class SubCommandRemove extends SubCommand {
                                                                           .startsWith(args[1].toLowerCase()))
                                                           .filter(ce -> finalItem == null || finalItem.getItemMeta()
                                                                                                       .getEnchants()
-                                                                                                      .containsKey(ce.getEnchantment()));
+                                                                                                      .containsKey(
+                                                                                                              ce.getEnchantment()));
             return filtered.map(CustomEnchant::getNamespacedName).collect(Collectors.toList());
         } else return null;
     }

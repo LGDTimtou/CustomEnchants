@@ -1,7 +1,6 @@
 package com.lgdtimtou.customenchantments.enchantments;
 
 import com.lgdtimtou.customenchantments.other.Util;
-import org.bukkit.ChatColor;
 import org.bukkit.enchantments.EnchantmentTarget;
 
 import java.util.Map;
@@ -11,18 +10,13 @@ public class CustomEnchantRecord {
     protected final String name;
     protected final String namespacedName;
     protected final CustomEnchantDefinition customEnchantDefinition;
-    protected final String cooldownMessage;
     private final Map<String, Boolean> tags;
 
-    protected CustomEnchantRecord(String name, CustomEnchantDefinition customEnchantDefinition, Map<String, Boolean> tags, String cooldownMessage) {
+    protected CustomEnchantRecord(String name, CustomEnchantDefinition customEnchantDefinition, Map<String, Boolean> tags) {
         this.name = name;
         this.namespacedName = Util.getNamedspacedName(name);
         this.customEnchantDefinition = customEnchantDefinition;
         this.tags = tags;
-        this.cooldownMessage = cooldownMessage != null ? ChatColor.translateAlternateColorCodes(
-                '&',
-                cooldownMessage
-        ) : null;
     }
 
     public String getName() {
@@ -37,13 +31,6 @@ public class CustomEnchantRecord {
         return tags;
     }
 
-    public String getCoolDownMessage() {
-        return cooldownMessage;
-    }
-
-    public boolean hasCoolDownMessage() {
-        return cooldownMessage != null;
-    }
 
     public int getEnchantmentTableWeight() {
         return customEnchantDefinition.enchantmentTableWeight();

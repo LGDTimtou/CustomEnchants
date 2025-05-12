@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners;
 
 
 import com.lgdtimtou.customenchantments.Main;
-import com.lgdtimtou.customenchantments.enchantments.created.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;

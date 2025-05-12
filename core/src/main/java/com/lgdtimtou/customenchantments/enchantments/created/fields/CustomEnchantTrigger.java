@@ -1,0 +1,192 @@
+package com.lgdtimtou.customenchantments.enchantments.created.fields;
+
+import com.lgdtimtou.customenchantments.Main;
+import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.other.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+import java.util.function.Supplier;
+
+public class CustomEnchantTrigger {
+
+    private static final Map<Player, Map<CustomEnchant, Long>> pendingCooldown = new HashMap<>();
+    private final TriggerType triggerType;
+    private final Map<ConditionKey, Set<String>> triggerConditions;
+    private final List<CustomEnchantLevel> levels;
+    private CustomEnchant customEnchant;
+
+
+    public CustomEnchantTrigger(TriggerType triggerType, Map<ConditionKey, Set<String>> triggerConditions, List<CustomEnchantLevel> levels) {
+        this.triggerType = triggerType;
+        this.triggerConditions = triggerConditions;
+        this.levels = levels;
+        Util.debug(levels.toString());
+
+        this.triggerType.subscribe(this);
+    }
+
+    public TriggerType getType() {
+        return triggerType;
+    }
+
+    public void setCustomEnchant(CustomEnchant customEnchant) {
+        this.customEnchant = customEnchant;
+    }
+
+
+    public void executeInstructions(Event event, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionValues, Map<String, Supplier<String>> parameters, Runnable onComplete) {
+        if (this.customEnchant == null) {
+            Util.error("Custom Enchant not set in trigger: " + this.triggerType);
+            return;
+        }
+
+        // Add all global conditions
+        triggerConditionValues.putAll(TriggerConditionType.getGlobalConditionMap(player));
+
+        Queue<CustomEnchantInstruction> instructions = loadInstructions(
+                event,
+                player,
+                priorityItems,
+                triggerConditionValues
+        );
+
+        if (instructions == null) {
+            onComplete.run();
+            return;
+        }
+
+        populateParameters(player, parameters, triggerConditionValues);
+
+        CustomEnchantInstruction.executeInstructionQueue(
+                new ArrayDeque<>(instructions),
+                player,
+                customEnchant,
+                parameters,
+                onComplete
+        );
+    }
+
+
+    private void populateParameters(Player player, Map<String, Supplier<String>> parameters, Map<ConditionKey, Object> triggerConditionValues) {
+        // Add global parameters
+        parameters.put("player", player::getDisplayName);
+        parameters.put("player_x", () -> String.valueOf(player.getLocation().getX()));
+        parameters.put("player_y", () -> String.valueOf(player.getLocation().getY()));
+        parameters.put("player_z", () -> String.valueOf(player.getLocation().getZ()));
+        parameters.put("player_health", () -> String.valueOf(player.getHealth()));
+
+        // Add condition type parameters
+        triggerConditionValues.forEach((conditionKey, obj) -> parameters.putAll(conditionKey.type()
+                                                                                            .getConditionParameters(
+                                                                                                    conditionKey.prefix(),
+                                                                                                    obj
+                                                                                            )));
+    }
+
+
+    private Queue<CustomEnchantInstruction> loadInstructions(@NotNull Event event, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<ConditionKey, Object> triggerConditionValues) {
+        // Check if the player has permission to trigger this enchantment
+        if (!customEnchant.hasPermission(player))
+            return null;
+
+        // Find the enchanted item in its set locations
+        ItemStack enchantedItem = customEnchant.getEnchantedItem(player, priorityItems);
+        if (enchantedItem == null)
+            return null;
+
+        //Get the level of the enchantment
+        int levelValue = Util.getLevel(enchantedItem, customEnchant.getEnchantment());
+        if (levelValue < 1 || levelValue > levels.size()) {
+            Util.error("Level of " + customEnchant.getName() + " cannot be " + levelValue);
+            return null;
+        }
+        CustomEnchantLevel level = levels.get(levelValue - 1);
+
+        //Check if this enchantment is still in cooldown for the player
+        pendingCooldown.computeIfAbsent(player, v -> new HashMap<>());
+        if (pendingCooldown.get(player).containsKey(customEnchant)) {
+            if (level.cooldownMessage() != null && !level.cooldownMessage().isBlank()) {
+                Long startTime = pendingCooldown.get(player).get(customEnchant);
+                int timeLeftSeconds = level.cooldown() - (int) ((System.currentTimeMillis() - startTime) / 1000);
+                player.sendMessage(Util.replaceParameters(Map.of(
+                        "player", player::getDisplayName,
+                        "enchantment", customEnchant::getName,
+                        "time_left", () -> Util.secondsToString(timeLeftSeconds, false),
+                        "time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true)
+                ), level.cooldownMessage()));
+            }
+            return null;
+        }
+
+        //Check if the trigger conditions are met
+        if (!checkTriggerConditions(triggerConditionValues))
+            return null;
+
+        //Return if chance didn't trigger
+        double randomNumberEnchantment = Math.random() * 100;
+        Util.debug("Random Number: " + randomNumberEnchantment + ", Enchantment Chance: " + level.chance());
+        if (level.chance() < randomNumberEnchantment)
+            return null;
+
+        //Cancel event if specified to do so
+        if (event instanceof Cancellable cancellable)
+            cancellable.setCancelled(level.cancelEvent());
+
+        //Add cool down if necessary
+        if (level.cooldown() > 0) {
+            pendingCooldown.get(player).put(customEnchant, System.currentTimeMillis());
+            Bukkit.getScheduler()
+                  .runTaskLater(
+                          Main.getMain(),
+                          v -> pendingCooldown.get(player).remove(customEnchant),
+                          level.cooldown() * 20L
+                  );
+        }
+
+        //Remove enchantment if chance triggered
+        double randomNumberRemoveEnchantment = Math.random() * 100;
+        Util.debug("Random Number: " + randomNumberRemoveEnchantment + ", Remove Enchantment Chance: " + customEnchant.getRemoveEnchantmentChance());
+        if (randomNumberRemoveEnchantment < customEnchant.getRemoveEnchantmentChance())
+            enchantedItem.removeEnchantment(customEnchant.getEnchantment());
+
+        //Destroy item if chance triggered
+        double randomNumberDestroyItem = Math.random() * 100;
+        Util.debug("Random Number: " + randomNumberDestroyItem + ", Destroy Item Chance: " + customEnchant.getDestroyItemChance());
+        if (randomNumberDestroyItem < customEnchant.getDestroyItemChance())
+            enchantedItem.setAmount(enchantedItem.getAmount() - 1);
+
+        // Return instructions
+        return level.instructions();
+    }
+
+
+    private boolean checkTriggerConditions(Map<ConditionKey, Object> triggerConditionValues) {
+        triggerConditions.forEach((conditionKey, strings) -> {
+            if (!triggerConditionValues.containsKey(conditionKey))
+                Util.warn(customEnchant.getNamespacedName() + ": " + conditionKey.toString()
+                                                                                 .toUpperCase() + " is not a valid condition for " + triggerType);
+        });
+
+        for (Map.Entry<ConditionKey, Object> entry : triggerConditionValues.entrySet()) {
+            ConditionKey conditionKey = entry.getKey();
+            Object triggerObject = entry.getValue();
+            Set<String> conditions = triggerConditions.get(conditionKey);
+            if (conditions != null)
+                for (String condition : conditions)
+                    if (!conditionKey.type().checkCondition(triggerObject, condition)) {
+                        Util.debug(conditionKey + ":" + triggerObject + ", did not match any of the following " + conditions);
+                        return false;
+                    }
+        }
+        return true;
+    }
+}

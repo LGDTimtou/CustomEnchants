@@ -1,0 +1,37 @@
+package com.lgdtimtou.customenchantments.enchantments.created.triggers.movement;
+
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.Map;
+
+public class PlayerSwimTrigger implements CustomEnchantListener {
+
+    private final TriggerType triggerType;
+
+    public PlayerSwimTrigger(TriggerType type) {
+        this.triggerType = type;
+    }
+
+    @EventHandler
+    public void onSwimEvent(PlayerMoveEvent e) {
+        Player player = e.getPlayer();
+        if (!player.isSwimming()) return;
+        triggerType.trigger(e, e.getPlayer(), Map.of(
+                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "from_x"), e.getFrom().getX(),
+                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "from_x"), e.getFrom().getX(),
+                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "from_x"), e.getFrom().getX(),
+                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "from_y"), e.getFrom().getY(),
+                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "from_y"), e.getFrom().getY(),
+                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "from_y"), e.getFrom().getY(),
+                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "from_z"), e.getFrom().getZ(),
+                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "from_z"), e.getFrom().getZ(),
+                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "from_z"), e.getFrom().getZ()
+        ), Map.of());
+    }
+}

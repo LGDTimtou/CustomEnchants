@@ -1,7 +1,7 @@
 replenish:
   enabled: true
-  needs_permission: false
   definition:
+    needs_permission: false
     enchanting_table:
       weight: 5
       min_cost_base: 1
@@ -19,8 +19,8 @@ replenish:
 
 telekinesis:
   enabled: true
-  needs_permission: false
   definition:
+    needs_permission: false
     enchanting_table:
       weight: 5
       min_cost_base: 1
@@ -39,8 +39,8 @@ telekinesis:
 
 excavator:
   enabled: true
-  needs_permission: false
   definition:
+    needs_permission: false
     enchanting_table:
       weight: 5
       min_cost_base: 1
@@ -58,8 +58,8 @@ excavator:
 
 lumber:
   enabled: true
-  needs_permission: false
   definition:
+    needs_permission: false
     enchanting_table:
       weight: 5
       min_cost_base: 1

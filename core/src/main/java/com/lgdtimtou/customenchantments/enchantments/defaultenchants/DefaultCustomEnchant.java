@@ -1,7 +1,7 @@
 package com.lgdtimtou.customenchantments.enchantments.defaultenchants;
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.enchantments.created.listeners.CustomEnchantListener;
+import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Excavator;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Lumber;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.listeners.Replenish;
