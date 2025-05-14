@@ -8,10 +8,12 @@ import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.Tri
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 //Loads a custom enchant from the enchantments.yml file with the given name
@@ -35,6 +37,15 @@ public class CustomEnchantBuilder {
         //Parsing the enabled option
         enabled = config.getBoolean(namespacedName + ".enabled");
         if (!enabled) return;
+
+        //Parsing the dependencies
+        List<String> dependencies = config.getStringList(namespacedName + ".depends");
+        Set<String> missingDependencies = findMissingDependencies(dependencies);
+        if (!missingDependencies.isEmpty()) {
+            Util.error(namespacedName + ": requires following missing dependencies: " + missingDependencies);
+            error = true;
+            return;
+        }
 
         //Parsing the max level of the enchantment
 
@@ -96,6 +107,11 @@ public class CustomEnchantBuilder {
 
         //Register the listener
         Util.registerListener(defaultCustomEnchant.getListener());
+    }
+
+    private Set<String> findMissingDependencies(List<String> dependencies) {
+        return dependencies.stream().filter(plugin -> Bukkit.getPluginManager().getPlugin(plugin) == null).collect(
+                Collectors.toSet());
     }
 
     private void parseTriggers(ConfigurationSection triggerSection) {

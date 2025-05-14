@@ -5,6 +5,9 @@ main: com.lgdtimtou.customenchantments.Main
 api-version: 1.18
 authors: [ Timtou ]
 description: A MineCraft plugin that adds new handy and fun enchantments to your server!
+softdepend:
+  - PlaceholderAPI
+
 
 commands:
   customenchant:

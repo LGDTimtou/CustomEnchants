@@ -107,10 +107,14 @@ public class SubCommandAdd extends SubCommand {
         }
 
         if (level <= 0 || customEnchant.getEnchantment().getMaxLevel() < level) {
-            player.sendMessage(Util.replaceParameters(Map.of(
-                    "max_level", () -> String.valueOf(customEnchant.getEnchantment().getMaxLevel()),
-                    "enchant", customEnchant::getName
-            ), Util.getMessage("LevelRange")));
+            player.sendMessage(Util.replaceParameters(
+                    player,
+                    Util.getMessage("LevelRange"),
+                    Map.of(
+                            "max_level", () -> String.valueOf(customEnchant.getEnchantment().getMaxLevel()),
+                            "enchant", customEnchant::getName
+                    )
+            ));
             return;
         }
 

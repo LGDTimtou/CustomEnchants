@@ -3,6 +3,7 @@ package com.lgdtimtou.customenchantments.other;
 import com.google.common.collect.Sets;
 import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,8 @@ import org.bukkit.permissions.Permissible;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +42,7 @@ public final class Util {
             EquipmentSlot.CHEST,
             EquipmentSlot.HEAD
     );
+    private static final Pattern placeholderPattern = Pattern.compile("%[a-z_]+%");
 
     public static boolean hasPermission(Permissible permissible, String permission) {
         return permissible.hasPermission("customenchantments." + permission) || permissible.hasPermission("ce." + permission);
@@ -118,7 +122,6 @@ public final class Util {
         return item;
     }
 
-
     public static int getLevel(ItemStack item, Enchantment enchantment) {
         if (item == null)
             return -1;
@@ -140,10 +143,19 @@ public final class Util {
         return Arrays.stream(yamlList.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"));
     }
 
-    public static String replaceParameters(Map<String, Supplier<String>> parameters, String str) {
-        String result = str;
+    public static String replaceParameters(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String result = value;
         for (Map.Entry<String, Supplier<String>> mapEntry : parameters.entrySet())
             result = result.replaceAll("%" + mapEntry.getKey() + "%", mapEntry.getValue().get());
+
+        if (Main.isPAPISupport())
+            result = PlaceholderAPI.setPlaceholders(player, result);
+
+        // Check for unresolved parameters
+        Matcher matcher = placeholderPattern.matcher(result);
+        if (matcher.find())
+            Util.warn("Unresolved placeholders found in text: " + result);
+
         return result;
     }
 

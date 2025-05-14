@@ -3,6 +3,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.fields.instruction
 import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -18,8 +19,8 @@ public class CommandInstruction extends CustomEnchantInstruction {
     }
 
     @Override
-    protected void execute(Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        String executableCommand = this.parseValue(command, parameters);
+    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+        String executableCommand = this.parseValue(player, command, parameters);
         Util.debug("Running command: " + executableCommand);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executableCommand);
 

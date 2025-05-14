@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -20,8 +21,8 @@ public class DelayInstruction extends CustomEnchantInstruction {
 
 
     @Override
-    protected void execute(Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        Double delay = parseValueAsDouble(delayTime, parameters);
+    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+        Double delay = parseValueAsDouble(player, delayTime, parameters);
         Util.debug("Delaying for: " + Math.round(delay) + " seconds");
         Bukkit.getScheduler()
               .runTaskLater(

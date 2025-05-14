@@ -18,11 +18,16 @@ public final class Main extends JavaPlugin {
 
 
     private static Main plugin;
+    private static boolean PAPISupport;
     private static EnchantmentManager enchantmentsManager;
     private static String minecraftVersion;
 
     public static Main getMain() {
         return plugin;
+    }
+
+    public static boolean isPAPISupport() {
+        return PAPISupport;
     }
 
     public static boolean isFirstBoot() {
@@ -33,12 +38,18 @@ public final class Main extends JavaPlugin {
         return enchantmentsManager;
     }
 
+    private static void setPAPISupport() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+            PAPISupport = true;
+        else Util.warn("PlaceholderAPI is not installed. PAPI placeholders will not be replaced.");
+    }
 
     @Override
     public void onEnable() {
         if (!isFirstBoot())
             Util.warn("Reloading is discouraged! Please use /restart instead.");
         plugin = this;
+        setPAPISupport();
         Files.register();
 
         enchantmentsManager = createEnchantmentManager();

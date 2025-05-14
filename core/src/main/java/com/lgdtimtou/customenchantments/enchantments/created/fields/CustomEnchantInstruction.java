@@ -76,15 +76,15 @@ public abstract class CustomEnchantInstruction {
     protected abstract void setValue(Object value);
 
     protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        execute(parameters, executeNextInstruction);
+        execute(player, parameters, executeNextInstruction);
     }
 
-    protected void execute(Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
     }
 
-    protected String parseValue(String value, Map<String, Supplier<String>> parameters) {
+    protected String parseValue(Player player, String value, Map<String, Supplier<String>> parameters) {
         //Replace parameters
-        String newValue = Util.replaceParameters(parameters, value);
+        String newValue = Util.replaceParameters(player, value, parameters);
 
         //Execute file functions
         try {
@@ -95,8 +95,8 @@ public abstract class CustomEnchantInstruction {
         return newValue;
     }
 
-    protected Double parseValueAsDouble(String value, Map<String, Supplier<String>> parameters) {
-        String stringValue = parseValue(value, parameters);
+    protected Double parseValueAsDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String stringValue = parseValue(player, value, parameters);
         try {
             return Double.parseDouble(stringValue);
         } catch (NumberFormatException exception) {

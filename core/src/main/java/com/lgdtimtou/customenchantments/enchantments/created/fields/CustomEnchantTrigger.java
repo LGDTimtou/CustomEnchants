@@ -103,7 +103,7 @@ public class CustomEnchantTrigger {
                 int timeLeftSeconds = level.cooldown() - (int) ((System.currentTimeMillis() - startTime) / 1000);
                 globalParameters.put("time_left", () -> Util.secondsToString(timeLeftSeconds, false));
                 globalParameters.put("time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true));
-                player.sendMessage(Util.replaceParameters(globalParameters, level.cooldownMessage()));
+                player.sendMessage(Util.replaceParameters(player, level.cooldownMessage(), globalParameters));
             }
             return null;
         }
