@@ -45,7 +45,6 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public enum TriggerType {
 
@@ -131,8 +130,10 @@ public enum TriggerType {
             constructor = null;
             Util.error("Could not find constructor for " + this + ", please report this error!");
         }
-        this.overriddenBy = Arrays.stream(overriddenBy).collect(Collectors.toSet());
-        this.overriddenBy.forEach(type -> type.addOverriddenBy(this.overriddenBy));
+
+        this.overriddenBy = new HashSet<>(Arrays.asList(overriddenBy));
+        Set<TriggerType> tempSet = new HashSet<>(this.overriddenBy);
+        tempSet.forEach(type -> type.addOverriddenBy(this.overriddenBy));
     }
 
     public Set<TriggerType> getOverriddenBy() {

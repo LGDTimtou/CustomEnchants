@@ -29,8 +29,6 @@ public class CustomEnchantTrigger {
         this.triggerType = triggerType;
         this.triggerConditions = triggerConditions;
         this.levels = levels;
-
-        this.triggerType.subscribe(this);
     }
 
     public TriggerType getType() {

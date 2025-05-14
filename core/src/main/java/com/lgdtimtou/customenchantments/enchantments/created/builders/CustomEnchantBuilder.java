@@ -128,6 +128,7 @@ public class CustomEnchantBuilder {
         }
 
         removeOverriddenTriggers();
+        triggers.forEach(trigger -> trigger.getType().subscribe(trigger));
     }
 
     private void removeOverriddenTriggers() {
