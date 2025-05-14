@@ -27,8 +27,10 @@ import com.lgdtimtou.customenchantments.enchantments.created.triggers.kill.KillA
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.kill.KillEntityTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.kill.KillMobTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.kill.KillPlayerTrigger;
+import com.lgdtimtou.customenchantments.enchantments.created.triggers.movement.PlayerIdleTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.movement.PlayerMoveTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.movement.PlayerSneakTrigger;
+import com.lgdtimtou.customenchantments.enchantments.created.triggers.movement.PlayerSwimTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitBlockTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitEntityTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitPlayerTrigger;
@@ -107,10 +109,12 @@ public enum TriggerType {
     RIGHT_CLICK_BLOCK(RightClickBlockTrigger.class, RIGHT_CLICK),
     RIGHT_CLICK_ENTITY(RightClickEntityTrigger.class, RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK),
 
-
     //Movement
+    PLAYER_IDLE(PlayerIdleTrigger.class),
     PLAYER_SNEAK(PlayerSneakTrigger.class),
     PLAYER_MOVE(PlayerMoveTrigger.class),
+    PLAYER_SWIM(PlayerSwimTrigger.class, PLAYER_MOVE),
+    
 
     //Projectiles
     PROJECTILE_LAND(ProjectileLandTrigger.class),
