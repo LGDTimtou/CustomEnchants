@@ -29,7 +29,6 @@ public class CustomEnchantTrigger {
         this.triggerType = triggerType;
         this.triggerConditions = triggerConditions;
         this.levels = levels;
-        Util.debug(levels.toString());
 
         this.triggerType.subscribe(this);
     }
@@ -56,6 +55,7 @@ public class CustomEnchantTrigger {
                 event,
                 player,
                 priorityItems,
+                parameters,
                 triggerConditionValues
         );
 
@@ -63,8 +63,6 @@ public class CustomEnchantTrigger {
             onComplete.run();
             return;
         }
-
-        populateParameters(player, parameters, triggerConditionValues);
 
         CustomEnchantInstruction.executeInstructionQueue(
                 new ArrayDeque<>(instructions),
@@ -76,24 +74,7 @@ public class CustomEnchantTrigger {
     }
 
 
-    private void populateParameters(Player player, Map<String, Supplier<String>> parameters, Map<ConditionKey, Object> triggerConditionValues) {
-        // Add global parameters
-        parameters.put("player", player::getDisplayName);
-        parameters.put("player_x", () -> String.valueOf(player.getLocation().getX()));
-        parameters.put("player_y", () -> String.valueOf(player.getLocation().getY()));
-        parameters.put("player_z", () -> String.valueOf(player.getLocation().getZ()));
-        parameters.put("player_health", () -> String.valueOf(player.getHealth()));
-
-        // Add condition type parameters
-        triggerConditionValues.forEach((conditionKey, obj) -> parameters.putAll(conditionKey.type()
-                                                                                            .getConditionParameters(
-                                                                                                    conditionKey.prefix(),
-                                                                                                    obj
-                                                                                            )));
-    }
-
-
-    private Queue<CustomEnchantInstruction> loadInstructions(@NotNull Event event, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<ConditionKey, Object> triggerConditionValues) {
+    private Queue<CustomEnchantInstruction> loadInstructions(@NotNull Event event, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<String, Supplier<String>> parameters, @NotNull Map<ConditionKey, Object> triggerConditionValues) {
         // Check if the player has permission to trigger this enchantment
         if (!customEnchant.hasPermission(player))
             return null;
@@ -111,18 +92,18 @@ public class CustomEnchantTrigger {
         }
         CustomEnchantLevel level = levels.get(levelValue - 1);
 
+        Map<String, Supplier<String>> globalParameters = getGlobalParameters(player, levelValue);
+        populateParameters(parameters, globalParameters, triggerConditionValues);
+
         //Check if this enchantment is still in cooldown for the player
         pendingCooldown.computeIfAbsent(player, v -> new HashMap<>());
         if (pendingCooldown.get(player).containsKey(customEnchant)) {
             if (level.cooldownMessage() != null && !level.cooldownMessage().isBlank()) {
                 Long startTime = pendingCooldown.get(player).get(customEnchant);
                 int timeLeftSeconds = level.cooldown() - (int) ((System.currentTimeMillis() - startTime) / 1000);
-                player.sendMessage(Util.replaceParameters(Map.of(
-                        "player", player::getDisplayName,
-                        "enchantment", customEnchant::getName,
-                        "time_left", () -> Util.secondsToString(timeLeftSeconds, false),
-                        "time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true)
-                ), level.cooldownMessage()));
+                globalParameters.put("time_left", () -> Util.secondsToString(timeLeftSeconds, false));
+                globalParameters.put("time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true));
+                player.sendMessage(Util.replaceParameters(globalParameters, level.cooldownMessage()));
             }
             return null;
         }
@@ -168,6 +149,18 @@ public class CustomEnchantTrigger {
         return level.instructions();
     }
 
+    private void populateParameters(Map<String, Supplier<String>> parameters, Map<String, Supplier<String>> globalParameters, Map<ConditionKey, Object> triggerConditionValues) {
+        // Add global parameters
+        parameters.putAll(globalParameters);
+
+        // Add condition type parameters
+        triggerConditionValues.forEach((conditionKey, obj) -> parameters.putAll(conditionKey.type()
+                                                                                            .getConditionParameters(
+                                                                                                    conditionKey.prefix(),
+                                                                                                    obj
+                                                                                            )));
+    }
+
 
     private boolean checkTriggerConditions(Map<ConditionKey, Object> triggerConditionValues) {
         triggerConditions.forEach((conditionKey, strings) -> {
@@ -188,5 +181,19 @@ public class CustomEnchantTrigger {
                     }
         }
         return true;
+    }
+
+    private Map<String, Supplier<String>> getGlobalParameters(Player player, int levelValue) {
+        return new HashMap<>(Map.of(
+                "player", player::getDisplayName,
+                "player_x", () -> String.valueOf(player.getLocation().getX()),
+                "player_y", () -> String.valueOf(player.getLocation().getY()),
+                "player_z", () -> String.valueOf(player.getLocation().getZ()),
+                "player_health", () -> String.valueOf(player.getHealth()),
+                "enchantment", () -> customEnchant.getNamespacedName(),
+                "enchantment_lore", () -> customEnchant.getName(),
+                "enchantment_level", () -> String.valueOf(levelValue),
+                "enchantment_level_roman", () -> CustomEnchant.getLevelRoman(levelValue)
+        ));
     }
 }

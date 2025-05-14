@@ -10,8 +10,9 @@ import java.util.function.Function;
 
 public enum SaveContext {
     GLOBAL(player -> ""),
-    WORLD(Entity::getWorld),
     DIMENSION(player -> player.getWorld().getEnvironment()),
+    WORLD(Entity::getWorld),
+    BIOME(player -> player.getWorld().getBiome(player.getLocation())),
     PLAYER(player -> player);
 
     private final Map<Object, Map<CustomEnchant, Map<String, String>>> savedValues = new HashMap<>();
