@@ -6,7 +6,10 @@ import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,31 +38,26 @@ public class SubCommandAdd extends SubCommand {
             //Returns the names of all the custom enchants
             case 2 -> {
                 ItemStack finalItem = item;
-                Stream<CustomEnchant> filtered = CustomEnchant.getCustomEnchantSet().stream()
-                                                              .filter(ce -> ce.getName()
-                                                                              .toLowerCase()
-                                                                              .startsWith(args[1].toLowerCase()))
-                                                              .filter(ce -> finalItem == null || !finalItem.getEnchantments()
-                                                                                                           .containsKey(
-                                                                                                                   ce.getEnchantment()))
-                                                              .filter(ce -> finalItem == null || Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()
-                                                                      || ce.getEnchantmentTargets()
-                                                                           .stream()
-                                                                           .anyMatch(target -> target.includes(
-                                                                                   finalItem)));
-                yield filtered.map(CustomEnchant::getNamespacedName).collect(Collectors.toList());
+                Stream<Enchantment> filtered = Registry.ENCHANTMENT.stream()
+                                                                   .filter(enchant -> enchant.getKey().getKey()
+                                                                                             .startsWith(args[1].toLowerCase()))
+                                                                   .filter(enchant -> finalItem == null || !finalItem.containsEnchantment(
+                                                                           enchant))
+                                                                   .filter(enchant -> finalItem == null || Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()
+                                                                           || enchant.canEnchantItem(finalItem));
+                yield filtered.map(enchant -> enchant.getKey().getKey()).collect(Collectors.toList());
             }
             // Checks if the given enchant exists
             // Return a list of all possible levels for that enchant otherwise -1
             case 3 -> {
-                String enchant = args[1].toLowerCase();
-                if (CustomEnchant.getCustomEnchantSet()
-                                 .stream()
-                                 .anyMatch(v -> v.getNamespacedName().equals(enchant))) {
-                    int maxLvl = CustomEnchant.get(enchant).getEnchantment().getMaxLevel();
-                    yield IntStream.range(1, maxLvl + 1).mapToObj(Integer::toString).collect(Collectors.toList());
+                String enchantName = args[1].toLowerCase();
+                Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(enchantName));
+                if (enchantment != null) {
+                    yield IntStream.range(1, enchantment.getMaxLevel() + 1)
+                                   .mapToObj(Integer::toString)
+                                   .collect(Collectors.toList());
                 } else {
-                    yield List.of("-1");
+                    yield null;
                 }
             }
             default -> null;
@@ -84,13 +82,12 @@ public class SubCommandAdd extends SubCommand {
         }
 
         //Enchant bestaat niet
-        CustomEnchant customEnchant;
-        try {
-            customEnchant = CustomEnchant.get(enchantName);
-        } catch (IllegalArgumentException e) {
+        Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(enchantName));
+        if (enchantment == null) {
             player.sendMessage(Util.getMessage("NonExistingEnchant"));
             return;
         }
+        String enchantmentName = Util.title(enchantment.getKey().getKey());
 
         //Speler heeft niets vast
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
@@ -100,28 +97,28 @@ public class SubCommandAdd extends SubCommand {
 
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (item.containsEnchantment(customEnchant.getEnchantment()) && level == item.getEnchantmentLevel(customEnchant.getEnchantment())) {
-            player.sendMessage(Util.getMessage("AlreadyHasEnchant").replace("%enchant%", customEnchant.getName())
+        if (item.containsEnchantment(enchantment) && level == item.getEnchantmentLevel(enchantment)) {
+            player.sendMessage(Util.getMessage("AlreadyHasEnchant").replace("%enchant%", enchantmentName)
                                    .replace("%level%", CustomEnchant.getLevelRoman(level)));
             return;
         }
 
-        if (level <= 0 || customEnchant.getEnchantment().getMaxLevel() < level) {
+        if (level <= 0 || enchantment.getMaxLevel() < level) {
             player.sendMessage(Util.replaceParameters(
                     player,
                     Util.getMessage("LevelRange"),
                     Map.of(
-                            "max_level", () -> String.valueOf(customEnchant.getEnchantment().getMaxLevel()),
-                            "enchant", customEnchant::getName
+                            "max_level", () -> String.valueOf(enchantment.getMaxLevel()),
+                            "enchant", () -> enchantName
                     )
             ));
             return;
         }
 
         // Same enchantment
-        if (item.containsEnchantment(customEnchant.getEnchantment())) {
-            item.removeEnchantment(customEnchant.getEnchantment());
-            item.addUnsafeEnchantment(customEnchant.getEnchantment(), level);
+        if (item.containsEnchantment(enchantment)) {
+            item.removeEnchantment(enchantment);
+            item.addUnsafeEnchantment(enchantment, level);
             return;
         }
 
@@ -129,12 +126,12 @@ public class SubCommandAdd extends SubCommand {
 
         // Conflicting enchantments
         List<String> conflictingEnchantments = item.getEnchantments().keySet().stream()
-                                                   .filter(ench -> ench.conflictsWith(customEnchant.getEnchantment()))
+                                                   .filter(ench -> ench.conflictsWith(enchantment))
                                                    .map(ench -> ench.getKey().toString())
                                                    .toList();
         if (!conflictingEnchantments.isEmpty() && !unsafeEnchantmentsAllowed) {
             player.sendMessage(Util.getMessage("ConflictingEnchantment")
-                                   .replace("%enchantment%", customEnchant.getName())
+                                   .replace("%enchantment%", enchantmentName)
                                    .replace("%conflicting_enchantments%", conflictingEnchantments.toString())
             );
             player.sendMessage(Util.getMessageNoPrefix("Setting")
@@ -143,19 +140,22 @@ public class SubCommandAdd extends SubCommand {
         }
 
         // Correct tool
-        boolean correctTool = customEnchant.getEnchantment().canEnchantItem(item);
+        boolean correctTool = enchantment.canEnchantItem(item);
         if (!correctTool && !unsafeEnchantmentsAllowed) {
             player.sendMessage(Util.getMessage("UnsafeEnchantment")
-                                   .replace("%enchant%", Util.title(customEnchant.getName()))
-                                   .replace("%targets%", customEnchant.getEnchantmentTargets().toString()));
+                                   .replace("%enchant%", enchantmentName)
+                                   .replace(
+                                           "%item%",
+                                           player.getInventory().getItemInMainHand().getType().toString()
+                                   ));
             player.sendMessage(Util.getMessageNoPrefix("Setting")
                                    .replace("%setting%", "allow_unsafe_enchantments"));
             return;
         }
 
         if (Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean())
-            item.addUnsafeEnchantment(customEnchant.getEnchantment(), level);
+            item.addUnsafeEnchantment(enchantment, level);
         else
-            item.addEnchantment(customEnchant.getEnchantment(), level);
+            item.addEnchantment(enchantment, level);
     }
 }

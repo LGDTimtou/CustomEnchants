@@ -2,10 +2,12 @@ package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
-import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,15 +31,12 @@ public class SubCommandRemove extends SubCommand {
 
         if (args.length == 2) {
             ItemStack finalItem = item;
-            Stream<CustomEnchant> filtered = CustomEnchant.getCustomEnchantSet().stream()
-                                                          .filter(ce -> ce.getName()
-                                                                          .toLowerCase()
-                                                                          .startsWith(args[1].toLowerCase()))
-                                                          .filter(ce -> finalItem == null || finalItem.getItemMeta()
-                                                                                                      .getEnchants()
-                                                                                                      .containsKey(
-                                                                                                              ce.getEnchantment()));
-            return filtered.map(CustomEnchant::getNamespacedName).collect(Collectors.toList());
+            Stream<Enchantment> filtered = Registry.ENCHANTMENT.stream()
+                                                               .filter(enchant -> enchant.getKey().getKey()
+                                                                                         .startsWith(args[1].toLowerCase()))
+                                                               .filter(enchant -> finalItem == null || finalItem.containsEnchantment(
+                                                                       enchant));
+            return filtered.map(enchant -> enchant.getKey().getKey()).collect(Collectors.toList());
         } else return null;
     }
 
@@ -51,13 +50,12 @@ public class SubCommandRemove extends SubCommand {
         String enchantName = args[1].toLowerCase();
 
         //Enchant bestaat niet
-        CustomEnchant customEnchant;
-        try {
-            customEnchant = CustomEnchant.get(enchantName);
-        } catch (IllegalArgumentException e) {
+        Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(enchantName));
+        if (enchantment == null) {
             player.sendMessage(Util.getMessage("NonExistingEnchant"));
             return;
         }
+        String enchantmentName = Util.title(enchantment.getKey().getKey());
 
         //Speler heeft niets vast
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
@@ -67,12 +65,12 @@ public class SubCommandRemove extends SubCommand {
 
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (!item.containsEnchantment(customEnchant.getEnchantment())) {
-            player.sendMessage(Util.getMessage("DoesntHaveEnchant").replace("%enchant%", customEnchant.getName()));
+        if (!item.containsEnchantment(enchantment)) {
+            player.sendMessage(Util.getMessage("DoesntHaveEnchant").replace("%enchant%", enchantmentName));
             return;
         }
 
         //Removing enchant
-        item.removeEnchantment(customEnchant.getEnchantment());
+        item.removeEnchantment(enchantment);
     }
 }
