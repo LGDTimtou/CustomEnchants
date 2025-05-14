@@ -154,13 +154,18 @@ public class EditorWebSocketClient extends WebSocketClient {
             ));
             player.spigot().sendMessage(openEditor);
         } else {
-            String message = customEnchant == null ? Util.getMessage("EditorURLConsoleCreate") : Util.getMessage(
-                                                                                                             "EditorURLConsoleEdit")
-                                                                                                     .replace(
-                                                                                                             "%enchant%",
-                                                                                                             customEnchant.getName()
-                                                                                                     );
-            sendMessage(message);
+            String message = customEnchant == null ?
+                    Util.getMessage("EditorURLConsoleCreate") :
+                    Util.getMessage("EditorURLConsoleEdit")
+                        .replace(
+                                "%enchant%",
+                                customEnchant.getName()
+                        );
+
+            sendMessage(message.replace(
+                    "%url%",
+                    url
+            ));
         }
     }
 

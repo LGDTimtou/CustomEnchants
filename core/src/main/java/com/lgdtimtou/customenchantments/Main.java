@@ -38,6 +38,7 @@ public final class Main extends JavaPlugin {
         return enchantmentsManager;
     }
 
+
     private static void setPAPISupport() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
             PAPISupport = true;
@@ -52,7 +53,7 @@ public final class Main extends JavaPlugin {
         setPAPISupport();
         Files.register();
 
-        enchantmentsManager = createEnchantmentManager();
+        createNMSClasses();
         if (enchantmentsManager == null) {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -89,19 +90,19 @@ public final class Main extends JavaPlugin {
     }
 
     @SuppressWarnings("unchecked")
-    private EnchantmentManager createEnchantmentManager() throws RuntimeException {
-        String clazzName = "com.lgdtimtou.customenchantments.nms_" + getMinecraftVersion()
-                .replace(".", "_") + ".EnchantmentManagerImpl";
+    private void createNMSClasses() throws RuntimeException {
+        String baseClazzName = "com.lgdtimtou.customenchantments.nms_" + getMinecraftVersion()
+                .replace(".", "_") + ".";
         try {
-            Class<? extends EnchantmentManager> clazz = (Class<? extends EnchantmentManager>) Class.forName(clazzName);
-            return clazz.getConstructor().newInstance();
+            Class<? extends EnchantmentManager> enchantmentManagerClass = (Class<? extends EnchantmentManager>) Class.forName(
+                    baseClazzName + "EnchantmentManagerImpl");
+
+            enchantmentsManager = enchantmentManagerClass.getConstructor().newInstance();
         } catch (ClassNotFoundException exception) {
             Util.error("Minecraft " + getMinecraftVersion() +
                     " is not supported by this version of CustomEnchantments)");
             Util.error("Download our latest update for newer versions!");
-            return null;
-        } catch (ReflectiveOperationException exception) {
-            return null;
+        } catch (ReflectiveOperationException ignored) {
         }
     }
 }

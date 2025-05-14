@@ -25,9 +25,9 @@ EditDefaultEnchant: "&7You can configure default enchantment settings in the &ed
 
 # Editing and Creating Enchantments
 EditorConnecting: "&7Connecting to websocket server..."
-EditorURLConsoleEdit: "&7Click this URL to edit &b%enchant%&7:\n&9%url%"
+EditorURLConsoleEdit: "&7Visit this URL to edit &b%enchant%&7:\n&9%url%"
 EditorClickToEdit: "&b&lClick Here &7to edit &b%enchant%"
-EditorURLConsoleCreate: "&7Click this URL to create a new enchantment"
+EditorURLConsoleCreate: "&7Visit this URL to create a new enchantment:\n&9%url%"
 EditorClickToCreate: "&b&lClick Here &7to create a new enchantment"
 EditorURLHover: "&7Open the &bCustom Enchant Editor &7in your browser"
 EditorYAMLSuccess: "&aEnchantment successfully updated!"

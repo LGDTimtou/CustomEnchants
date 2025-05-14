@@ -11,8 +11,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.triggers.block_othe
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.block_other.PrimeTNTTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.chat.PlayerChatTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.chat.PlayerReceiveChatTrigger;
-import com.lgdtimtou.customenchantments.enchantments.created.triggers.click.LeftClickItemTrigger;
-import com.lgdtimtou.customenchantments.enchantments.created.triggers.click.RightClickItemTrigger;
+import com.lgdtimtou.customenchantments.enchantments.created.triggers.click.*;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.damage.DamageAnimalTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.damage.DamageEntityTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.damage.DamageMobTrigger;
@@ -101,8 +100,14 @@ public enum TriggerType {
     HEALTH_DECREASE(PlayerHealthDecreaseTrigger.class, HEALTH_CHANGE),
 
     //Click
-    LEFT_CLICK(LeftClickItemTrigger.class),
-    RIGHT_CLICK(RightClickItemTrigger.class),
+    LEFT_CLICK(LeftClickTrigger.class),
+    LEFT_CLICK_AIR(LeftClickAirTrigger.class, LEFT_CLICK),
+    LEFT_CLICK_BLOCK(LeftClickBlockTrigger.class, LEFT_CLICK),
+    RIGHT_CLICK(RightClickTrigger.class),
+    RIGHT_CLICK_AIR(RightClickAirTrigger.class, RIGHT_CLICK),
+    RIGHT_CLICK_BLOCK(RightClickBlockTrigger.class, RIGHT_CLICK),
+    RIGHT_CLICK_ENTITY(RightClickEntityTrigger.class, RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK),
+
 
     //Movement
     PLAYER_SNEAK(PlayerSneakTrigger.class),

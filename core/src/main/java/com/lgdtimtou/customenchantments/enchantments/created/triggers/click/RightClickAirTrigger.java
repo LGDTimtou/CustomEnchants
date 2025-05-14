@@ -8,20 +8,19 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.Map;
 
-public class LeftClickItemTrigger implements CustomEnchantListener {
+public class RightClickAirTrigger implements CustomEnchantListener {
 
     private final TriggerType triggerType;
 
-    public LeftClickItemTrigger(TriggerType type) {
+    public RightClickAirTrigger(TriggerType type) {
         this.triggerType = type;
     }
 
 
     @EventHandler
-    public void onLeftClick(PlayerInteractEvent e) {
-        if (!(e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)) return;
+    public void onPlayerRightClickAir(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
 
-        triggerType.trigger(e, e.getPlayer(), Map.of(), Map.of());
+        triggerType.trigger(event, event.getPlayer(), Map.of(), Map.of());
     }
 }
-

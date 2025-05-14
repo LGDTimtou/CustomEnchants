@@ -94,6 +94,40 @@ public enum FileFunction {
             }
         }
     },
+    SIN("sin") {
+        @Override
+        public String execute(String... values) {
+            if (values.length != 1) {
+                Util.error("'sin' function takes 1 value. Usage: $[sin(value)]");
+                return "-1";
+            }
+
+            try {
+                double value = Double.parseDouble(values[0]);
+                return String.valueOf(Math.sin(value));
+            } catch (NumberFormatException e) {
+                Util.error("Invalid value '" + values[0] + "' in 'sin' function. Ensure the value is numeric.");
+                return "-1";
+            }
+        }
+    },
+    COS("cos") {
+        @Override
+        public String execute(String... values) {
+            if (values.length != 1) {
+                Util.error("'cos' function takes 1 value. Usage: $[cos(value)]");
+                return "-1";
+            }
+
+            try {
+                double value = Double.parseDouble(values[0]);
+                return String.valueOf(Math.cos(value));
+            } catch (NumberFormatException e) {
+                Util.error("Invalid value '" + values[0] + "' in 'cos' function. Ensure the value is numeric.");
+                return "-1";
+            }
+        }
+    },
     RANDOM("random") {
         @Override
         public String execute(String... values) {
