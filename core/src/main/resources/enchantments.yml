@@ -23,60 +23,231 @@
 ############################################################################################################################################
 
 sneak:
-  version: 1.21.4
+  version: 1.21.5
   enabled: true
   definition:
     max_level: 3
-    anvil_cost: 2
-    conflicts_with: [ ]
+    anvil_cost: 20
+    conflicts_with:
+      - swift_sneak
     targets:
       - armor_feet
     tags:
       in_enchanting_table: true
     enchanting_table:
-      weight: 10
+      weight: 20
       min_cost_base: 2
-      min_cost_incr: 1
-      max_cost_base: 5
-      max_cost_incr: 1
-  custom_locations:
-    - ender_chest
-  destroy_item_chance: 0
-  remove_enchantment_chance: 0
+      min_cost_incr: 10
+      max_cost_base: 10
+      max_cost_incr: 15
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+  custom_locations: [ ]
   triggers:
     player_sneak:
-      block_under:
-        - grass_block
-      block_feet:
-        - oak_trapdoor
-      block_head:
-        - water
-      block_above:
-        - obsidian
-  levels:
-    1:
-      cancel_event: false
-      cooldown: 90
-      chance: 100
-      commands:
-        - effect give %player% minecraft:invisibility 5 1
-        - particle minecraft:smoke %x% $[add(%y%, 1)] %z% 0.5 1 0.5 0.0 50 force
-    2:
-      cancel_event: false
-      cooldown: 60
-      chance: 100
-      commands:
-        - effect give %player% minecraft:invisibility 8 1
-        - particle minecraft:smoke %x% $[add(%y%, 1)] %z% 0.5 1 0.5 0.0 50 force
-    3:
-      cancel_event: false
-      cooldown: 2
-      chance: 50
-      commands:
-        - effect give %player% minecraft:invisibility 10 1
-        - particle minecraft:smoke %x% $[add(%y%, 1)] %z% 0.5 1 0.5 0.0 50 force
+      conditions: { }
+      levels:
+        1:
+          cancel_event: false
+          cooldown: 90
+          chance: 100
+          instructions:
+            - command: effect give %player% minecraft:invisibility 5 1
+            - command: particle minecraft:smoke %player_x% $[add(%player_y%, 1)] %player_z% 0.5 1 0.5 0.0 50 force
+        2:
+          cancel_event: false
+          cooldown: 60
+          chance: 100
+          instructions:
+            - command: effect give %player% minecraft:invisibility 8 1
+            - command: particle minecraft:smoke %player_x% $[add(%player_y%, 1)] %player_z% 0.5 1 0.5 0.0 50 force
+        3:
+          cancel_event: false
+          cooldown: 10
+          chance: 100
+          instructions:
+            - command: effect give %player% minecraft:invisibility 10 1
+            - command: particle minecraft:smoke %player_x% $[add(%player_y%, 1)] %player_z% 0.5 1 0.5 0.0 50 force
+
+saving_grace:
+  version: 1.21.5
+  enabled: true
+  depends:
+    - PlaceholderAPI
+  definition:
+    needs_permission: false
+    max_level: 1
+    anvil_cost: 20
+    conflicts_with:
+      - sharpness
+    targets:
+      - weapon
+    tags:
+      tradeable: true
+      treasure: true
+      in_enchanting_table: true
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+    enchanting_table:
+      weight: 20
+      min_cost_base: 2
+      min_cost_incr: 10
+      max_cost_base: 10
+      max_cost_incr: 15
+  custom_locations: [ ]
+  triggers:
+    left_click:
+      conditions: { }
+      levels:
+        1:
+          cancel_event: false
+          cooldown: 0
+          cooldown_message: ""
+          chance: 100
+          instructions:
+            - save:
+                context: player
+                identifier: previous_x
+                value: "%player_x%"
+            - save:
+                context: player
+                identifier: previous_y
+                value: "%player_y%"
+            - save:
+                context: player
+                identifier: previous_z
+                value: "%player_z%"
+    right_click:
+      conditions: { }
+      levels:
+        1:
+          cancel_event: false
+          cooldown: 30
+          cooldown_message: Wait %time_left% before you can do this %
+          chance: 100
+          instructions:
+            - load:
+                context: player
+                identifier: previous_x
+                default_value: "%player_x%"
+            - load:
+                context: player
+                identifier: previous_y
+                default_value: "%player_y%"
+            - load:
+                context: player
+                identifier: previous_z
+                default_value: "%player_z%"
+            - command: tp %player% %previous_x% %previous_y% %previous_z%
 
 
+aura2:
+  version: 1.21.5
+  enabled: true
+  depends: [ ]
+  definition:
+    needs_permission: false
+    max_level: 1
+    anvil_cost: 10
+    conflicts_with: [ ]
+    targets:
+      - armor_torso
+    tags:
+      in_enchanting_table: true
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+    enchanting_table:
+      weight: 50
+      min_cost_base: 2
+      min_cost_incr: 10
+      max_cost_base: 8
+      max_cost_incr: 15
+  custom_locations: [ ]
+  triggers:
+    player_move:
+      conditions: { }
+      levels:
+        '1':
+          cancel_event: false
+          cooldown: 7
+          cooldown_message: ''
+          chance: 100
+          instructions:
+            - conditional:
+                value1: "%player_y%"
+                operation: "greater_than"
+                value2: 150
+                if:
+                  - repeat:
+                      amount: 63
+                      loop_parameter: k
+                      instructions:
+                        - command: 'particle minecraft:flame $[add(%player_x%, $[mul($[cos($[mul(%k%,
+                            0.2)])], 1)])] $[add(%player_y%, $[mul(%k%, 0.04)])] $[add(%player_z%,
+                            $[mul($[sin($[mul(%k%, 0.2)])], 1)])] 0 0 0 0 1 force @a '
+                        - delay: '0.05'
+                  - repeat:
+                      amount: 63
+                      loop_parameter: k
+                      instructions:
+                        - command: 'particle minecraft:flame $[add(%player_x%, $[mul($[cos($[mul(%k%,
+                      0.2)])], 1)])] $[add(%player_y%, $[mul($[sub(63, %k%)], 0.04)])]
+                      $[add(%player_z%, $[mul($[sin($[mul(%k%, 0.2)])], 1)])] 0 0
+                      0 0 1 force @a '
+                        - delay: '0.05'
+                else:
+                  - command: say je bent te laag dwapneus
+
+
+aura:
+  version: 1.21.5
+  enabled: true
+  depends: [ ]
+  definition:
+    needs_permission: false
+    max_level: 1
+    anvil_cost: 10
+    conflicts_with: [ ]
+    targets:
+      - armor_torso
+    tags:
+      in_enchanting_table: true
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+    enchanting_table:
+      weight: 50
+      min_cost_base: 2
+      min_cost_incr: 10
+      max_cost_base: 8
+      max_cost_incr: 15
+  custom_locations: [ ]
+  triggers:
+    player_idle:
+      conditions: { }
+      levels:
+        '1':
+          cancel_event: false
+          cooldown: 7
+          cooldown_message: ''
+          chance: 100
+          instructions:
+            - repeat:
+                amount: 63
+                loop_parameter: k
+                instructions:
+                  - command: 'particle minecraft:flame $[add(%player_x%, $[mul($[cos($[mul(%k%,
+                      0.2)])], 1)])] $[add(%player_y%, $[mul(%k%, 0.04)])] $[add(%player_z%,
+                      $[mul($[sin($[mul(%k%, 0.2)])], 1)])] 0 0 0 0 1 force @a '
+                  - delay: '0.05'
+            - repeat:
+                amount: 63
+                loop_parameter: k
+                instructions:
+                  - command: 'particle minecraft:flame $[add(%player_x%, $[mul($[cos($[mul(%k%,
+                0.2)])], 1)])] $[add(%player_y%, $[mul($[sub(63, %k%)], 0.04)])]
+                $[add(%player_z%, $[mul($[sin($[mul(%k%, 0.2)])], 1)])] 0 0
+                0 0 1 force @a '
+                  - delay: '0.05'
 
 
 #wolf_summoner:
