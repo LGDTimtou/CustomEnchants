@@ -3,16 +3,14 @@ package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.other.EditorWebSocketClient;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
+import com.lgdtimtou.customenchantments.other.WebSocketConnection;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SubCommandEdit extends SubCommand {
@@ -46,14 +44,17 @@ public class SubCommandEdit extends SubCommand {
             return;
         }
 
-        EditorWebSocketClient client = EditorWebSocketClient.editingEnchantments.getOrDefault(commandSender, Map.of())
-                                                                                .getOrDefault(customEnchant, null);
-        if (client == null) {
-            client = new EditorWebSocketClient(commandSender, customEnchant, yaml);
-            EditorWebSocketClient.editingEnchantments.putIfAbsent(commandSender, new HashMap<>());
-            EditorWebSocketClient.editingEnchantments.get(commandSender).put(customEnchant, client);
-            client.connect();
-        } else client.sendURL(commandSender);
+        WebSocketConnection webSocketConnection = WebSocketConnection.get();
+        webSocketConnection.sendEnchantment(commandSender, customEnchant.getNamespacedName(), yaml);
+
+        //EditorWebSocketClient client = EditorWebSocketClient.editingEnchantments.getOrDefault(commandSender, Map.of())
+        //                                                                        .getOrDefault(customEnchant, null);
+        //if (client == null) {
+        //    client = new EditorWebSocketClient(commandSender, customEnchant, yaml);
+        //    EditorWebSocketClient.editingEnchantments.putIfAbsent(commandSender, new HashMap<>());
+        //    EditorWebSocketClient.editingEnchantments.get(commandSender).put(customEnchant, client);
+        //    client.connect();
+        //} else client.sendURL(commandSender);
     }
 
     @Override

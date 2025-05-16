@@ -12,7 +12,8 @@ public enum Files {
     CONFIG("config.yml"),
     MESSAGES("messages.yml"),
     ENCHANTMENTS("enchantments.yml"),
-    DEFAULT_ENCHANTMENTS("default_enchantments.yml");
+    DEFAULT_ENCHANTMENTS("default_enchantments.yml"),
+    WS(".ws.yml");
 
     private final String path;
 

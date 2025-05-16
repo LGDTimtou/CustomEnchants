@@ -7,6 +7,7 @@ import com.lgdtimtou.customenchantments.nms.EnchantmentManager;
 import com.lgdtimtou.customenchantments.other.EditorWebSocketClient;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
+import com.lgdtimtou.customenchantments.other.WebSocketConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -49,9 +50,16 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         if (!isFirstBoot())
             Util.warn("Reloading is discouraged! Please use /restart instead.");
+
+        // Set static values
         plugin = this;
         setPAPISupport();
+
+        // Register and load the files
         Files.register();
+
+        // Creating the WebSocketConnection (after registering files!)
+        WebSocketConnection.register();
 
         createNMSClasses();
         if (enchantmentsManager == null) {
