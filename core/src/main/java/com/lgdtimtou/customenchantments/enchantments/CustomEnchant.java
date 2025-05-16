@@ -7,6 +7,8 @@ import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCust
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -134,5 +136,20 @@ public class CustomEnchant extends CustomEnchantRecord {
 
         // Fallback: default item
         return Util.getEnchantedItem(player, this);
+    }
+
+    public String getYaml() {
+        ConfigurationSection section = Files.ENCHANTMENTS.getConfig().getConfigurationSection(getNamespacedName());
+        if (section == null) return null;
+
+        YamlConfiguration fullYaml = new YamlConfiguration();
+        YamlConfiguration inner = new YamlConfiguration();
+
+        for (String key : section.getKeys(false)) {
+            inner.set(key, section.get(key));
+        }
+
+        fullYaml.set(getNamespacedName(), inner);
+        return fullYaml.saveToString();
     }
 }

@@ -4,10 +4,9 @@ import com.lgdtimtou.customenchantments.command.enchant.EnchantCommand;
 import com.lgdtimtou.customenchantments.customevents.CustomEvent;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.nms.EnchantmentManager;
-import com.lgdtimtou.customenchantments.other.EditorWebSocketClient;
 import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
-import com.lgdtimtou.customenchantments.other.WebSocketConnection;
+import com.lgdtimtou.customenchantments.websocket.WebSocketConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,6 +20,7 @@ public final class Main extends JavaPlugin {
     private static Main plugin;
     private static boolean PAPISupport;
     private static EnchantmentManager enchantmentsManager;
+    private static WebSocketConnection webSocketConnection;
     private static String minecraftVersion;
 
     public static Main getMain() {
@@ -37,6 +37,12 @@ public final class Main extends JavaPlugin {
 
     public static EnchantmentManager getEnchantmentsManager() {
         return enchantmentsManager;
+    }
+
+    public static WebSocketConnection getWebSocketConnection() {
+        if (webSocketConnection == null)
+            webSocketConnection = new WebSocketConnection();
+        return webSocketConnection;
     }
 
 
@@ -58,9 +64,6 @@ public final class Main extends JavaPlugin {
         // Register and load the files
         Files.register();
 
-        // Creating the WebSocketConnection (after registering files!)
-        WebSocketConnection.register();
-
         createNMSClasses();
         if (enchantmentsManager == null) {
             Bukkit.getPluginManager().disablePlugin(this);
@@ -70,17 +73,15 @@ public final class Main extends JavaPlugin {
         CustomEnchant.register();
         CustomEvent.register();
         new EnchantCommand();
+
+        // Creating the WebSocketConnection (after everything else!)
+        webSocketConnection = new WebSocketConnection();
     }
 
     @Override
     public void onDisable() {
-        try {
-            Class.forName("com.lgdtimtou.customenchantments.other.EditorWebSocketClient");
-            EditorWebSocketClient.shutdown();
-        } catch (ClassNotFoundException ignored) {
-        }
-
         System.setProperty("RELOAD", "TRUE");
+        webSocketConnection.shutdown();
     }
 
     private String getMinecraftVersion() {

@@ -1,14 +1,11 @@
 package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
+import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.other.Files;
 import com.lgdtimtou.customenchantments.other.Util;
-import com.lgdtimtou.customenchantments.other.WebSocketConnection;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,23 +35,7 @@ public class SubCommandEdit extends SubCommand {
             return;
         }
 
-        String yaml = getYamlForEnchant(customEnchant);
-        if (yaml == null) {
-            commandSender.sendMessage(Util.getMessage("EditorNoYaml"));
-            return;
-        }
-
-        WebSocketConnection webSocketConnection = WebSocketConnection.get();
-        webSocketConnection.sendEnchantment(commandSender, customEnchant.getNamespacedName(), yaml);
-
-        //EditorWebSocketClient client = EditorWebSocketClient.editingEnchantments.getOrDefault(commandSender, Map.of())
-        //                                                                        .getOrDefault(customEnchant, null);
-        //if (client == null) {
-        //    client = new EditorWebSocketClient(commandSender, customEnchant, yaml);
-        //    EditorWebSocketClient.editingEnchantments.putIfAbsent(commandSender, new HashMap<>());
-        //    EditorWebSocketClient.editingEnchantments.get(commandSender).put(customEnchant, client);
-        //    client.connect();
-        //} else client.sendURL(commandSender);
+        Main.getWebSocketConnection().sendEnchantment(commandSender, customEnchant);
     }
 
     @Override
@@ -68,21 +49,5 @@ public class SubCommandEdit extends SubCommand {
                                 .map(CustomEnchant::getNamespacedName)
                                 .collect(Collectors.toList());
         else return null;
-    }
-
-    private String getYamlForEnchant(CustomEnchant customEnchant) {
-        String enchantmentName = customEnchant.getNamespacedName();
-        ConfigurationSection section = Files.ENCHANTMENTS.getConfig().getConfigurationSection(enchantmentName);
-        if (section == null) return null;
-
-        YamlConfiguration fullYaml = new YamlConfiguration();
-        YamlConfiguration inner = new YamlConfiguration();
-
-        for (String key : section.getKeys(false)) {
-            inner.set(key, section.get(key));
-        }
-
-        fullYaml.set(enchantmentName, inner);
-        return fullYaml.saveToString();
     }
 }
