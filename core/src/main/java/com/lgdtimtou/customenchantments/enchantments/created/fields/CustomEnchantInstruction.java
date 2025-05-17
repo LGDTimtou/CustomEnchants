@@ -19,7 +19,8 @@ public abstract class CustomEnchantInstruction {
             "delay", DelayInstruction.class,
             "repeat", RepeatInstruction.class,
             "save", SaveInstruction.class,
-            "load", LoadInstruction.class
+            "load", LoadInstruction.class,
+            "conditional", ConditionalInstruction.class
     );
 
     public static CustomEnchantInstruction getInstruction(String name, Object value) {
