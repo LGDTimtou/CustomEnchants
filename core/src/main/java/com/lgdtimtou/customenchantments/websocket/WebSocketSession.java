@@ -62,13 +62,8 @@ public class WebSocketSession {
     }
 
     public static void loadPersistentWebSocketSessions() {
-        for (Map<?, ?> session : Files.WS.getConfig().getMapList("ws_sessions")) {
-            try {
-                webSocketSessions.add(new WebSocketSession(session));
-            } catch (Exception e) {
-                Util.error("Couldn't load WebSocket Session: " + session + "\nError: " + e.getMessage());
-            }
-        }
+        for (Map<?, ?> session : Files.WS.getConfig().getMapList("ws_sessions"))
+            webSocketSessions.add(new WebSocketSession(session));
     }
 
     public static void savePersistentWebSocketSessions() {

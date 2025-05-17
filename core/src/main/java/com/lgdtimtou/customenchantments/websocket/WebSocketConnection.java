@@ -90,10 +90,11 @@ public class WebSocketConnection extends WebSocketClient {
                                         .filter(cr -> cr.code == code)
                                         .findFirst()
                                         .orElse(null);
-        if (closeReason != null)
+
+        if (closeReason != null && closeReason != CloseReason.SERVER_SHUTDOWN)
             Arrays.stream(closeReason.messages)
                   .forEach(WebSocketSession::sendDistinctMessage);
-        else {
+        else if (closeReason != CloseReason.SERVER_SHUTDOWN) {
             WebSocketSession.sendDistinctMessage(Util.getMessage("EditorDisconnected")
                                                      .replace("%reason%", reason)
                                                      .replace("%code%", String.valueOf(code)));
