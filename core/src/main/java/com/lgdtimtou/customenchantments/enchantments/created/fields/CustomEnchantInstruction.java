@@ -1,8 +1,11 @@
 package com.lgdtimtou.customenchantments.enchantments.created.fields;
 
+import com.ezylang.evalex.EvaluationException;
+import com.ezylang.evalex.Expression;
+import com.ezylang.evalex.data.EvaluationValue;
+import com.ezylang.evalex.parser.ParseException;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.instructions.*;
-import com.lgdtimtou.customenchantments.other.FileFunction;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.entity.Player;
 
@@ -10,7 +13,10 @@ import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class CustomEnchantInstruction {
 
@@ -22,6 +28,7 @@ public abstract class CustomEnchantInstruction {
             "load", LoadInstruction.class,
             "conditional", ConditionalInstruction.class
     );
+    private static final Pattern pattern = Pattern.compile("(\\$\\[(?:(?!\\$\\[).)*?\\])");
 
     public static CustomEnchantInstruction getInstruction(String name, Object value) {
         // Check if the instruction type exists in the map
@@ -83,27 +90,47 @@ public abstract class CustomEnchantInstruction {
     protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
     }
 
-    protected String parseValue(Player player, String value, Map<String, Supplier<String>> parameters) {
-        //Replace parameters
-        String newValue = Util.replaceParameters(player, value, parameters);
 
-        //Execute file functions
-        try {
-            newValue = FileFunction.parse(newValue);
-        } catch (NumberFormatException exception) {
-            Util.error("Error when trying to parse the functions of the following value: " + newValue);
+    public String parseNestedExpression(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String substitutedValue = Util.replaceParameters(player, value, parameters);
+
+        Matcher matcher = pattern.matcher(substitutedValue);
+        while (matcher.find()) {
+            String expressionString = matcher.group();
+            String result = parseExpression(
+                    expressionString.substring(2, expressionString.length() - 1),
+                    EvaluationValue::getStringValue,
+                    "error"
+            );
+            substitutedValue = substitutedValue.replace(expressionString, result);
+            matcher = pattern.matcher(substitutedValue);
         }
-        return newValue;
+        return substitutedValue;
     }
 
-    protected Double parseValueAsDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
-        String stringValue = parseValue(player, value, parameters);
+
+    protected boolean parseCondition(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String substitutedValue = parseNestedExpression(player, value, parameters);
+
+        return parseExpression(substitutedValue, EvaluationValue::getBooleanValue, false);
+    }
+
+    protected Double parseDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String substitutedValue = parseNestedExpression(player, value, parameters);
+        return parseExpression(substitutedValue, EvaluationValue::getNumberValue, 0).doubleValue();
+    }
+
+    private <T> T parseExpression(String expressionString, Function<EvaluationValue, T> getValue, T defaultValue) {
+        Expression expression = new Expression(expressionString);
+
+        T result = defaultValue;
         try {
-            return Double.parseDouble(stringValue);
-        } catch (NumberFormatException exception) {
-            Util.warn("Couldn't parse value to number: " + stringValue + ". Defaulting to 0");
-            return 0.0;
+            result = getValue.apply(expression.evaluate());
+        } catch (ParseException | EvaluationException e) {
+            Util.error("Error while evaluating following expression: " + expressionString + ", do all parameters exist?");
+            Util.debug(e.getMessage());
         }
+        return result;
     }
 }
 

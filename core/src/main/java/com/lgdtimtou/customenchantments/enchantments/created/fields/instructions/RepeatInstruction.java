@@ -33,7 +33,7 @@ public class RepeatInstruction extends CustomEnchantInstruction {
     protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
         if (amount == null || instructions == null) return;
 
-        int max = parseValueAsDouble(player, amount, parameters).intValue();
+        int max = parseDouble(player, amount, parameters).intValue();
         callIteration(0, max, player, customEnchant, parameters, executeNextInstruction);
     }
 

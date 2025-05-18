@@ -22,7 +22,7 @@ public class DelayInstruction extends CustomEnchantInstruction {
 
     @Override
     protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        Double delay = parseValueAsDouble(player, delayTime, parameters);
+        double delay = parseDouble(player, delayTime, parameters);
         Util.debug("Delaying for: " + Math.round(delay) + " seconds");
         Bukkit.getScheduler()
               .runTaskLater(
