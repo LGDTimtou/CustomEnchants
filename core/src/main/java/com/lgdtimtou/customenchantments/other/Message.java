@@ -81,7 +81,7 @@ public enum Message {
     private String getMessage() {
         String message = File.MESSAGES.getConfig().getString(getPath());
         if (message == null) {
-            Util.error("&cMessage " + name() + " was not found in messages.yml, setting its default value");
+            Util.error("Message " + getPath() + " was not found in messages.yml, setting its default value");
             File.MESSAGES.getConfig().set(getPath(), defaultMessage);
             File.MESSAGES.save();
             return getMessage();
