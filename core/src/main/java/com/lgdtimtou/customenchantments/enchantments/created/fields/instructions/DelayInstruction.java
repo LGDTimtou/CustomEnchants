@@ -6,6 +6,7 @@ import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -23,7 +24,8 @@ public class DelayInstruction extends CustomEnchantInstruction {
     @Override
     protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
         double delay = parseDouble(player, delayTime, parameters);
-        Util.debug("Delaying for: " + Math.round(delay) + " seconds");
+        DecimalFormat df = new DecimalFormat("#.00");
+        Util.debug("Delaying for: " + df.format(delay) + " seconds");
         Bukkit.getScheduler()
               .runTaskLater(
                       Main.getMain(),

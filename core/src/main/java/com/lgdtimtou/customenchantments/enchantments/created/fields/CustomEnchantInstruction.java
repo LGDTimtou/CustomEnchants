@@ -26,7 +26,8 @@ public abstract class CustomEnchantInstruction {
             "repeat", RepeatInstruction.class,
             "save", SaveInstruction.class,
             "load", LoadInstruction.class,
-            "conditional", ConditionalInstruction.class
+            "conditional", ConditionalInstruction.class,
+            "while", WhileInstruction.class
     );
     private static final Pattern pattern = Pattern.compile("(\\$\\[(?:(?!\\$\\[).)*?\\])");
 
