@@ -4,39 +4,50 @@ import com.lgdtimtou.customenchantments.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
-public enum Files {
+public enum File {
 
-    CONFIG("config.yml"),
-    MESSAGES("messages.yml"),
-    ENCHANTMENTS("enchantments.yml"),
-    DEFAULT_ENCHANTMENTS("default_enchantments.yml"),
-    WS(".ws.yml");
+    CONFIG("config.yml", (file) -> {}),
+    ENCHANTMENTS("enchantments.yml", (file) -> {}),
+    DEFAULT_ENCHANTMENTS("default_enchantments.yml", (file) -> {}),
+    WS(".ws.yml", (file) -> {}),
+    MESSAGES("messages.yml", (file) -> {
+        for (Message message : Message.values())
+            if (file.getConfig().get(message.getPath()) == null)
+                file.getConfig().set(message.getPath(), message.getDefault());
+        file.save();
+    });
 
     private final String path;
-
+    private final Consumer<File> initialization;
     private FileConfiguration config;
-    private File file;
+    private java.io.File file;
 
 
-    Files(String path) {
+    File(String path, Consumer<File> initialization) {
         this.path = path;
+        this.initialization = initialization;
     }
 
+
     public static void register() {
-        for (Files yamlFile : Files.values()) {
-            if (yamlFile.file == null)
-                yamlFile.file = new File(Main.getMain().getDataFolder(), yamlFile.path);
-            if (!yamlFile.file.exists() || yamlFile.file.length() == 0)
-                Main.getMain().saveResource(yamlFile.path, true);
-        }
+        Arrays.stream(File.values()).forEach(File::registerFile);
+    }
+
+    private void registerFile() {
+        if (file == null)
+            file = new java.io.File(Main.getMain().getDataFolder(), path);
+        if (!file.exists() || file.length() == 0)
+            Main.getMain().saveResource(path, true);
+        initialization.accept(this);
     }
 
     public void reloadConfig() {
         if (file == null)
-            file = new File(Main.getMain().getDataFolder(), path);
+            file = new java.io.File(Main.getMain().getDataFolder(), path);
 
         config = YamlConfiguration.loadConfiguration(file);
     }
@@ -72,7 +83,7 @@ public enum Files {
         }
 
         public boolean getBoolean() {
-            return Files.CONFIG.getConfig().getBoolean(this.path);
+            return File.CONFIG.getConfig().getBoolean(this.path);
         }
     }
 }

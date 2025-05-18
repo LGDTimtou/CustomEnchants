@@ -6,7 +6,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchan
 import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantedItemLocation;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
-import com.lgdtimtou.customenchantments.other.Files;
+import com.lgdtimtou.customenchantments.other.File;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,7 +32,7 @@ public class CustomEnchantBuilder {
     public CustomEnchantBuilder(String name) {
         this.error = false;
         this.namespacedName = Util.getNamedspacedName(name);
-        FileConfiguration config = Files.ENCHANTMENTS.getConfig();
+        FileConfiguration config = File.ENCHANTMENTS.getConfig();
 
         //Parsing the enabled option
         enabled = config.getBoolean(namespacedName + ".enabled");
@@ -82,7 +82,7 @@ public class CustomEnchantBuilder {
 
     public CustomEnchantBuilder(DefaultCustomEnchant defaultCustomEnchant) {
         this.namespacedName = defaultCustomEnchant.getNamespacedName();
-        FileConfiguration config = Files.DEFAULT_ENCHANTMENTS.getConfig();
+        FileConfiguration config = File.DEFAULT_ENCHANTMENTS.getConfig();
 
         if (!config.contains(this.namespacedName)) {
             Util.error("Default custom enchantment " + this.namespacedName + " has not been found in the default_enchantments.yml file");

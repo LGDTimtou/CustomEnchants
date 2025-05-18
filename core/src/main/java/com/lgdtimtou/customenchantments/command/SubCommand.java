@@ -28,7 +28,7 @@ public abstract class SubCommand {
         return minArguments;
     }
 
-    public String getUsageMessageID() {
+    public String getUsageMessage() {
         return usageMessageID;
     }
 

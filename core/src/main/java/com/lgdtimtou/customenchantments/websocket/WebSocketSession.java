@@ -1,7 +1,8 @@
 package com.lgdtimtou.customenchantments.websocket;
 
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.other.Files;
+import com.lgdtimtou.customenchantments.other.File;
+import com.lgdtimtou.customenchantments.other.Message;
 import com.lgdtimtou.customenchantments.other.Util;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -62,7 +63,7 @@ public class WebSocketSession {
     }
 
     public static void loadPersistentWebSocketSessions() {
-        for (Map<?, ?> session : Files.WS.getConfig().getMapList("ws_sessions"))
+        for (Map<?, ?> session : File.WS.getConfig().getMapList("ws_sessions"))
             webSocketSessions.add(new WebSocketSession(session));
     }
 
@@ -103,7 +104,7 @@ public class WebSocketSession {
     }
 
     private void saveState() {
-        List<Map<?, ?>> sessions = Files.WS.getConfig().getMapList("ws_sessions");
+        List<Map<?, ?>> sessions = File.WS.getConfig().getMapList("ws_sessions");
 
         Map<String, Object> sessionData = Map.of(
                 "type", type.name(),
@@ -124,8 +125,8 @@ public class WebSocketSession {
         if (index == sessions.size())
             sessions.add(sessionData);
 
-        Files.WS.getConfig().set("ws_sessions", sessions);
-        Files.WS.save();
+        File.WS.getConfig().set("ws_sessions", sessions);
+        File.WS.save();
     }
 
     public void updateYAML(String yamlString) {
@@ -133,42 +134,39 @@ public class WebSocketSession {
         try {
             yamlConf.loadFromString(yamlString);
         } catch (Exception e) {
-            sendMessage(Util.getMessage("EditorYAMLParseFail").replace("%yaml%", yamlString));
+            sendMessage(Message.WEBSOCKET__ERROR__YAML_PARSE.get(Map.of("yaml", yamlString)));
             return;
         }
 
         String newName = yamlConf.getKeys(false).stream().findFirst().orElse(null);
         if (newName == null) {
-            sendMessage(Util.getMessage("EditorYAMLParseFail").replace("%yaml%", yamlString));
+            sendMessage(Message.WEBSOCKET__ERROR__YAML_PARSE.get(Map.of("yaml", yamlString)));
             return;
         }
 
         boolean isNewName = type == WebSocketSessionType.EDIT && !newName.equals(customEnchantName);
         if (isNewName)
-            sendMessage(Util.getMessage("EditorCannotChangeName"));
+            sendMessage(Message.COMMANDS__EDIT__NAME_CHANGE.get());
 
         String duplicateName = newName;
         int i = 1;
-        while (type == WebSocketSessionType.CREATE && Files.ENCHANTMENTS.getConfig().get(duplicateName) != null)
+        while (type == WebSocketSessionType.CREATE && File.ENCHANTMENTS.getConfig().get(duplicateName) != null)
             duplicateName = newName + i++;
 
         if (!duplicateName.equalsIgnoreCase(newName))
-            sendMessage(Util.getMessage("EditorDuplicateName")
-                            .replace("%existing%", newName)
-                            .replace("%new%", duplicateName));
-
+            sendMessage(Message.COMMANDS__CREATE__EXISTING_NAME.get(Map.of("existing", newName, "new", duplicateName)));
         String name = isNewName ? customEnchantName : duplicateName;
         Object yamlContent = yamlConf.get(newName);
 
-        Files.ENCHANTMENTS.getConfig().set(name, yamlContent);
-        Files.ENCHANTMENTS.save();
+        File.ENCHANTMENTS.getConfig().set(name, yamlContent);
+        File.ENCHANTMENTS.save();
 
         this.type = WebSocketSessionType.EDIT;
         this.customEnchantName = name;
         saveState();
 
-        sendMessage(Util.getMessage("EditorYAMLSuccess"));
-        sendMessage(Util.getMessage("EditorRestartServer"));
+        sendMessage(Message.WEBSOCKET__SUCCESS.get());
+        sendMessage(Message.GLOBAL__RESTART_SERVER.get());
     }
 
     public WebSocketSessionStatus getStatus() {
@@ -187,34 +185,39 @@ public class WebSocketSession {
         String url = Util.getWebBuilderUrl("secret", secret);
 
         if (commandSender instanceof Player player) {
-            String message = type == WebSocketSessionType.CREATE ? Util.getMessage("EditorClickToCreate") : Util.getMessage(
-                                                                                                                        "EditorClickToEdit")
-                                                                                                                .replace(
-                                                                                                                        "%enchant%",
-                                                                                                                        customEnchantName
-                                                                                                                );
-            TextComponent openEditor = new TextComponent(message);
-            openEditor.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-            openEditor.setHoverEvent(new HoverEvent(
-                    HoverEvent.Action.SHOW_TEXT,
-                    new Text(Util.getMessageNoPrefix("EditorURLHover"))
-            ));
+            TextComponent openEditor = getPlayerURLMessage(url);
             player.spigot().sendMessage(openEditor);
         } else {
-            String message = type == WebSocketSessionType.CREATE ?
-                    Util.getMessage("EditorURLConsoleCreate") :
-                    Util.getMessage("EditorURLConsoleEdit")
-                        .replace(
-                                "%enchant%",
-                                customEnchantName
-                        );
-
-            sendMessage(message.replace(
-                    "%url%",
-                    url
+            String message = (type == WebSocketSessionType.CREATE ?
+                    Message.COMMANDS__CREATE__CONSOLE_MESSAGE :
+                    Message.COMMANDS__EDIT__CONSOLE_MESSAGE
+            ).get(Map.of(
+                    "enchant", customEnchantName,
+                    "url", url
             ));
+
+            sendMessage(message);
         }
     }
+
+    private @NotNull TextComponent getPlayerURLMessage(String url) {
+        String message = type == WebSocketSessionType.CREATE ?
+                Message.COMMANDS__CREATE__PLAYER_MESSAGE.get() :
+                Message.COMMANDS__EDIT__PLAYER_MESSAGE.get(Map.of("enchant", customEnchantName));
+
+        String hoverMessage = type == WebSocketSessionType.CREATE ?
+                Message.COMMANDS__CREATE__PLAYER_MESSAGE_HOVER.getNoPrefix() :
+                Message.COMMANDS__EDIT__PLAYER_MESSAGE_HOVER.getNoPrefix();
+
+        TextComponent openEditor = new TextComponent(message);
+        openEditor.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+        openEditor.setHoverEvent(new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                new Text(hoverMessage)
+        ));
+        return openEditor;
+    }
+
 
     public JSONObject getJson() {
         return new JSONObject(Map.of(

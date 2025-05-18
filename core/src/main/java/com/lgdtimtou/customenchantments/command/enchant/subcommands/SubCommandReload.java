@@ -2,8 +2,8 @@ package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
-import com.lgdtimtou.customenchantments.other.Files;
-import com.lgdtimtou.customenchantments.other.Util;
+import com.lgdtimtou.customenchantments.other.File;
+import com.lgdtimtou.customenchantments.other.Message;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class SubCommandReload extends SubCommand {
 
     @Override
     public void execute(CommandSender commandSender, String[] args) {
-        Arrays.stream(Files.values()).forEach(Files::reloadConfig);
-        commandSender.sendMessage(Util.getMessage("ConfigReloadSuccess"));
+        Arrays.stream(File.values()).forEach(File::reloadConfig);
+        commandSender.sendMessage(Message.COMMANDS__RELOAD__SUCCESS.get());
     }
 }

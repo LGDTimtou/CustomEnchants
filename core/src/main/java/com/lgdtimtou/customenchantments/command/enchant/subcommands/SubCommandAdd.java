@@ -3,7 +3,8 @@ package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.other.Files;
+import com.lgdtimtou.customenchantments.other.File;
+import com.lgdtimtou.customenchantments.other.Message;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
 public class SubCommandAdd extends SubCommand {
 
     public SubCommandAdd(Command command) {
-        super(command, "add", 1, "EnchantSubCommandAddUsage");
+        super(command, "add", 1, Message.COMMANDS__ADD__USAGE.get());
     }
 
     @Override
@@ -43,7 +44,7 @@ public class SubCommandAdd extends SubCommand {
                                                                                              .startsWith(args[1].toLowerCase()))
                                                                    .filter(enchant -> finalItem == null || !finalItem.containsEnchantment(
                                                                            enchant))
-                                                                   .filter(enchant -> finalItem == null || Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()
+                                                                   .filter(enchant -> finalItem == null || File.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()
                                                                            || enchant.canEnchantItem(finalItem));
                 yield filtered.map(enchant -> enchant.getKey().getKey()).collect(Collectors.toList());
             }
@@ -67,7 +68,7 @@ public class SubCommandAdd extends SubCommand {
     @Override
     public void execute(CommandSender commandSender, String[] args) {
         if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage(Util.getMessage("OnlyPlayers"));
+            commandSender.sendMessage(Message.COMMANDS__ONLY_PLAYERS.get());
             return;
         }
         String enchantName = args[1].toLowerCase();
@@ -76,7 +77,7 @@ public class SubCommandAdd extends SubCommand {
             try {
                 level = Integer.parseInt(args[2]);
             } catch (Exception e) {
-                player.sendMessage(Util.getMessage("EnchantCommandUsage"));
+                player.sendMessage(Message.COMMANDS__ADD__USAGE.get());
                 return;
             }
         }
@@ -84,29 +85,33 @@ public class SubCommandAdd extends SubCommand {
         //Enchant bestaat niet
         Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(enchantName));
         if (enchantment == null) {
-            player.sendMessage(Util.getMessage("NonExistingEnchant"));
+            player.sendMessage(Message.COMMANDS__NON_EXISTING_ENCHANT.get());
             return;
         }
         String enchantmentName = Util.title(enchantment.getKey().getKey());
 
         //Speler heeft niets vast
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-            player.sendMessage(Util.getMessage("EmptyHand"));
+            player.sendMessage(Message.COMMANDS__EMPTY_HAND.get());
             return;
         }
 
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (item.containsEnchantment(enchantment) && level == item.getEnchantmentLevel(enchantment)) {
-            player.sendMessage(Util.getMessage("AlreadyHasEnchant").replace("%enchant%", enchantmentName)
-                                   .replace("%level%", CustomEnchant.getLevelRoman(level)));
+            player.sendMessage(Message.COMMANDS__ADD__ALREADY_HAS_ENCHANT.get(Map.of(
+                    "enchant",
+                    enchantmentName,
+                    "level",
+                    CustomEnchant.getLevelRoman(level)
+            )));
             return;
         }
 
         if (level <= 0 || enchantment.getMaxLevel() < level) {
             player.sendMessage(Util.replaceParameters(
                     player,
-                    Util.getMessage("LevelRange"),
+                    Message.COMMANDS__ADD__LEVEL_RANGE.get(),
                     Map.of(
                             "max_level", () -> String.valueOf(enchantment.getMaxLevel()),
                             "enchant", () -> enchantName
@@ -122,7 +127,7 @@ public class SubCommandAdd extends SubCommand {
             return;
         }
 
-        boolean unsafeEnchantmentsAllowed = Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean();
+        boolean unsafeEnchantmentsAllowed = File.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean();
 
         // Conflicting enchantments
         List<String> conflictingEnchantments = item.getEnchantments().keySet().stream()
@@ -130,30 +135,28 @@ public class SubCommandAdd extends SubCommand {
                                                    .map(ench -> ench.getKey().toString())
                                                    .toList();
         if (!conflictingEnchantments.isEmpty() && !unsafeEnchantmentsAllowed) {
-            player.sendMessage(Util.getMessage("ConflictingEnchantment")
-                                   .replace("%enchantment%", enchantmentName)
-                                   .replace("%conflicting_enchantments%", conflictingEnchantments.toString())
-            );
-            player.sendMessage(Util.getMessageNoPrefix("Setting")
-                                   .replace("%setting%", "allow_unsafe_enchantments"));
+            player.sendMessage(Message.COMMANDS__ADD__CONFLICTING_ENCHANTMENT.get(Map.of(
+                    "enchant",
+                    enchantmentName,
+                    "conflicting_enchantments",
+                    conflictingEnchantments.toString()
+            )));
+            player.sendMessage(Message.GLOBAL__SETTING.getNoPrefix(Map.of("setting", "allow_unsafe_enchantments")));
             return;
         }
 
         // Correct tool
         boolean correctTool = enchantment.canEnchantItem(item);
         if (!correctTool && !unsafeEnchantmentsAllowed) {
-            player.sendMessage(Util.getMessage("UnsafeEnchantment")
-                                   .replace("%enchant%", enchantmentName)
-                                   .replace(
-                                           "%item%",
-                                           player.getInventory().getItemInMainHand().getType().toString()
-                                   ));
-            player.sendMessage(Util.getMessageNoPrefix("Setting")
-                                   .replace("%setting%", "allow_unsafe_enchantments"));
+            player.sendMessage(Message.COMMANDS__ADD__UNSAFE_ENCHANTMENT.get(Map.of(
+                    "enchant", enchantmentName,
+                    "item", player.getInventory().getItemInMainHand().getType().toString()
+            )));
+            player.sendMessage(Message.GLOBAL__SETTING.getNoPrefix(Map.of("setting", "allow_unsafe_enchantments")));
             return;
         }
 
-        if (Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean())
+        if (File.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean())
             item.addUnsafeEnchantment(enchantment, level);
         else
             item.addEnchantment(enchantment, level);

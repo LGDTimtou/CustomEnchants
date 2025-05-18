@@ -3,7 +3,7 @@ package com.lgdtimtou.customenchantments.command.enchant;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.command.enchant.subcommands.*;
-import com.lgdtimtou.customenchantments.other.Util;
+import com.lgdtimtou.customenchantments.other.Message;
 import org.bukkit.command.CommandSender;
 
 public class EnchantCommand extends Command {
@@ -23,28 +23,28 @@ public class EnchantCommand extends Command {
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
         if (!hasPermission(sender)) {
-            sender.sendMessage(Util.getMessage("NoPermission"));
+            sender.sendMessage(Message.COMMANDS__NO_PERMISSION.get());
             return false;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(Util.getMessage("EnchantCommandUsage"));
+            sender.sendMessage(Message.COMMANDS__USAGE.get());
             return false;
         }
 
         SubCommand subCommand = this.getSubCommand(args[0].toLowerCase());
         if (subCommand == null) {
-            sender.sendMessage(Util.getMessage("EnchantCommandUsage"));
+            sender.sendMessage(Message.COMMANDS__USAGE.get());
             return false;
         }
 
         if (!subCommand.hasPermission(sender)) {
-            sender.sendMessage(Util.getMessage("NoPermission"));
+            sender.sendMessage(Message.COMMANDS__NO_PERMISSION.get());
             return false;
         }
 
         if (args.length < subCommand.getMinArguments()) {
-            sender.sendMessage(Util.getMessage(subCommand.getUsageMessageID()));
+            sender.sendMessage(subCommand.getUsageMessage());
             return false;
         }
 

@@ -3,7 +3,7 @@ package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.other.Util;
+import com.lgdtimtou.customenchantments.other.Message;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -22,7 +22,7 @@ public class SubCommandList extends SubCommand {
     @Override
     public void execute(CommandSender commandSender, String[] args) {
         if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage(Util.getMessage("OnlyPlayers"));
+            commandSender.sendMessage(Message.COMMANDS__ONLY_PLAYERS.get());
             return;
         }
         // Default enchantments (not editable)

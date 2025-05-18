@@ -4,7 +4,7 @@ import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.other.Util;
+import com.lgdtimtou.customenchantments.other.Message;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -25,13 +25,13 @@ public class SubCommandEdit extends SubCommand {
         try {
             customEnchant = CustomEnchant.get(enchantmentName);
         } catch (IllegalArgumentException e) {
-            commandSender.sendMessage(Util.getMessage("NonExistingEnchant"));
+            commandSender.sendMessage(Message.COMMANDS__NON_EXISTING_ENCHANT.get());
             return;
         }
 
         // Default enchantments
         if (customEnchant.isDefaultEnchantment()) {
-            commandSender.sendMessage(Util.getMessage("EditDefaultEnchant"));
+            commandSender.sendMessage(Message.COMMANDS__EDIT__DEFAULT_ENCHANT.get());
             return;
         }
 

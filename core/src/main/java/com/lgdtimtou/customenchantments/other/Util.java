@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.permissions.Permissible;
 
 import java.util.*;
@@ -69,7 +68,7 @@ public final class Util {
     }
 
     public static void debug(String message) {
-        if (Files.ConfigValue.VERBOSE.getBoolean())
+        if (File.ConfigValue.VERBOSE.getBoolean())
             Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[DEBUG] " + message);
     }
 
@@ -94,32 +93,6 @@ public final class Util {
         }
 
         return (minDistance <= 3) ? closest : null;
-    }
-
-    public static String getMessage(String name) {
-        String message = Files.MESSAGES.getConfig().getString(name);
-        if (name.equals("Prefix"))
-            return message == null ? ChatColor.RED + "Prefix not found!" : format(message);
-        return Util.getMessage("Prefix") +
-                (message == null ? ChatColor.RED + name + " message not found!" : format(message));
-    }
-
-    public static String getMessageNoPrefix(String name) {
-        String message = Files.MESSAGES.getConfig().getString(name);
-        return (message == null ? ChatColor.RED + name + " message not found!" : format(message));
-    }
-
-    public static String format(String str) {
-        return ChatColor.translateAlternateColorCodes('&', str);
-    }
-
-    public static ItemStack getPlayerHead(UUID uuid) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
-
-        meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
-        item.setItemMeta(meta);
-        return item;
     }
 
     public static int getLevel(ItemStack item, Enchantment enchantment) {
@@ -173,7 +146,7 @@ public final class Util {
     public static Set<EquipmentSlot> targetsToSlots(Set<EnchantmentTarget> targets) {
         Set<EquipmentSlot> slots = new HashSet<>();
 
-        if (Files.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()) {
+        if (File.ConfigValue.ALLOW_UNSAFE_ENCHANTMENTS.getBoolean()) {
             slots.addAll(armorEquipmentSlots);
             slots.add(EquipmentSlot.HAND);
             return slots;

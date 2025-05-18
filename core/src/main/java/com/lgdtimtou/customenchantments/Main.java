@@ -4,7 +4,7 @@ import com.lgdtimtou.customenchantments.command.enchant.EnchantCommand;
 import com.lgdtimtou.customenchantments.customevents.CustomEvent;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.nms.EnchantmentManager;
-import com.lgdtimtou.customenchantments.other.Files;
+import com.lgdtimtou.customenchantments.other.File;
 import com.lgdtimtou.customenchantments.other.Util;
 import com.lgdtimtou.customenchantments.websocket.WebSocketConnection;
 import org.bukkit.Bukkit;
@@ -59,7 +59,7 @@ public final class Main extends JavaPlugin {
             Util.warn("Reloading is discouraged! Please use /restart instead.");
 
         // Register and load the files
-        Files.register();
+        File.register();
 
         setPAPISupport();
 

@@ -4,7 +4,8 @@ import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.created.builders.CustomEnchantBuilder;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantedItemLocation;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
-import com.lgdtimtou.customenchantments.other.Files;
+import com.lgdtimtou.customenchantments.other.File;
+import com.lgdtimtou.customenchantments.other.Message;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,7 +44,7 @@ public class CustomEnchant extends CustomEnchantRecord {
 
             if (!Main.isFirstBoot())
                 for (Player player : Bukkit.getOnlinePlayers())
-                    player.kickPlayer(Util.getMessageNoPrefix("EditorNewEnchantmentKickMessage"));
+                    player.kickPlayer(Message.COMMANDS__CREATE__KICK.getNoPrefix());
         }
 
         enchantments.put(this.namespacedName, this);
@@ -54,7 +55,7 @@ public class CustomEnchant extends CustomEnchantRecord {
         Main.getEnchantmentsManager().unFreezeRegistry();
 
         //Build CustomEnchantments from enchantments.yml
-        for (String enchant : Files.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
+        for (String enchant : File.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
             new CustomEnchantBuilder(enchant).build(false);
 
         //Register the default custom enchantments
@@ -139,7 +140,7 @@ public class CustomEnchant extends CustomEnchantRecord {
     }
 
     public String getYaml() {
-        ConfigurationSection section = Files.ENCHANTMENTS.getConfig().getConfigurationSection(getNamespacedName());
+        ConfigurationSection section = File.ENCHANTMENTS.getConfig().getConfigurationSection(getNamespacedName());
         if (section == null) return null;
 
         YamlConfiguration fullYaml = new YamlConfiguration();

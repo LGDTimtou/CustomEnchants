@@ -2,6 +2,7 @@ package com.lgdtimtou.customenchantments.command.enchant.subcommands;
 
 import com.lgdtimtou.customenchantments.command.Command;
 import com.lgdtimtou.customenchantments.command.SubCommand;
+import com.lgdtimtou.customenchantments.other.Message;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +45,7 @@ public class SubCommandRemove extends SubCommand {
     @Override
     public void execute(CommandSender commandSender, String[] args) {
         if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage(Util.getMessage("OnlyPlayers"));
+            commandSender.sendMessage(Message.COMMANDS__ONLY_PLAYERS.get());
             return;
         }
 
@@ -52,21 +54,21 @@ public class SubCommandRemove extends SubCommand {
         //Enchant bestaat niet
         Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(enchantName));
         if (enchantment == null) {
-            player.sendMessage(Util.getMessage("NonExistingEnchant"));
+            player.sendMessage(Message.COMMANDS__NON_EXISTING_ENCHANT.get());
             return;
         }
         String enchantmentName = Util.title(enchantment.getKey().getKey());
 
         //Speler heeft niets vast
         if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
-            player.sendMessage(Util.getMessage("EmptyHand"));
+            player.sendMessage(Message.COMMANDS__EMPTY_HAND.get());
             return;
         }
 
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (!item.containsEnchantment(enchantment)) {
-            player.sendMessage(Util.getMessage("DoesntHaveEnchant").replace("%enchant%", enchantmentName));
+            player.sendMessage(Message.COMMANDS__REMOVE__DOESNT_HAVE_ENCHANT.get(Map.of("enchant", enchantmentName)));
             return;
         }
 

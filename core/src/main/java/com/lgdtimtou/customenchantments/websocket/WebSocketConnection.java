@@ -2,7 +2,8 @@ package com.lgdtimtou.customenchantments.websocket;
 
 import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
-import com.lgdtimtou.customenchantments.other.Files;
+import com.lgdtimtou.customenchantments.other.File;
+import com.lgdtimtou.customenchantments.other.Message;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -45,11 +46,11 @@ public class WebSocketConnection extends WebSocketClient {
     @NotNull
     private static String getServerID() {
         String path = "ws_server_id";
-        String secret = Files.WS.getConfig().getString(path, null);
+        String secret = File.WS.getConfig().getString(path, null);
         if (secret == null || secret.isBlank()) {
             secret = UUID.randomUUID().toString();
-            Files.WS.getConfig().set(path, secret);
-            Files.WS.save();
+            File.WS.getConfig().set(path, secret);
+            File.WS.save();
         }
         return secret;
     }
@@ -95,15 +96,16 @@ public class WebSocketConnection extends WebSocketClient {
             Arrays.stream(closeReason.messages)
                   .forEach(WebSocketSession::sendDistinctMessage);
         else if (closeReason != CloseReason.SERVER_SHUTDOWN) {
-            WebSocketSession.sendDistinctMessage(Util.getMessage("EditorDisconnected")
-                                                     .replace("%reason%", reason)
-                                                     .replace("%code%", String.valueOf(code)));
+            WebSocketSession.sendDistinctMessage(Message.WEBSOCKET__ERROR__CLOSED_UNKNOWN_REASON.get(Map.of(
+                    "reason", reason,
+                    "code", String.valueOf(code)
+            )));
         }
 
         WebSocketSession.savePersistentWebSocketSessions();
         if (closeReason == null || closeReason.clearSessions) {
-            Files.WS.getConfig().set("ws_sessions", List.of());
-            Files.WS.save();
+            File.WS.getConfig().set("ws_sessions", List.of());
+            File.WS.save();
         }
     }
 
@@ -119,7 +121,7 @@ public class WebSocketConnection extends WebSocketClient {
 
     public void sendEnchantment(CommandSender commandSender, CustomEnchant customEnchant) {
         if (customEnchant != null && customEnchant.getYaml() == null) {
-            commandSender.sendMessage(Util.getMessage("EditorNoYaml"));
+            commandSender.sendMessage(Message.COMMANDS__EDIT__NO_YAML.get());
             return;
         }
 
@@ -127,17 +129,16 @@ public class WebSocketConnection extends WebSocketClient {
         session.setStatus(WebSocketSessionStatus.WAITING_CONNECTION_URL);
 
         if (connecting) {
-            commandSender.sendMessage(Util.getMessage("EditorConnecting"));
+            commandSender.sendMessage(Message.WEBSOCKET__CONNECTING.get());
             return;
         }
 
         if (!isOpen()) {
-            commandSender.sendMessage(Util.getMessage("EditorConnecting"));
+            commandSender.sendMessage(Message.WEBSOCKET__CONNECTING.get());
             tasks.add(Bukkit.getScheduler()
                             .runTaskLater(
                                     Main.getMain(),
-                                    () -> commandSender.sendMessage(Util.getMessage(
-                                            "EditorConnectingSlow")),
+                                    () -> commandSender.sendMessage(Message.WEBSOCKET__SLOW_CONNECTION.get()),
                                     100L
                             ));
             connect();
@@ -161,12 +162,10 @@ public class WebSocketConnection extends WebSocketClient {
     }
 
     public enum CloseReason {
-        WRONG_FORMATTED_MESSAGE(4000, Util.getMessage("EditorInvalidMessage")),
-        COULD_NOT_PARSE_YAML(4003, Util.getMessage("EditorYAMLParseFail")),
-        SERVER_SHUTDOWN(4001, false, Util.getMessage("EditorServerShutdown")),
-        SESSION_EXPIRED(4999, Util.getMessage("EditorSessionExpired")),
-        REMOTE_SERVER_CLOSED(1006, Util.getMessage("EditorRemoteClosed")),
-        REMOTE_SERVER_OFFLINE(-1, Util.getMessage("EditorRemoteOffline"));
+        SERVER_SHUTDOWN(4998, ""),
+        SESSION_EXPIRED(4999, Message.WEBSOCKET__SESSION_EXPIRED.get()),
+        REMOTE_SERVER_CLOSED(1006, Message.WEBSOCKET__ERROR__REMOTE_CLOSED.get()),
+        REMOTE_SERVER_OFFLINE(-1, Message.WEBSOCKET__ERROR__REMOTE_CLOSED.get());
 
         private final int code;
         private final boolean clearSessions;
