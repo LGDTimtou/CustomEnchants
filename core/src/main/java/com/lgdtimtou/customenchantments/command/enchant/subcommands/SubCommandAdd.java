@@ -22,13 +22,13 @@ import java.util.stream.Stream;
 public class SubCommandAdd extends SubCommand {
 
     public SubCommandAdd(Command command) {
-        super(command, "add", 2, "EnchantSubCommandAddUsage");
+        super(command, "add", 1, "EnchantSubCommandAddUsage");
     }
 
     @Override
     public List<String> getTabValues(CommandSender commandSender, String[] args) {
         if (!(commandSender instanceof Player player))
-            return null;
+            return List.of();
 
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() == Material.AIR || item.getItemMeta() == null)
@@ -57,10 +57,10 @@ public class SubCommandAdd extends SubCommand {
                                    .mapToObj(Integer::toString)
                                    .collect(Collectors.toList());
                 } else {
-                    yield null;
+                    yield List.of();
                 }
             }
-            default -> null;
+            default -> List.of();
         };
     }
 

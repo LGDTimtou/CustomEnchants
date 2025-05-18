@@ -16,7 +16,7 @@ public abstract class SubCommand {
     public SubCommand(Command command, String label, int minArguments, String usageMessageID) {
         this.permission = command.permission;
         this.label = label;
-        this.minArguments = minArguments;
+        this.minArguments = minArguments + 1;
         this.usageMessageID = usageMessageID;
     }
 

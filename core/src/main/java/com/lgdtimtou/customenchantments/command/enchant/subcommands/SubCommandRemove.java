@@ -17,13 +17,13 @@ import java.util.stream.Stream;
 
 public class SubCommandRemove extends SubCommand {
     public SubCommandRemove(Command command) {
-        super(command, "remove", 2, "EnchantSubCommandRemoveUsage");
+        super(command, "remove", 1, "EnchantSubCommandRemoveUsage");
     }
 
     @Override
     public List<String> getTabValues(CommandSender commandSender, String[] args) {
         if (!(commandSender instanceof Player player))
-            return null;
+            return List.of();
 
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() == Material.AIR || item.getItemMeta() == null)
@@ -37,7 +37,7 @@ public class SubCommandRemove extends SubCommand {
                                                                .filter(enchant -> finalItem == null || finalItem.containsEnchantment(
                                                                        enchant));
             return filtered.map(enchant -> enchant.getKey().getKey()).collect(Collectors.toList());
-        } else return null;
+        } else return List.of();
     }
 
     @Override

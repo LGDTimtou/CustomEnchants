@@ -51,3 +51,7 @@ EditorRemoteOffline: "&cRemote server is offline"
 # Shutdowns
 EditorServerShutdown: "&eWebSocket connection closed due to server shutdown."
 EditorSessionExpired: "&eWebSocket connection expired after 30 minutes of inactivity"
+
+
+
+ConfigReloadSuccess: "&aSuccessfully reloaded files!"

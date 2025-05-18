@@ -11,7 +11,7 @@ public class SubCommandCreate extends SubCommand {
 
 
     public SubCommandCreate(Command command) {
-        super(command, "create", 1, "EnchantSubCommandCreateUsage");
+        super(command, "create", 0, "EnchantSubCommandCreateUsage");
     }
 
     @Override
@@ -21,6 +21,6 @@ public class SubCommandCreate extends SubCommand {
 
     @Override
     public List<String> getTabValues(CommandSender commandSender, String[] args) {
-        return null;
+        return List.of();
     }
 }

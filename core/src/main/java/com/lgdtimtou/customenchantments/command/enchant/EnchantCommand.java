@@ -15,7 +15,8 @@ public class EnchantCommand extends Command {
                 new SubCommandRemove(this),
                 new SubCommandEdit(this),
                 new SubCommandList(this),
-                new SubCommandCreate(this)
+                new SubCommandCreate(this),
+                new SubCommandReload(this)
         );
     }
 

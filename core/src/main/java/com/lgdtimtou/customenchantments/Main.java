@@ -54,15 +54,14 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        plugin = this;
         if (!isFirstBoot())
             Util.warn("Reloading is discouraged! Please use /restart instead.");
 
-        // Set static values
-        plugin = this;
-        setPAPISupport();
-
         // Register and load the files
         Files.register();
+
+        setPAPISupport();
 
         createNMSClasses();
         if (enchantmentsManager == null) {

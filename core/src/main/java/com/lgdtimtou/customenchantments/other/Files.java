@@ -29,8 +29,8 @@ public enum Files {
         for (Files yamlFile : Files.values()) {
             if (yamlFile.file == null)
                 yamlFile.file = new File(Main.getMain().getDataFolder(), yamlFile.path);
-            if (!yamlFile.file.exists())
-                Main.getMain().saveResource(yamlFile.path, false);
+            if (!yamlFile.file.exists() || yamlFile.file.length() == 0)
+                Main.getMain().saveResource(yamlFile.path, true);
         }
     }
 
@@ -39,7 +39,6 @@ public enum Files {
             file = new File(Main.getMain().getDataFolder(), path);
 
         config = YamlConfiguration.loadConfiguration(file);
-        save();
     }
 
     public FileConfiguration getConfig() {
@@ -49,12 +48,14 @@ public enum Files {
     }
 
     public void save() {
-        if (config == null || file == null)
+        if (config == null || file == null) {
+            Util.debug("Could not save: " + this.name() + ", because the config or file is null");
             return;
+        }
         try {
             getConfig().save(file);
         } catch (IOException e) {
-            Util.error("Could not save file: " + path);
+            Util.debug("Could not save file: " + path);
         }
     }
 

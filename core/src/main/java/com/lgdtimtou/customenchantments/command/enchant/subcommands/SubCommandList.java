@@ -16,7 +16,7 @@ import java.util.List;
 public class SubCommandList extends SubCommand {
 
     public SubCommandList(Command command) {
-        super(command, "list", 1, "EnchantSubCommandListUsage");
+        super(command, "list", 0, "EnchantSubCommandListUsage");
     }
 
     @Override
@@ -59,6 +59,6 @@ public class SubCommandList extends SubCommand {
 
     @Override
     public List<String> getTabValues(CommandSender commandSender, String[] args) {
-        return null;
+        return List.of();
     }
 }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class SubCommandEdit extends SubCommand {
 
     public SubCommandEdit(Command command) {
-        super(command, "edit", 2, "EnchantSubCommandEditUsage");
+        super(command, "edit", 1, "EnchantSubCommandEditUsage");
     }
 
     @Override
@@ -48,6 +48,6 @@ public class SubCommandEdit extends SubCommand {
                                                 .startsWith(args[1].toLowerCase()))
                                 .map(CustomEnchant::getNamespacedName)
                                 .collect(Collectors.toList());
-        else return null;
+        else return List.of();
     }
 }
