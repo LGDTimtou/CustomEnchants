@@ -98,7 +98,7 @@ public class CustomEnchantTrigger {
         if (pendingCooldown.get(player).containsKey(customEnchant)) {
             if (level.cooldownMessage() != null && !level.cooldownMessage().isBlank()) {
                 Long startTime = pendingCooldown.get(player).get(customEnchant);
-                int timeLeftSeconds = level.cooldown() - (int) ((System.currentTimeMillis() - startTime) / 1000);
+                int timeLeftSeconds = (int) (level.cooldown() - (double) (System.currentTimeMillis() - startTime) / 1000);
                 globalParameters.put("time_left", () -> Util.secondsToString(timeLeftSeconds, false));
                 globalParameters.put("time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true));
                 player.sendMessage(Util.replaceParameters(player, level.cooldownMessage(), globalParameters));
@@ -127,7 +127,7 @@ public class CustomEnchantTrigger {
                   .runTaskLater(
                           Main.getMain(),
                           v -> pendingCooldown.get(player).remove(customEnchant),
-                          level.cooldown() * 20L
+                          Double.valueOf(level.cooldown() * 20).longValue()
                   );
         }
 

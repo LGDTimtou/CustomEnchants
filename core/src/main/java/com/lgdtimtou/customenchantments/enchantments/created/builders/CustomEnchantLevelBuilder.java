@@ -12,7 +12,7 @@ import java.util.Queue;
 
 public class CustomEnchantLevelBuilder {
 
-    private final int cooldown;
+    private final double cooldown;
     private final boolean cancelEvent;
     private final Queue<CustomEnchantInstruction> instructions;
     private double chance;
@@ -26,7 +26,7 @@ public class CustomEnchantLevelBuilder {
             cooldownMessage = previous.cooldownMessage();
             instructions = previous.instructions();
         } else {
-            cooldown = section.getInt("cooldown", previous.cooldown());
+            cooldown = section.getDouble("cooldown", previous.cooldown());
             chance = section.getDouble("chance", previous.chance());
             if (chance > 100 || chance <= 0) chance = 100;
             cancelEvent = section.getBoolean("cancel_event", previous.cancelEvent());
