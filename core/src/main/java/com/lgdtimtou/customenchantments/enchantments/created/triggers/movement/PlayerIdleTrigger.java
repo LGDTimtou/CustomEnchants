@@ -1,8 +1,11 @@
 package com.lgdtimtou.customenchantments.enchantments.created.triggers.movement;
 
 import com.lgdtimtou.customenchantments.Main;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import com.lgdtimtou.customenchantments.other.File;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +18,6 @@ import java.util.Map;
 public class PlayerIdleTrigger implements CustomEnchantListener {
 
     private static final Map<Player, Long> lastMoveTime = new HashMap<>();
-    private static final int idleTimeSeconds = 10; // Idle time in seconds
     private final TriggerType triggerType;
 
     public PlayerIdleTrigger(TriggerType type) {
@@ -40,16 +42,20 @@ public class PlayerIdleTrigger implements CustomEnchantListener {
                 () -> {
                     long currentTime = System.currentTimeMillis();
                     lastMoveTime.forEach((player, lastTime) -> {
-                        if ((currentTime - lastTime) >= (idleTimeSeconds * 1000L)) {
-                            triggerIdle(player);
+                        double timePassedSeconds = (double) (currentTime - lastTime) / 1000L;
+                        if (timePassedSeconds > 1) {
+                            triggerType.trigger(null, player, Map.of(
+                                    new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "time_passed"),
+                                    timePassedSeconds,
+                                    new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "time_passed"),
+                                    timePassedSeconds,
+                                    new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "time_passed"),
+                                    timePassedSeconds
+                            ), Map.of());
                         }
                     });
                 },
-                20L, 10L
+                20L, File.ConfigValue.PLAYER_IDLE_TRIGGER_CHECK_FREQUENCY.getDouble().longValue() * 20L
         );
-    }
-
-    private void triggerIdle(Player player) {
-        triggerType.trigger(null, player, Map.of(), Map.of()); // Trigger idle event
     }
 }

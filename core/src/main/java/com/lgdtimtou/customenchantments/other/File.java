@@ -10,7 +10,10 @@ import java.util.function.Consumer;
 
 public enum File {
 
-    CONFIG("config.yml", (file) -> {}),
+    CONFIG("config.yml", (file) -> {
+        Arrays.stream(ConfigValue.values()).forEach(ConfigValue::check);
+        file.save();
+    }),
     ENCHANTMENTS("enchantments.yml", (file) -> {}),
     DEFAULT_ENCHANTMENTS("default_enchantments.yml", (file) -> {}),
     WS(".ws.yml", (file) -> {}),
@@ -73,17 +76,29 @@ public enum File {
 
     public enum ConfigValue {
 
-        VERBOSE("verbose"),
-        ALLOW_UNSAFE_ENCHANTMENTS("allow_unsafe_enchantments");
+        VERBOSE("verbose", false),
+        ALLOW_UNSAFE_ENCHANTMENTS("allow_unsafe_enchantments", false),
+        PLAYER_IDLE_TRIGGER_CHECK_FREQUENCY("player_idle_trigger_check_frequency", 0.5);
 
         private final String path;
+        private final Object defaultValue;
 
-        ConfigValue(String path) {
+        ConfigValue(String path, Object defaultValue) {
             this.path = path;
+            this.defaultValue = defaultValue;
         }
 
-        public boolean getBoolean() {
+        public Boolean getBoolean() {
             return File.CONFIG.getConfig().getBoolean(this.path);
+        }
+
+        public Double getDouble() {
+            return File.CONFIG.getConfig().getDouble(this.path);
+        }
+
+        public void check() {
+            if (File.CONFIG.getConfig().get(path) == null)
+                File.CONFIG.getConfig().set(path, defaultValue);
         }
     }
 }
