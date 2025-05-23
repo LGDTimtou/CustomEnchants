@@ -45,6 +45,10 @@ public final class Main extends JavaPlugin {
         return webSocketConnection;
     }
 
+    public static void resetWebSocketConnection() {
+        webSocketConnection = null;
+    }
+
 
     private static void setPAPISupport() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)

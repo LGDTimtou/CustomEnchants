@@ -65,6 +65,7 @@ public class WebSocketConnection extends WebSocketClient {
     public void onOpen(ServerHandshake serverHandshake) {
         connecting = false;
         cancelTasks();
+        WebSocketSession.sendDistinctMessage(Message.WEBSOCKET__CONNECTED.get());
         WebSocketSession.getWebSocketSessions().forEach(this::sendEnchantmentYAML);
     }
 
@@ -102,11 +103,17 @@ public class WebSocketConnection extends WebSocketClient {
             )));
         }
 
+        // Reset the stored websocket connection and save all sessions
+        Main.resetWebSocketConnection();
         WebSocketSession.savePersistentWebSocketSessions();
         if (closeReason == null || closeReason.clearSessions) {
             File.WS.getConfig().set("ws_sessions", List.of());
             File.WS.save();
         }
+
+        // If the remote server closed we call the websocket connection so it opens the connection again
+        if (closeReason == CloseReason.REMOTE_SERVER_CLOSED)
+            Main.getWebSocketConnection();
     }
 
     @Override
@@ -162,9 +169,9 @@ public class WebSocketConnection extends WebSocketClient {
     }
 
     public enum CloseReason {
-        SERVER_SHUTDOWN(4998, ""),
+        REMOTE_SERVER_CLOSED(1006, false, Message.WEBSOCKET__ERROR__REMOTE_CLOSED.get()),
+        SERVER_SHUTDOWN(4998, false, ""),
         SESSION_EXPIRED(4999, Message.WEBSOCKET__SESSION_EXPIRED.get()),
-        REMOTE_SERVER_CLOSED(1006, Message.WEBSOCKET__ERROR__REMOTE_CLOSED.get()),
         REMOTE_SERVER_OFFLINE(-1, Message.WEBSOCKET__ERROR__REMOTE_CLOSED.get());
 
         private final int code;

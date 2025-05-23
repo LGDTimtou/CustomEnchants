@@ -57,7 +57,6 @@ public abstract class CustomEnchantInstruction {
 
         for (Object unparsedInstruction : unparsedInstructions) {
             if (unparsedInstruction instanceof Map<?, ?> instructionMap) {
-
                 for (Map.Entry<?, ?> entry : instructionMap.entrySet()) {
                     String instructionType = entry.getKey().toString();
                     Object value = entry.getValue();

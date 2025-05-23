@@ -55,12 +55,14 @@ public enum Message {
     WEBSOCKET__CONNECTING("&7Connecting to websocket server..."),
     WEBSOCKET__SLOW_CONNECTION(
             "&7Connection is slow as the server is starting up. This should only take a minute. Thanks for your patience!"),
+    WEBSOCKET__CONNECTED("&7WebSocket connected successfully!"),
     WEBSOCKET__SUCCESS("&aEnchantment successfully updated!"),
     WEBSOCKET__SESSION_EXPIRED("&eWebSocket connection expired after 30 minutes of inactivity"),
 
     WEBSOCKET__ERROR__YAML_PARSE("&cCould not parse the incoming YAML\n%yaml%"),
     WEBSOCKET__ERROR__REMOTE_OFFLINE("&cRemote server is offline"),
-    WEBSOCKET__ERROR__REMOTE_CLOSED("&cWebSocket connection closed due to remote server shutdown."),
+    WEBSOCKET__ERROR__REMOTE_CLOSED(
+            "&eRemote server shutting down, restarting connection. Please wait before pushing changes as they may not be registered."),
     WEBSOCKET__ERROR__CLOSED_UNKNOWN_REASON("&cWebSocket connection closed due to reason: %reason% with code: %code%");
 
 
