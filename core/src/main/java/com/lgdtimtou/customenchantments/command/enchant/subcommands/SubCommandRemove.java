@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 public class SubCommandRemove extends SubCommand {
     public SubCommandRemove(Command command) {
-        super(command, "remove", 1, "EnchantSubCommandRemoveUsage");
+        super(command, "remove", 1, Message.COMMANDS__REMOVE__USAGE.get());
     }
 
     @Override

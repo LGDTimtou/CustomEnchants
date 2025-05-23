@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class SubCommandEdit extends SubCommand {
 
     public SubCommandEdit(Command command) {
-        super(command, "edit", 1, "EnchantSubCommandEditUsage");
+        super(command, "edit", 1, Message.COMMANDS__EDIT__USAGE.get());
     }
 
     @Override

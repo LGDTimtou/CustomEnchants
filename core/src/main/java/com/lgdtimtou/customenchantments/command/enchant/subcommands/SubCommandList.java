@@ -16,7 +16,7 @@ import java.util.List;
 public class SubCommandList extends SubCommand {
 
     public SubCommandList(Command command) {
-        super(command, "list", 0, "EnchantSubCommandListUsage");
+        super(command, "list", 0, Message.COMMANDS__LIST__USAGE.get());
     }
 
     @Override

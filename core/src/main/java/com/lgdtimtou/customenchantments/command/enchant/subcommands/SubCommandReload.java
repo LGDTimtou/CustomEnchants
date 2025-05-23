@@ -11,7 +11,7 @@ import java.util.List;
 
 public class SubCommandReload extends SubCommand {
     public SubCommandReload(Command command) {
-        super(command, "reload", 0, "EnchantSubCommandReloadUsage");
+        super(command, "reload", 0, Message.COMMANDS__RELOAD__USAGE.get());
     }
 
     @Override
