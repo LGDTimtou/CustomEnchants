@@ -1,7 +1,5 @@
 package com.lgdtimtou.customenchantments.enchantments.created.fields.triggers;
 
-import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantTrigger;
-import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.armor.ArmorDeEquipTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.armor.ArmorEquipTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.block.*;
@@ -40,13 +38,11 @@ import com.lgdtimtou.customenchantments.enchantments.created.triggers.take_damag
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.take_damage.TakeDamageFromNonEntityTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.take_damage.TakeDamageFromPlayerTrigger;
 import com.lgdtimtou.customenchantments.other.Util;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Constructor;
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public enum TriggerType {
 
@@ -114,7 +110,7 @@ public enum TriggerType {
     PLAYER_SNEAK(PlayerSneakTrigger.class),
     PLAYER_MOVE(PlayerMoveTrigger.class),
     PLAYER_SWIM(PlayerSwimTrigger.class, PLAYER_MOVE),
-    
+
 
     //Projectiles
     PROJECTILE_LAND(ProjectileLandTrigger.class),
@@ -123,13 +119,11 @@ public enum TriggerType {
     PROJECTILE_HIT_PLAYER(ProjectileHitPlayerTrigger.class, PROJECTILE_HIT_ENTITY);
 
     private final Set<TriggerType> overriddenBy;
-    private final Set<CustomEnchantTrigger> subscribers = new HashSet<>();
     private Constructor<?> constructor;
-    private CustomEnchantListener instance;
 
     TriggerType(Class<?> triggerClass, TriggerType... overriddenBy) {
         try {
-            constructor = triggerClass.getConstructor(TriggerType.class);
+            constructor = triggerClass.getConstructor(TriggerInvoker.class);
         } catch (NoSuchMethodException e) {
             constructor = null;
             Util.error("Could not find constructor for " + this + ", please report this error!");
@@ -140,54 +134,19 @@ public enum TriggerType {
         tempSet.forEach(type -> type.addOverriddenBy(this.overriddenBy));
     }
 
+    public Constructor<?> getConstructor() {
+        return constructor;
+    }
+
+
     public Set<TriggerType> getOverriddenBy() {
         return overriddenBy;
     }
 
-    public void addOverriddenBy(Set<TriggerType> set) {
+    private void addOverriddenBy(Set<TriggerType> set) {
         this.overriddenBy.forEach(type -> {
             type.addOverriddenBy(set);
             set.add(type);
         });
-    }
-
-    public void trigger(Event event, Player player, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters) {
-        trigger(event, player, Collections.emptySet(), triggerConditionMap, localParameters);
-    }
-
-    public void trigger(Event event, Player player, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
-        trigger(event, player, Collections.emptySet(), triggerConditionMap, localParameters, onComplete);
-    }
-
-    public void trigger(Event event, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters) {
-        trigger(event, player, priorityItems, triggerConditionMap, localParameters, () -> {});
-    }
-
-    public void trigger(Event event, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
-        subscribers.forEach(customEnchantTrigger -> customEnchantTrigger.executeInstructions(
-                event,
-                player,
-                priorityItems,
-                new HashMap<>(triggerConditionMap),
-                new HashMap<>(localParameters),
-                onComplete
-        ));
-    }
-
-    public void subscribe(CustomEnchantTrigger customEnchantTrigger) {
-        createInstance();
-        subscribers.add(customEnchantTrigger);
-    }
-
-    private void createInstance() {
-        try {
-            if (this.instance == null) {
-                this.instance = (CustomEnchantListener) constructor.newInstance(this);
-                Util.registerListener(this.instance);
-            }
-        } catch (Exception ignored) {
-            Util.error("Trigger type: " + this + " could not be instanced! Please report this error!");
-            this.instance = null;
-        }
     }
 }

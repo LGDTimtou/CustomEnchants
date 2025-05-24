@@ -1,6 +1,6 @@
 package com.lgdtimtou.customenchantments.enchantments.created.triggers.click;
 
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -10,10 +10,10 @@ import java.util.Map;
 
 public class LeftClickTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public LeftClickTrigger(TriggerType type) {
-        this.triggerType = type;
+    public LeftClickTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
 
@@ -21,7 +21,7 @@ public class LeftClickTrigger implements CustomEnchantListener {
     public void onLeftClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.LEFT_CLICK_AIR && e.getAction() != Action.LEFT_CLICK_BLOCK) return;
 
-        triggerType.trigger(e, e.getPlayer(), Map.of(), Map.of());
+        triggerInvoker.trigger(e, e.getPlayer(), Map.of(), Map.of());
     }
 }
 

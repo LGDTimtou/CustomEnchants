@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.block;
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockDamageEvent;
@@ -11,15 +11,15 @@ import java.util.Map;
 
 public class BlockDamagedTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public BlockDamagedTrigger(TriggerType type) {
-        this.triggerType = type;
+    public BlockDamagedTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
     public void onBlockDamage(BlockDamageEvent e) {
-        triggerType.trigger(
+        triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
                 Map.of(new ConditionKey(TriggerConditionType.BLOCK, ""), e.getBlock()),

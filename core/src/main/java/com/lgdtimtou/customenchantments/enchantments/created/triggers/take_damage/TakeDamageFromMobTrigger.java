@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.take_dama
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -14,10 +14,10 @@ import java.util.UUID;
 
 public class TakeDamageFromMobTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public TakeDamageFromMobTrigger(TriggerType type) {
-        this.triggerType = type;
+    public TakeDamageFromMobTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
@@ -30,7 +30,7 @@ public class TakeDamageFromMobTrigger implements CustomEnchantListener {
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         monster.addScoreboardTag(uniqueTag);
 
-        triggerType.trigger(e, player,
+        triggerInvoker.trigger(e, player,
                 Map.of(
                         new ConditionKey(TriggerConditionType.ENTITY, "mob"), monster,
                         new ConditionKey(TriggerConditionType.CAUSE, "damage"), e.getCause()

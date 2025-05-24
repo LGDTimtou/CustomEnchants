@@ -1,6 +1,6 @@
 # CustomEnchants Plugin
 
-CustomEnchants is a Bukkit plugin that allows you to create, manage, and use custom vanilla-like enchantments on your
+CustomEnchants is a Spigot plugin that allows you to create, manage, and use custom vanilla-like enchantments on your
 server.
 
 For detailed documentation and setup instructions please visit the official website:

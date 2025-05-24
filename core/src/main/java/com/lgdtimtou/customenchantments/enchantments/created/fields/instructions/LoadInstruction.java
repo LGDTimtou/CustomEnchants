@@ -33,7 +33,7 @@ public class LoadInstruction extends CustomEnchantInstruction {
                 player,
                 customEnchant,
                 identifier,
-                parseNestedExpression(player, defaultValue, parameters)
+                parseNestedExpression(defaultValue, player, parameters)
         );
         parameters.put(identifier, () -> value);
         executeNextInstruction.run();

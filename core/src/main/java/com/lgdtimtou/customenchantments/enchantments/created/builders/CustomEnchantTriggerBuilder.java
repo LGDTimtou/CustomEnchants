@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchan
 import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,7 +18,7 @@ public class CustomEnchantTriggerBuilder {
     private final ConfigurationSection config;
     private final Map<ConditionKey, Set<String>> conditions = new HashMap<>();
     private final List<CustomEnchantLevel> levels = new ArrayList<>();
-    private TriggerType triggerType;
+    private TriggerInvoker triggerInvoker;
     private boolean error = false;
 
 
@@ -31,7 +32,8 @@ public class CustomEnchantTriggerBuilder {
         }
 
         try {
-            triggerType = TriggerType.valueOf(triggerKey.toUpperCase());
+            TriggerType triggerType = TriggerType.valueOf(triggerKey.toUpperCase());
+            triggerInvoker = new TriggerInvoker(triggerType);
         } catch (IllegalArgumentException e) {
             String closest = Util.findClosestMatch(triggerKey, TriggerType.class);
             String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
@@ -51,7 +53,7 @@ public class CustomEnchantTriggerBuilder {
     public CustomEnchantTrigger build() {
         if (!error) {
             return new CustomEnchantTrigger(
-                    triggerType,
+                    triggerInvoker,
                     conditions,
                     levels
             );

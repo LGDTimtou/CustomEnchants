@@ -4,6 +4,7 @@ import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchantDefinition;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantTrigger;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.CustomEnchantedItemLocation;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import com.lgdtimtou.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import com.lgdtimtou.customenchantments.other.File;
@@ -128,19 +129,19 @@ public class CustomEnchantBuilder {
         }
 
         removeOverriddenTriggers();
-        triggers.forEach(trigger -> trigger.getType().subscribe(trigger));
+        triggers.forEach(trigger -> trigger.getInvoker().subscribe(trigger));
     }
 
     private void removeOverriddenTriggers() {
         Iterator<CustomEnchantTrigger> it = this.triggers.iterator();
         while (it.hasNext()) {
-            TriggerType type = it.next().getType();
+            TriggerInvoker triggerInvoker = it.next().getInvoker();
             // Loop through all types that can override this one
-            for (TriggerType overriddenByType : type.getOverriddenBy()) {
-                if (triggers.stream().anyMatch(trigger -> trigger.getType() == overriddenByType)) {
+            for (TriggerType overriddenByType : triggerInvoker.getOverriddenBy()) {
+                if (triggers.stream().anyMatch(trigger -> trigger.getInvoker().getTriggerType() == overriddenByType)) {
                     // Remove the overridden trigger from the map
                     it.remove();
-                    Util.warn(namespacedName + ": the '" + type + "' trigger was overridden by '" + overriddenByType + "', so it has been removed");
+                    Util.warn(namespacedName + ": the '" + triggerInvoker + "' trigger was overridden by '" + overriddenByType + "', so it has been removed");
                 }
             }
         }

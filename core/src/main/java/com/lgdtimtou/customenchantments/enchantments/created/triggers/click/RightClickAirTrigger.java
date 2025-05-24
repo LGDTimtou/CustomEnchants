@@ -1,6 +1,6 @@
 package com.lgdtimtou.customenchantments.enchantments.created.triggers.click;
 
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -10,10 +10,10 @@ import java.util.Map;
 
 public class RightClickAirTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public RightClickAirTrigger(TriggerType type) {
-        this.triggerType = type;
+    public RightClickAirTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
 
@@ -21,6 +21,6 @@ public class RightClickAirTrigger implements CustomEnchantListener {
     public void onPlayerRightClickAir(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
 
-        triggerType.trigger(event, event.getPlayer(), Map.of(), Map.of());
+        triggerInvoker.trigger(event, event.getPlayer(), Map.of(), Map.of());
     }
 }

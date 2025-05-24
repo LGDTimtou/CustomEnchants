@@ -30,7 +30,7 @@ public class SaveInstruction extends CustomEnchantInstruction {
 
     @Override
     protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        String parsedValue = parseNestedExpression(player, value, parameters);
+        String parsedValue = parseNestedExpression(value, player, parameters);
         this.context.save(player, customEnchant, identifier, parsedValue);
         executeNextInstruction.run();
     }

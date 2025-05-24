@@ -21,7 +21,7 @@ public class CommandInstruction extends CustomEnchantInstruction {
 
     @Override
     protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        String executableCommand = parseNestedExpression(player, command, parameters);
+        String executableCommand = parseNestedExpression(command, player, parameters);
         Util.debug("Running command: " + executableCommand);
 
         CustomEnchantLogFilter.addFilter();

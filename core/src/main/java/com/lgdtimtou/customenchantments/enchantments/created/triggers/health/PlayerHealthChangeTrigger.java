@@ -3,7 +3,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.health;
 import com.lgdtimtou.customenchantments.customevents.health_change.PlayerHealthChangeEvent;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.event.EventHandler;
 
@@ -11,15 +11,15 @@ import java.util.Map;
 
 public class PlayerHealthChangeTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public PlayerHealthChangeTrigger(TriggerType type) {
-        this.triggerType = type;
+    public PlayerHealthChangeTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
     public void onHealthChange(PlayerHealthChangeEvent e) {
-        triggerType.trigger(e, e.getPlayer(), Map.of(
+        triggerInvoker.trigger(e, e.getPlayer(), Map.of(
                 new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "health"),
                 e.getHealth(),
                 new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "health"),

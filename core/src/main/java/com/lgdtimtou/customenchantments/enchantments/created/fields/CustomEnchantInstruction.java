@@ -81,17 +81,7 @@ public abstract class CustomEnchantInstruction {
         );
     }
 
-    protected abstract void setValue(Object value);
-
-    protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        execute(player, parameters, executeNextInstruction);
-    }
-
-    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-    }
-
-
-    public String parseNestedExpression(Player player, String value, Map<String, Supplier<String>> parameters) {
+    public static String parseNestedExpression(String value, Player player, Map<String, Supplier<String>> parameters) {
         String substitutedValue = Util.replaceParameters(player, value, parameters);
 
         Matcher matcher = pattern.matcher(substitutedValue);
@@ -108,19 +98,7 @@ public abstract class CustomEnchantInstruction {
         return substitutedValue;
     }
 
-
-    protected boolean parseCondition(Player player, String value, Map<String, Supplier<String>> parameters) {
-        String substitutedValue = parseNestedExpression(player, value, parameters);
-
-        return parseExpression(substitutedValue, EvaluationValue::getBooleanValue, false);
-    }
-
-    protected Double parseDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
-        String substitutedValue = parseNestedExpression(player, value, parameters);
-        return parseExpression(substitutedValue, EvaluationValue::getNumberValue, 0).doubleValue();
-    }
-
-    private <T> T parseExpression(String expressionString, Function<EvaluationValue, T> getValue, T defaultValue) {
+    private static <T> T parseExpression(String expressionString, Function<EvaluationValue, T> getValue, T defaultValue) {
         Expression expression = new Expression(expressionString);
 
         T result = defaultValue;
@@ -131,6 +109,26 @@ public abstract class CustomEnchantInstruction {
             Util.debug(e.getMessage());
         }
         return result;
+    }
+
+    protected abstract void setValue(Object value);
+
+    protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+        execute(player, parameters, executeNextInstruction);
+    }
+
+    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+    }
+
+    protected boolean parseCondition(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String substitutedValue = parseNestedExpression(value, player, parameters);
+
+        return parseExpression(substitutedValue, EvaluationValue::getBooleanValue, false);
+    }
+
+    protected Double parseDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String substitutedValue = parseNestedExpression(value, player, parameters);
+        return parseExpression(substitutedValue, EvaluationValue::getNumberValue, 0).doubleValue();
     }
 }
 

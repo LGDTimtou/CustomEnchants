@@ -1,6 +1,5 @@
 package com.lgdtimtou.customenchantments.customevents.health_change;
 
-import com.lgdtimtou.customenchantments.customevents.health_decrease.PlayerHealthDecreaseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -14,7 +13,7 @@ public class PlayerHealthChangeListeners implements Listener {
 
 
     @EventHandler
-    public void onPlayerTakeDamage(EntityDamageEvent e){
+    public void onPlayerTakeDamage(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player player))
             return;
         Event healthChangeEvent = new PlayerHealthChangeEvent(player, -e.getDamage());
@@ -24,7 +23,7 @@ public class PlayerHealthChangeListeners implements Listener {
     }
 
     @EventHandler
-    public void onPlayerTakeDamageByEntity(EntityDamageByEntityEvent e){
+    public void onPlayerTakeDamageByEntity(EntityDamageByEntityEvent e) {
         if (!(e.getEntity() instanceof Player player))
             return;
         Event healthChangeEvent = new PlayerHealthChangeEvent(player, -e.getDamage());
@@ -34,12 +33,10 @@ public class PlayerHealthChangeListeners implements Listener {
     }
 
     @EventHandler
-    public void onPlayerRegenHealth(EntityRegainHealthEvent e){
+    public void onPlayerRegenHealth(EntityRegainHealthEvent e) {
         if (!(e.getEntity() instanceof Player player))
             return;
         Event event = new PlayerHealthChangeEvent(player, e.getAmount());
         Bukkit.getPluginManager().callEvent(event);
     }
-
-
 }

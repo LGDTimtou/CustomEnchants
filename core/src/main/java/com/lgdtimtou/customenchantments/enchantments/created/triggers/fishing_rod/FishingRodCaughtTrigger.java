@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.fishing_r
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
@@ -12,10 +12,10 @@ import java.util.Map;
 
 public class FishingRodCaughtTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public FishingRodCaughtTrigger(TriggerType type) {
-        this.triggerType = type;
+    public FishingRodCaughtTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
@@ -23,7 +23,7 @@ public class FishingRodCaughtTrigger implements CustomEnchantListener {
         if (e.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
         if (e.getCaught() == null) return;
 
-        triggerType.trigger(
+        triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
                 Map.of(new ConditionKey(TriggerConditionType.ITEM, "caught"), ((Item) e.getCaught()).getItemStack()),

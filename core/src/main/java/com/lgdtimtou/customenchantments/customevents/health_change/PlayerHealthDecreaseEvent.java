@@ -1,17 +1,17 @@
-package com.lgdtimtou.customenchantments.customevents.health_decrease;
+package com.lgdtimtou.customenchantments.customevents.health_change;
 
 import com.lgdtimtou.customenchantments.customevents.CustomEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 public class PlayerHealthDecreaseEvent extends CustomEvent implements Cancellable {
-    private boolean isCancelled;
     private final double decrease;
     private final double health;
     private final double previous_health;
+    private boolean isCancelled;
 
 
-    public PlayerHealthDecreaseEvent(final Player player, double decrease){
+    public PlayerHealthDecreaseEvent(final Player player, double decrease) {
         super(player);
         this.decrease = decrease;
         this.health = player.getHealth() - decrease;

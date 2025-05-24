@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.kill;
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,10 +14,10 @@ import java.util.UUID;
 
 public class KillEntityTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public KillEntityTrigger(TriggerType type) {
-        this.triggerType = type;
+    public KillEntityTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
@@ -26,7 +26,7 @@ public class KillEntityTrigger implements CustomEnchantListener {
         Entity entity = e.getEntity();
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         entity.addScoreboardTag(uniqueTag);
-        triggerType.trigger(
+        triggerInvoker.trigger(
                 e,
                 killer,
                 Map.of(new ConditionKey(TriggerConditionType.ENTITY, "entity"), entity),

@@ -1,9 +1,11 @@
 package com.lgdtimtou.customenchantments.enchantments.created.fields;
 
 import com.lgdtimtou.customenchantments.Main;
+import com.lgdtimtou.customenchantments.api.CustomEnchantTriggerEvent;
 import com.lgdtimtou.customenchantments.enchantments.CustomEnchant;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import com.lgdtimtou.customenchantments.other.Util;
 import org.bukkit.Bukkit;
@@ -18,21 +20,21 @@ import java.util.function.Supplier;
 
 public class CustomEnchantTrigger {
 
-    private static final Map<Player, Map<CustomEnchant, Long>> pendingCooldown = new HashMap<>();
-    private final TriggerType triggerType;
+    private static final Map<Player, Map<CooldownKey, Long>> pendingCooldown = new HashMap<>();
+    private final TriggerInvoker triggerInvoker;
     private final Map<ConditionKey, Set<String>> triggerConditions;
     private final List<CustomEnchantLevel> levels;
     private CustomEnchant customEnchant;
 
 
-    public CustomEnchantTrigger(TriggerType triggerType, Map<ConditionKey, Set<String>> triggerConditions, List<CustomEnchantLevel> levels) {
-        this.triggerType = triggerType;
+    public CustomEnchantTrigger(TriggerInvoker triggerInvoker, Map<ConditionKey, Set<String>> triggerConditions, List<CustomEnchantLevel> levels) {
+        this.triggerInvoker = triggerInvoker;
         this.triggerConditions = triggerConditions;
         this.levels = levels;
     }
 
-    public TriggerType getType() {
-        return triggerType;
+    public TriggerInvoker getInvoker() {
+        return triggerInvoker;
     }
 
     public void setCustomEnchant(CustomEnchant customEnchant) {
@@ -42,7 +44,7 @@ public class CustomEnchantTrigger {
 
     public void executeInstructions(Event event, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionValues, Map<String, Supplier<String>> parameters, Runnable onComplete) {
         if (this.customEnchant == null) {
-            Util.error("Custom Enchant not set in trigger: " + this.triggerType);
+            Util.error("Custom Enchant not set in trigger: " + this.triggerInvoker);
             return;
         }
 
@@ -61,6 +63,16 @@ public class CustomEnchantTrigger {
             onComplete.run();
             return;
         }
+
+        Bukkit.getServer()
+              .getPluginManager()
+              .callEvent(new CustomEnchantTriggerEvent(
+                      event,
+                      player,
+                      triggerInvoker.getTriggerType(),
+                      customEnchant.getEnchantment(),
+                      parameters
+              ));
 
         CustomEnchantInstruction.executeInstructionQueue(
                 new ArrayDeque<>(instructions),
@@ -94,10 +106,11 @@ public class CustomEnchantTrigger {
         populateParameters(parameters, globalParameters, triggerConditionValues);
 
         //Check if this enchantment is still in cooldown for the player
+        CooldownKey cooldownKey = new CooldownKey(customEnchant, triggerInvoker.getTriggerType());
         pendingCooldown.computeIfAbsent(player, v -> new HashMap<>());
-        if (pendingCooldown.get(player).containsKey(customEnchant)) {
+        if (pendingCooldown.get(player).containsKey(cooldownKey)) {
             if (level.cooldownMessage() != null && !level.cooldownMessage().isBlank()) {
-                Long startTime = pendingCooldown.get(player).get(customEnchant);
+                Long startTime = pendingCooldown.get(player).get(cooldownKey);
                 int timeLeftSeconds = (int) (level.cooldown() - (double) (System.currentTimeMillis() - startTime) / 1000);
                 globalParameters.put("time_left", () -> Util.secondsToString(timeLeftSeconds, false));
                 globalParameters.put("time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true));
@@ -122,11 +135,15 @@ public class CustomEnchantTrigger {
 
         //Add cool down if necessary
         if (level.cooldown() > 0) {
-            pendingCooldown.get(player).put(customEnchant, System.currentTimeMillis());
+            pendingCooldown.get(player)
+                           .put(
+                                   cooldownKey,
+                                   System.currentTimeMillis()
+                           );
             Bukkit.getScheduler()
                   .runTaskLater(
                           Main.getMain(),
-                          v -> pendingCooldown.get(player).remove(customEnchant),
+                          v -> pendingCooldown.get(player).remove(cooldownKey),
                           Double.valueOf(level.cooldown() * 20).longValue()
                   );
         }
@@ -164,7 +181,7 @@ public class CustomEnchantTrigger {
         triggerConditions.forEach((conditionKey, strings) -> {
             if (!triggerConditionValues.containsKey(conditionKey))
                 Util.warn(customEnchant.getNamespacedName() + ": " + conditionKey.toString()
-                                                                                 .toUpperCase() + " is not a valid condition for " + triggerType);
+                                                                                 .toUpperCase() + " is not a valid condition for " + triggerInvoker);
         });
 
         for (Map.Entry<ConditionKey, Object> entry : triggerConditionValues.entrySet()) {
@@ -193,5 +210,9 @@ public class CustomEnchantTrigger {
                 "enchantment_level", () -> String.valueOf(levelValue),
                 "enchantment_level_roman", () -> CustomEnchant.getLevelRoman(levelValue)
         ));
+    }
+
+    public record CooldownKey(CustomEnchant customEnchant, TriggerType triggerType) {
+
     }
 }

@@ -3,7 +3,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.movement;
 import com.lgdtimtou.customenchantments.Main;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import com.lgdtimtou.customenchantments.other.File;
 import org.bukkit.Bukkit;
@@ -18,10 +18,10 @@ import java.util.Map;
 public class PlayerIdleTrigger implements CustomEnchantListener {
 
     private static final Map<Player, Long> lastMoveTime = new HashMap<>();
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public PlayerIdleTrigger(TriggerType type) {
-        this.triggerType = type;
+    public PlayerIdleTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
         startIdleCheckTask();
     }
 
@@ -44,7 +44,7 @@ public class PlayerIdleTrigger implements CustomEnchantListener {
                     lastMoveTime.forEach((player, lastTime) -> {
                         double timePassedSeconds = (double) (currentTime - lastTime) / 1000L;
                         if (timePassedSeconds > 1) {
-                            triggerType.trigger(null, player, Map.of(
+                            triggerInvoker.trigger(null, player, Map.of(
                                     new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "idle_time"),
                                     timePassedSeconds,
                                     new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "idle_time"),

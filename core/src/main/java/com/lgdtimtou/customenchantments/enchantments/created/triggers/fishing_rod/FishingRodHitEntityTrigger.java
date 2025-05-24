@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.fishing_r
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -13,10 +13,10 @@ import java.util.UUID;
 
 public class FishingRodHitEntityTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public FishingRodHitEntityTrigger(TriggerType type) {
-        this.triggerType = type;
+    public FishingRodHitEntityTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
@@ -28,7 +28,7 @@ public class FishingRodHitEntityTrigger implements CustomEnchantListener {
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
         entity.addScoreboardTag(uniqueTag);
 
-        triggerType.trigger(
+        triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
                 Map.of(new ConditionKey(TriggerConditionType.ENTITY, "hit"), entity),

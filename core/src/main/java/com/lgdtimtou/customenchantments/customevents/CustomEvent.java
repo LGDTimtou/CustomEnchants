@@ -16,17 +16,17 @@ public class CustomEvent extends PlayerEvent {
         super(who);
     }
 
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public static void register(){
+    public static void register() {
         Util.registerListener(new PlayerHealthChangeListeners());
         Util.registerListener(new ArmorListener(Collections.emptyList()));
     }
 
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

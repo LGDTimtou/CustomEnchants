@@ -1,6 +1,7 @@
 package com.lgdtimtou.customenchantments.other;
 
 import com.lgdtimtou.customenchantments.Main;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -52,7 +53,14 @@ public enum File {
         if (file == null)
             file = new java.io.File(Main.getMain().getDataFolder(), path);
 
-        config = YamlConfiguration.loadConfiguration(file);
+        config = new YamlConfiguration();
+        try {
+            config.load(file);
+        } catch (IOException | InvalidConfigurationException e) {
+            Util.error("Error when parsing " + name() + ": " + e.getMessage());
+            if (e instanceof InvalidConfigurationException)
+                Util.error("Remember to wrap strings in (single) quotation marks '<string>' or \"<string>\"");
+        }
     }
 
     public FileConfiguration getConfig() {

@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.projectil
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -16,10 +16,10 @@ import java.util.UUID;
 
 public class ProjectileLandTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public ProjectileLandTrigger(TriggerType type) {
-        this.triggerType = type;
+    public ProjectileLandTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
 
@@ -43,7 +43,7 @@ public class ProjectileLandTrigger implements CustomEnchantListener {
         String projectileUniqueTag = "projectile_" + UUID.randomUUID().toString().substring(0, 8);
         usedProjectile.addScoreboardTag(projectileUniqueTag);
 
-        triggerType.trigger(e, player, Map.of(
+        triggerInvoker.trigger(e, player, Map.of(
                 new ConditionKey(TriggerConditionType.ENTITY, "projectile"), usedProjectile
         ), Map.of(
                 "projectile_tag", () -> projectileUniqueTag

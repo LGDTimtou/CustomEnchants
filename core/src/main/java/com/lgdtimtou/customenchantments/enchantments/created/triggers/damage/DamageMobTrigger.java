@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.damage;
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -16,10 +16,10 @@ import java.util.UUID;
 
 public class DamageMobTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public DamageMobTrigger(TriggerType type) {
-        this.triggerType = type;
+    public DamageMobTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
@@ -34,7 +34,7 @@ public class DamageMobTrigger implements CustomEnchantListener {
         double health = entity instanceof Damageable damageable ? damageable.getHealth() : 0;
         double damage = e.getDamage();
 
-        triggerType.trigger(
+        triggerInvoker.trigger(
                 e,
                 player,
                 Map.of(

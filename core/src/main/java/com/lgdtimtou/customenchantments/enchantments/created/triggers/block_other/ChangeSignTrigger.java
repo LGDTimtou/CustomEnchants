@@ -2,7 +2,7 @@ package com.lgdtimtou.customenchantments.enchantments.created.triggers.block_oth
 
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
-import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import com.lgdtimtou.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import com.lgdtimtou.customenchantments.enchantments.created.triggers.CustomEnchantListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.SignChangeEvent;
@@ -12,16 +12,16 @@ import java.util.Map;
 
 public class ChangeSignTrigger implements CustomEnchantListener {
 
-    private final TriggerType triggerType;
+    private final TriggerInvoker triggerInvoker;
 
-    public ChangeSignTrigger(TriggerType type) {
-        this.triggerType = type;
+    public ChangeSignTrigger(TriggerInvoker type) {
+        this.triggerInvoker = type;
     }
 
     @EventHandler
     public void onSignChance(SignChangeEvent e) {
         String lines = Arrays.toString(e.getLines());
-        triggerType.trigger(
+        triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
                 Map.of(new ConditionKey(TriggerConditionType.STRING, "lines"), lines),
