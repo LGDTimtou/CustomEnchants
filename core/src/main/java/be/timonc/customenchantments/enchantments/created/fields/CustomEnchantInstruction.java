@@ -81,7 +81,7 @@ public abstract class CustomEnchantInstruction {
         );
     }
 
-    public static String parseNestedExpression(String value, Player player, Map<String, Supplier<String>> parameters) {
+    public String parseNestedExpression(String value, Player player, Map<String, Supplier<String>> parameters) {
         String substitutedValue = Util.replaceParameters(player, value, parameters);
 
         Matcher matcher = pattern.matcher(substitutedValue);
@@ -98,7 +98,7 @@ public abstract class CustomEnchantInstruction {
         return substitutedValue;
     }
 
-    private static <T> T parseExpression(String expressionString, Function<EvaluationValue, T> getValue, T defaultValue) {
+    private <T> T parseExpression(String expressionString, Function<EvaluationValue, T> getValue, T defaultValue) {
         Expression expression = new Expression(expressionString);
 
         T result = defaultValue;

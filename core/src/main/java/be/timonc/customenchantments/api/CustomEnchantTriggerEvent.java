@@ -75,16 +75,42 @@ public class CustomEnchantTriggerEvent extends CustomEvent {
         return enchantment;
     }
 
+
     /**
-     * Gets an unmodifiable view of the dynamic parameters associated with this trigger event.
-     * <p>
-     * Each parameter name maps to a supplier that provides its current value.
-     * </p>
+     * Retrieves the value of a dynamic parameter as a String.
      *
-     * @return The map of parameter names to their suppliers.
+     * @param key The name of the parameter to retrieve.
+     * @return The parameter value as a String.
+     * @throws NullPointerException if the parameter with the given key does not exist or its supplier returns null.
      */
     @NotNull
-    public Map<String, Supplier<String>> getParameters() {
-        return parameters;
+    public String getParameter(@NotNull String key) {
+        return parameters.get(key).get();
+    }
+
+    /**
+     * Retrieves the value of a dynamic parameter as an Integer.
+     *
+     * @param key The name of the parameter to retrieve.
+     * @return The parameter value parsed as an Integer.
+     * @throws NullPointerException  if the parameter with the given key does not exist or its supplier returns null.
+     * @throws NumberFormatException if the parameter value cannot be parsed as an Integer.
+     */
+    @NotNull
+    public Integer getIntParameter(@NotNull String key) {
+        return Integer.valueOf(parameters.get(key).get());
+    }
+
+    /**
+     * Retrieves the value of a dynamic parameter as a Double.
+     *
+     * @param key The name of the parameter to retrieve.
+     * @return The parameter value parsed as a Double.
+     * @throws NullPointerException  if the parameter with the given key does not exist or its supplier returns null.
+     * @throws NumberFormatException if the parameter value cannot be parsed as a Double.
+     */
+    @NotNull
+    public Double getDoubleParameter(@NotNull String key) {
+        return Double.valueOf(parameters.get(key).get());
     }
 }
