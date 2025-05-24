@@ -45,11 +45,11 @@ public class PlayerIdleTrigger implements CustomEnchantListener {
                         double timePassedSeconds = (double) (currentTime - lastTime) / 1000L;
                         if (timePassedSeconds > 1) {
                             triggerType.trigger(null, player, Map.of(
-                                    new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "time_passed"),
+                                    new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "idle_time"),
                                     timePassedSeconds,
-                                    new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "time_passed"),
+                                    new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "idle_time"),
                                     timePassedSeconds,
-                                    new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "time_passed"),
+                                    new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "idle_time"),
                                     timePassedSeconds
                             ), Map.of());
                         }
