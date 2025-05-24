@@ -53,21 +53,21 @@ sneak:
           chance: 100
           instructions:
             - command: effect give %player% minecraft:invisibility 5 1
-            - command: particle minecraft:smoke %player_x% $[add(%player_y%, 1)] %player_z% 0.5 1 0.5 0.0 50 force
+            - command: particle minecraft:smoke %player_x% $[%player_y% + 1] %player_z% 0.5 1 0.5 0.0 50 force
         2:
           cancel_event: false
           cooldown: 60
           chance: 100
           instructions:
             - command: effect give %player% minecraft:invisibility 8 1
-            - command: particle minecraft:smoke %player_x% $[add(%player_y%, 1)] %player_z% 0.5 1 0.5 0.0 50 force
+            - command: particle minecraft:smoke %player_x% $[%player_y% + 1] %player_z% 0.5 1 0.5 0.0 50 force
         3:
           cancel_event: false
           cooldown: 10
           chance: 100
           instructions:
             - command: effect give %player% minecraft:invisibility 10 1
-            - command: particle minecraft:smoke %player_x% $[add(%player_y%, 1)] %player_z% 0.5 1 0.5 0.0 50 force
+            - command: particle minecraft:smoke %player_x% $[%player_y% + 1] %player_z% 0.5 1 0.5 0.0 50 force
 
 saving_grace:
   version: 1.21.5
@@ -117,13 +117,14 @@ saving_grace:
                 context: player
                 identifier: previous_z
                 value: "%player_z%"
+            - command: tellraw %player% {"text":"Your location has been saved!","color":"green"}
     right_click:
       conditions: { }
       levels:
         1:
           cancel_event: false
           cooldown: 30
-          cooldown_message: Wait %time_left% before you can do this %
+          cooldown_message: "&eWait %time_left% before your sword is charged again!"
           chance: 100
           instructions:
             - load:
@@ -138,7 +139,11 @@ saving_grace:
                 context: player
                 identifier: previous_z
                 default_value: "%player_z%"
+            - command: effect give %player% levitation 1 10 true
+            - delay: 1
             - command: tp %player% %previous_x% %previous_y% %previous_z%
+            - command: playsound minecraft:item.totem.use player %player% %previous_x% %previous_y% %previous_z%
+            - command: tellraw %player% {"text":"You have been saved!","color":"green"}
 
 
 aura:
@@ -169,7 +174,7 @@ aura:
       levels:
         '1':
           cancel_event: false
-          cooldown: 7
+          cooldown: 6.3
           cooldown_message: ''
           chance: 100
           instructions:
@@ -177,20 +182,65 @@ aura:
                 amount: 63
                 loop_parameter: k
                 instructions:
-                  - command: 'particle minecraft:flame $[add(%player_x%, $[mul($[cos($[mul(%k%,
-                      0.2)])], 1)])] $[add(%player_y%, $[mul(%k%, 0.04)])] $[add(%player_z%,
-                      $[mul($[sin($[mul(%k%, 0.2)])], 1)])] 0 0 0 0 1 force @a '
+                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + %k% * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
                   - delay: '0.05'
             - repeat:
                 amount: 63
                 loop_parameter: k
                 instructions:
-                  - command: 'particle minecraft:flame $[add(%player_x%, $[mul($[cos($[mul(%k%,
-                0.2)])], 1)])] $[add(%player_y%, $[mul($[sub(63, %k%)], 0.04)])]
-                $[add(%player_z%, $[mul($[sin($[mul(%k%, 0.2)])], 1)])] 0 0
-                0 0 1 force @a '
+                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + (63 - %k%) * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
                   - delay: '0.05'
 
+head_hunter:
+  version: 1.21.5
+  enabled: true
+  depends: [ ]
+  definition:
+    needs_permission: false
+    max_level: 3
+    anvil_cost: 10
+    conflicts_with: [ ]
+    targets:
+      - weapon
+    tags:
+      in_enchanting_table: true
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+    enchanting_table:
+      weight: 50
+      min_cost_base: 2
+      min_cost_incr: 10
+      max_cost_base: 8
+      max_cost_incr: 15
+  custom_locations: [ ]
+  triggers:
+    kill_player:
+      conditions: { }
+      levels:
+        '1':
+          cancel_event: false
+          cooldown: 0
+          cooldown_message: ''
+          chance: 5
+          instructions:
+            - command:
+                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
+        '2':
+          cancel_event: false
+          cooldown: 0
+          cooldown_message: ''
+          chance: 10
+          instructions:
+            - command:
+                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
+        '3':
+          cancel_event: false
+          cooldown: 0
+          cooldown_message: ''
+          chance: 25
+          instructions:
+            - command:
+                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
 
 #wolf_summoner:
 #  enabled: true
