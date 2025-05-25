@@ -60,7 +60,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         if (!isFirstBoot())
-            Util.warn("Reloading is discouraged! Please use /restart instead.");
+            Util.warn("Reloading will not load all changes made to an enchantment. Use /restart to apply them properly.");
 
         // Register and load the files
         File.register();

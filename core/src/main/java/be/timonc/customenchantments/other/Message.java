@@ -8,7 +8,7 @@ public enum Message {
 
     GLOBAL__PREFIX("&4&l[&6&lCustomEnchants&4&l]&r "),
     GLOBAL__SETTING("&cUpdate %setting% in config.yml to alter this behaviour"),
-    GLOBAL__RESTART_SERVER("&7Please &orestart/reload the server &7to apply changes."),
+    GLOBAL__RESTART_SERVER("&7Please &orestart the server &7to apply changes."),
 
     COMMANDS__USAGE("&7Usage: /ce <add | remove | create | edit | list>"),
     COMMANDS__ONLY_PLAYERS("&cOnly players can use this command"),

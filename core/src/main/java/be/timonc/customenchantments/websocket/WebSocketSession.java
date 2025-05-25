@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -21,17 +22,18 @@ import java.util.stream.Collectors;
 public class WebSocketSession {
 
     private static final Set<WebSocketSession> webSocketSessions = new HashSet<>();
-
+    private final String secret;
+    private final String commandSenderName;
+    private final String yaml;
+    private CommandSender commandSender;
     private WebSocketSessionStatus status = WebSocketSessionStatus.WAITING_CONNECTION;
     private WebSocketSessionType type;
-    private String secret;
-    private CommandSender commandSender;
     private String customEnchantName;
-    private String yaml;
 
     public WebSocketSession(CommandSender commandSender, CustomEnchant customEnchant) {
         this.type = customEnchant == null ? WebSocketSessionType.CREATE : WebSocketSessionType.EDIT;
         this.secret = UUID.randomUUID().toString();
+        this.commandSenderName = commandSender.getName();
         this.commandSender = commandSender;
         this.customEnchantName = customEnchant == null ? "" : customEnchant.getNamespacedName();
         this.yaml = customEnchant == null ? "" : customEnchant.getYaml();
@@ -41,21 +43,16 @@ public class WebSocketSession {
 
 
     public WebSocketSession(Map<?, ?> persistentSession) {
-        try {
-            type = WebSocketSessionType.valueOf(persistentSession.get("type").toString());
-            String commandSenderString = persistentSession.get("command_sender").toString();
-            commandSender = commandSenderString.equalsIgnoreCase("console") ? Bukkit.getConsoleSender() : Bukkit.getPlayer(
-                    commandSenderString);
+        type = WebSocketSessionType.valueOf(persistentSession.get("type").toString());
+        commandSenderName = persistentSession.get("command_sender").toString();
+        commandSender = commandSenderName.equalsIgnoreCase("console") ? Bukkit.getConsoleSender() : null;
 
-            String customEnchantString = persistentSession.get("enchant").toString();
-            customEnchantName = type == WebSocketSessionType.CREATE ? "" : customEnchantString;
-            yaml = type == WebSocketSessionType.CREATE ? "" : CustomEnchant.get(customEnchantString).getYaml();
+        String customEnchantString = persistentSession.get("enchant").toString();
+        customEnchantName = type == WebSocketSessionType.CREATE ? "" : customEnchantString;
+        yaml = type == WebSocketSessionType.CREATE ? "" : CustomEnchant.get(customEnchantString).getYaml();
 
-            secret = persistentSession.get("secret").toString();
-            webSocketSessions.add(this);
-        } catch (Exception e) {
-            Util.error("Couldn't load WebSocket Session: " + persistentSession + "\nError: " + e.getMessage());
-        }
+        secret = persistentSession.get("secret").toString();
+        webSocketSessions.add(this);
     }
 
     public static Set<WebSocketSession> getWebSocketSessions() {
@@ -63,8 +60,21 @@ public class WebSocketSession {
     }
 
     public static void loadPersistentWebSocketSessions() {
-        for (Map<?, ?> session : File.WS.getConfig().getMapList("ws_sessions"))
-            webSocketSessions.add(new WebSocketSession(session));
+        List<Map<?, ?>> sessions = File.WS.getConfig().getMapList("ws_sessions");
+        Iterator<Map<?, ?>> iterator = sessions.iterator();
+        while (iterator.hasNext()) {
+            Map<?, ?> session = iterator.next();
+            try {
+                webSocketSessions.add(new WebSocketSession(session));
+            } catch (Exception e) {
+                Util.debug("Couldn't load WebSocket Session: " + session);
+                Util.debug("Error: " + e.getMessage());
+                Util.debug("Removing it...");
+                iterator.remove();
+            }
+        }
+        File.WS.getConfig().set("ws_sessions", sessions);
+        File.WS.save();
     }
 
     public static void savePersistentWebSocketSessions() {
@@ -79,9 +89,8 @@ public class WebSocketSession {
     @NotNull
     public static WebSocketSession get(CommandSender commandSender, CustomEnchant customEnchant) {
         WebSocketSession session = webSocketSessions.stream()
-                                                    .filter(s ->
-                                                            s.commandSender.equals(commandSender) &&
-                                                                    s.customEnchantName.equals(customEnchant == null ? "" : customEnchant.getNamespacedName()))
+                                                    .filter(s -> commandSender.equals(s.getCommandSender()) &&
+                                                            s.customEnchantName.equals(customEnchant == null ? "" : customEnchant.getNamespacedName()))
                                                     .findFirst()
                                                     .orElse(null);
 
@@ -91,6 +100,7 @@ public class WebSocketSession {
     }
 
     private static void sendMessage(CommandSender commandSender, String message) {
+        if (commandSender == null) return;
         if (commandSender instanceof Player player && !player.isOnline())
             return;
 
@@ -98,9 +108,13 @@ public class WebSocketSession {
     }
 
     public static void sendDistinctMessage(String message) {
-        webSocketSessions.stream().map(session -> session.commandSender).collect(Collectors.toSet()).forEach(
-                commandSender -> sendMessage(commandSender, message)
-        );
+        webSocketSessions.stream()
+                         .map(WebSocketSession::getCommandSender)
+                         .filter(Objects::nonNull)
+                         .collect(Collectors.toSet())
+                         .forEach(
+                                 commandSender -> sendMessage(commandSender, message)
+                         );
     }
 
     private void saveState() {
@@ -127,6 +141,13 @@ public class WebSocketSession {
 
         File.WS.getConfig().set("ws_sessions", sessions);
         File.WS.save();
+    }
+
+    @Nullable
+    private CommandSender getCommandSender() {
+        if (commandSender == null)
+            commandSender = Bukkit.getPlayer(commandSenderName);
+        return commandSender;
     }
 
     public void updateYAML(String yamlString) {
@@ -178,13 +199,13 @@ public class WebSocketSession {
     }
 
     private void sendMessage(String message) {
-        sendMessage(commandSender, message);
+        sendMessage(getCommandSender(), message);
     }
 
     public void sendURL() {
         String url = Util.getWebBuilderUrl("secret", secret);
 
-        if (commandSender instanceof Player player) {
+        if (getCommandSender() instanceof Player player) {
             TextComponent openEditor = getPlayerURLMessage(url);
             player.spigot().sendMessage(openEditor);
         } else {
