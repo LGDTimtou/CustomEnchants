@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 public class CustomEnchantTrigger {
 
     private static final Map<Player, Map<CooldownKey, Long>> pendingCooldown = new HashMap<>();
+    private static final Map<Player, Set<CooldownKey>> pendingCooldownMessages = new HashMap<>();
     private final TriggerInvoker triggerInvoker;
     private final Map<ConditionKey, Set<String>> triggerConditions;
     private final List<CustomEnchantLevel> levels;
@@ -109,12 +110,19 @@ public class CustomEnchantTrigger {
         CooldownKey cooldownKey = new CooldownKey(customEnchant, triggerInvoker.getTriggerType());
         pendingCooldown.computeIfAbsent(player, v -> new HashMap<>());
         if (pendingCooldown.get(player).containsKey(cooldownKey)) {
-            if (level.cooldownMessage() != null && !level.cooldownMessage().isBlank()) {
+            if (level.cooldownMessage() != null && !level.cooldownMessage()
+                                                         .isBlank() && !pendingCooldownMessages.getOrDefault(
+                    player,
+                    Set.of()
+            ).contains(cooldownKey)) {
                 Long startTime = pendingCooldown.get(player).get(cooldownKey);
                 int timeLeftSeconds = (int) (level.cooldown() - (double) (System.currentTimeMillis() - startTime) / 1000);
                 globalParameters.put("time_left", () -> Util.secondsToString(timeLeftSeconds, false));
                 globalParameters.put("time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true));
                 player.sendMessage(Util.replaceParameters(player, level.cooldownMessage(), globalParameters));
+                pendingCooldownMessages.computeIfAbsent(player, v -> new HashSet<>()).add(cooldownKey);
+                Bukkit.getScheduler()
+                      .runTaskLater(Main.getMain(), () -> pendingCooldownMessages.get(player).remove(cooldownKey), 5L);
             }
             return null;
         }
