@@ -31,8 +31,8 @@ public class CustomEnchant extends CustomEnchantRecord {
     private boolean newlyRegistered = false;
 
 
-    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations, Map<String, Boolean> tags) {
-        super(Util.getPrettyName(name), definition, tags);
+    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations) {
+        super(Util.getPrettyName(name), definition);
 
         this.defaultEnchantment = defaultEnchantment;
         this.customEnchantedItemLocations = customEnchantedItemLocations;
@@ -54,18 +54,25 @@ public class CustomEnchant extends CustomEnchantRecord {
     public static void register() {
         Main.getEnchantmentsManager().unFreezeRegistry();
 
-        //Build CustomEnchantments from enchantments.yml
-        for (String enchant : File.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
-            new CustomEnchantBuilder(enchant).build(false);
+        try {
+            //Build CustomEnchantments from enchantments.yml
+            for (String enchant : File.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
+                new CustomEnchantBuilder(enchant).build(false);
 
-        //Register the default custom enchantments
-        for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
-            new CustomEnchantBuilder(defaultCustomEnchant).build(true);
+            //Register the default custom enchantments
+            for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
+                new CustomEnchantBuilder(defaultCustomEnchant).build(true);
 
-        for (CustomEnchant customEnchant : getCustomEnchantSet())
-            if (customEnchant.isNewlyRegistered())
-                Main.getEnchantmentsManager()
-                    .addExclusives(customEnchant.getNamespacedName(), customEnchant.getConflictingEnchantments());
+            for (CustomEnchant customEnchant : getCustomEnchantSet())
+                if (customEnchant.isNewlyRegistered())
+                    Main.getEnchantmentsManager()
+                        .addExclusives(customEnchant.getNamespacedName(), customEnchant.getConflictingEnchantments());
+
+            for (CustomEnchant customEnchant : getCustomEnchantSet())
+                Main.getEnchantmentsManager().addTagsOnReload(customEnchant);
+        } catch (Exception e) {
+            Util.error("Error when registering enchantments: " + e.getMessage());
+        }
 
         Main.getEnchantmentsManager().freezeRegistry();
 

@@ -1,5 +1,6 @@
 package be.timonc.customenchantments.nms_1_21_1;
 
+import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.CustomEnchantDefinition;
 import be.timonc.customenchantments.enchantments.CustomEnchantRecord;
 import be.timonc.customenchantments.nms.EnchantmentManager;
@@ -24,6 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R1.util.CraftNamespacedKey;
 import org.bukkit.enchantments.EnchantmentTarget;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -72,21 +74,8 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                 slots
         );
         Enchantment enchantment = new Enchantment(component, definition, exclusiveSet, effects);
-
-        Holder.Reference<Enchantment> reference = ENCHANTMENT_REGISTRY.createIntrusiveHolder(enchantment);
+        ENCHANTMENT_REGISTRY.createIntrusiveHolder(enchantment);
         Registry.register(ENCHANTMENT_REGISTRY, enchantId, enchantment);
-
-        enchantmentTags.forEach((tagName, tagKey) -> {
-            if (customEnchant.getTags().getOrDefault(tagName, false)) {
-                addInTag(tagKey, reference);
-                if (tagName.equalsIgnoreCase("treasure"))
-                    removeFromTag(EnchantmentTags.NON_TREASURE, reference);
-            } else {
-                removeFromTag(tagKey, reference);
-                if (tagName.equalsIgnoreCase("treasure"))
-                    addInTag(EnchantmentTags.NON_TREASURE, reference);
-            }
-        });
 
         return Util.getEnchantmentByName(customEnchant.getNamespacedName());
     }
@@ -236,6 +225,31 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         });
 
         Reflex.setFieldValue(exclusiveSet, HOLDER_SET_DIRECT_CONTENTS_FIELD, contents);
+    }
+
+    @Override
+    public void addTagsOnReload(@NotNull CustomEnchant customEnchant) {
+        ResourceLocation location = ResourceLocation.withDefaultNamespace(customEnchant.getNamespacedName());
+        Holder.Reference<Enchantment> reference = ENCHANTMENT_REGISTRY.getHolder(location).orElse(null);
+        if (reference == null) {
+            Util.error("Custom Enchantment " + customEnchant.getNamespacedName() + " was not found in enchantment registry! Could not add tags");
+            return;
+        }
+        addTags(reference, customEnchant.getTags());
+    }
+
+    private void addTags(Holder.Reference<Enchantment> reference, Map<String, Boolean> tags) {
+        enchantmentTags.forEach((tagName, tagKey) -> {
+            if (tags.getOrDefault(tagName, false)) {
+                addInTag(tagKey, reference);
+                if (tagName.equalsIgnoreCase("treasure"))
+                    removeFromTag(EnchantmentTags.NON_TREASURE, reference);
+            } else {
+                removeFromTag(tagKey, reference);
+                if (tagName.equalsIgnoreCase("treasure"))
+                    addInTag(EnchantmentTags.NON_TREASURE, reference);
+            }
+        });
     }
 
     private void fillEnchantmentTags() {

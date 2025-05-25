@@ -1,6 +1,7 @@
 package be.timonc.customenchantments.nms_1_21_5;
 
 
+import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.CustomEnchantDefinition;
 import be.timonc.customenchantments.enchantments.CustomEnchantRecord;
 import be.timonc.customenchantments.nms.EnchantmentManager;
@@ -164,21 +165,8 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                 slots
         );
         Enchantment enchantment = new Enchantment(component, definition, exclusiveSet, effects);
-
-        Holder.Reference<Enchantment> reference = ENCHANTS.createIntrusiveHolder(enchantment);
+        ENCHANTS.createIntrusiveHolder(enchantment);
         Registry.register(ENCHANTS, enchantId, enchantment);
-
-        enchantmentTags.forEach((tagName, tagKey) -> {
-            if (customEnchant.getTags().getOrDefault(tagName, false)) {
-                addInTag(tagKey, reference);
-                if (tagName.equalsIgnoreCase("treasure"))
-                    removeFromTag(EnchantmentTags.NON_TREASURE, reference);
-            } else {
-                removeFromTag(tagKey, reference);
-                if (tagName.equalsIgnoreCase("treasure"))
-                    addInTag(EnchantmentTags.NON_TREASURE, reference);
-            }
-        });
 
         return Util.getEnchantmentByName(customEnchant.getNamespacedName());
     }
@@ -278,21 +266,6 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         return getFrozenTags(ENCHANTS).get(customKey);
     }
 
-    public void addExclusives(@NotNull String enchantId, @NotNull Set<String> conflicts) {
-        ResourceKey<Enchantment> enchantKey = getResourceKey(ENCHANTS, enchantId);
-        Enchantment enchantment = ENCHANTS.getValue(enchantKey);
-        if (enchantment == null) return;
-
-        TagKey<Enchantment> exclusivesKey = getTagKey(ENCHANTS, "exclusive_set/" + enchantId);
-
-        conflicts.forEach(id -> {
-            ResourceKey<Enchantment> conflictKey = getResourceKey(ENCHANTS, id);
-            Holder.Reference<Enchantment> reference = ENCHANTS.get(conflictKey).orElse(null);
-            if (reference == null) return;
-
-            addInTag(exclusivesKey, reference);
-        });
-    }
 
     private void fillEnchantmentTags() {
         Field[] fields = EnchantmentTags.class.getDeclaredFields();
@@ -309,5 +282,47 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                 }
             }
         }
+    }
+
+
+    public void addExclusives(@NotNull String enchantId, @NotNull Set<String> conflicts) {
+        ResourceKey<Enchantment> enchantKey = getResourceKey(ENCHANTS, enchantId);
+        Enchantment enchantment = ENCHANTS.getValue(enchantKey);
+        if (enchantment == null) return;
+
+        TagKey<Enchantment> exclusivesKey = getTagKey(ENCHANTS, "exclusive_set/" + enchantId);
+
+        conflicts.forEach(id -> {
+            ResourceKey<Enchantment> conflictKey = getResourceKey(ENCHANTS, id);
+            Holder.Reference<Enchantment> reference = ENCHANTS.get(conflictKey).orElse(null);
+            if (reference == null) return;
+
+            addInTag(exclusivesKey, reference);
+        });
+    }
+
+    @Override
+    public void addTagsOnReload(@NotNull CustomEnchant customEnchant) {
+        ResourceLocation location = ResourceLocation.withDefaultNamespace(customEnchant.getNamespacedName());
+        Holder.Reference<Enchantment> reference = ENCHANTS.get(location).orElse(null);
+        if (reference == null) {
+            Util.error("Custom Enchantment " + customEnchant.getNamespacedName() + " was not found in enchantment registry! Could not add tags");
+            return;
+        }
+        addTags(reference, customEnchant.getTags());
+    }
+
+    private void addTags(Holder.Reference<Enchantment> reference, Map<String, Boolean> tags) {
+        enchantmentTags.forEach((tagName, tagKey) -> {
+            if (tags.getOrDefault(tagName, false)) {
+                addInTag(tagKey, reference);
+                if (tagName.equalsIgnoreCase("treasure"))
+                    removeFromTag(EnchantmentTags.NON_TREASURE, reference);
+            } else {
+                removeFromTag(tagKey, reference);
+                if (tagName.equalsIgnoreCase("treasure"))
+                    addInTag(EnchantmentTags.NON_TREASURE, reference);
+            }
+        });
     }
 }

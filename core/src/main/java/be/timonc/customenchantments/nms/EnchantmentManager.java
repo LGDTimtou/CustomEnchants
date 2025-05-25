@@ -1,5 +1,6 @@
 package be.timonc.customenchantments.nms;
 
+import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.CustomEnchantRecord;
 import org.bukkit.enchantments.Enchantment;
 
@@ -14,4 +15,6 @@ public interface EnchantmentManager {
     Enchantment registerEnchantment(CustomEnchantRecord customEnchant);
 
     void addExclusives(String enchantId, Set<String> exclusives);
+
+    void addTagsOnReload(CustomEnchant customEnchant);
 }

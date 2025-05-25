@@ -13,7 +13,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -21,7 +24,6 @@ import java.util.stream.Collectors;
 public class CustomEnchantBuilder {
 
     private final String namespacedName;
-    private final Map<String, Boolean> tags = new HashMap<>();
     private final List<CustomEnchantTrigger> triggers = new ArrayList<>();
     private final List<CustomEnchantedItemLocation> customEnchantedItemLocations = new ArrayList<>();
     private int maxLvl;
@@ -156,8 +158,7 @@ public class CustomEnchantBuilder {
                     namespacedName,
                     defaultEnchantment,
                     definition,
-                    customEnchantedItemLocations,
-                    tags
+                    customEnchantedItemLocations
             );
             triggers.forEach(trigger -> trigger.setCustomEnchant(customEnchant));
         }

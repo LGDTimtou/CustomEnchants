@@ -10,13 +10,11 @@ public class CustomEnchantRecord {
     protected final String name;
     protected final String namespacedName;
     protected final CustomEnchantDefinition customEnchantDefinition;
-    private final Map<String, Boolean> tags;
 
-    protected CustomEnchantRecord(String name, CustomEnchantDefinition customEnchantDefinition, Map<String, Boolean> tags) {
+    protected CustomEnchantRecord(String name, CustomEnchantDefinition customEnchantDefinition) {
         this.name = name;
         this.namespacedName = Util.getNamedspacedName(name);
         this.customEnchantDefinition = customEnchantDefinition;
-        this.tags = tags;
     }
 
     public String getName() {
@@ -28,7 +26,7 @@ public class CustomEnchantRecord {
     }
 
     public Map<String, Boolean> getTags() {
-        return tags;
+        return customEnchantDefinition.tags();
     }
 
 
