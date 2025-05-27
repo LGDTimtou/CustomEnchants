@@ -18,9 +18,9 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class CustomEnchantInstruction {
+public abstract class Instruction {
 
-    private static final Map<String, Class<? extends CustomEnchantInstruction>> customEnchantInstructions = Map.of(
+    private static final Map<String, Class<? extends Instruction>> customEnchantInstructions = Map.of(
             "command", CommandInstruction.class,
             "delay", DelayInstruction.class,
             "repeat", RepeatInstruction.class,
@@ -31,7 +31,7 @@ public abstract class CustomEnchantInstruction {
     );
     private static final Pattern pattern = Pattern.compile("(\\$\\[(?:(?!\\$\\[).)*?\\])");
 
-    public static CustomEnchantInstruction getInstruction(String name, Object value) {
+    public static Instruction getInstruction(String name, Object value) {
         // Check if the instruction type exists in the map
         if (!customEnchantInstructions.containsKey(name)) {
             Util.warn("Instruction type '" + name + "' does not exist");
@@ -39,11 +39,11 @@ public abstract class CustomEnchantInstruction {
         }
 
         // Retrieve the instruction class
-        Class<? extends CustomEnchantInstruction> instructionClass = customEnchantInstructions.get(name);
+        Class<? extends Instruction> instructionClass = customEnchantInstructions.get(name);
 
         try {
             // Create an instance of the instruction class
-            CustomEnchantInstruction instruction = instructionClass.getDeclaredConstructor().newInstance();
+            Instruction instruction = instructionClass.getDeclaredConstructor().newInstance();
             instruction.setValue(value);
             return instruction;
         } catch (Exception e) {
@@ -52,8 +52,8 @@ public abstract class CustomEnchantInstruction {
         }
     }
 
-    public static Queue<CustomEnchantInstruction> parseInstructions(List<?> unparsedInstructions) {
-        Queue<CustomEnchantInstruction> instructionQueue = new ArrayDeque<>();
+    public static Queue<Instruction> parseInstructions(List<?> unparsedInstructions) {
+        Queue<Instruction> instructionQueue = new ArrayDeque<>();
 
         for (Object unparsedInstruction : unparsedInstructions) {
             if (unparsedInstruction instanceof Map<?, ?> instructionMap) {
@@ -67,8 +67,8 @@ public abstract class CustomEnchantInstruction {
         return instructionQueue;
     }
 
-    public static void executeInstructionQueue(Queue<CustomEnchantInstruction> instructionQueue, Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable oncomplete) {
-        CustomEnchantInstruction instruction = instructionQueue.poll();
+    public static void executeInstructionQueue(Queue<Instruction> instructionQueue, Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable oncomplete) {
+        Instruction instruction = instructionQueue.poll();
         if (instruction == null) {
             oncomplete.run();
             return;

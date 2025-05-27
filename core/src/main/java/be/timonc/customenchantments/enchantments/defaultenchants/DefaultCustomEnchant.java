@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.defaultenchants;
 
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.defaultenchants.listeners.Excavator;
 import be.timonc.customenchantments.enchantments.defaultenchants.listeners.Lumber;
 import be.timonc.customenchantments.enchantments.defaultenchants.listeners.Replenish;
@@ -18,12 +18,12 @@ public enum DefaultCustomEnchant {
 
     private final String namespacedName;
     private final int maxLevel;
-    private final CustomEnchantListener listener;
+    private final TriggerListener listener;
 
     private CustomEnchant enchantment;
 
 
-    DefaultCustomEnchant(String namespacedName, int maxLevel, CustomEnchantListener listener) {
+    DefaultCustomEnchant(String namespacedName, int maxLevel, TriggerListener listener) {
         this.namespacedName = namespacedName;
         this.maxLevel = maxLevel;
         this.listener = listener;
@@ -43,7 +43,7 @@ public enum DefaultCustomEnchant {
         return maxLevel;
     }
 
-    public CustomEnchantListener getListener() {
+    public TriggerListener getListener() {
         return listener;
     }
 

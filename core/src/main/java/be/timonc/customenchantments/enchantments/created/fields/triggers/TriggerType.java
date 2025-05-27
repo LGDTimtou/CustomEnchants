@@ -1,5 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers;
 
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.created.triggers.armor.ArmorDeEquipTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.armor.ArmorEquipTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.block.*;
@@ -119,6 +121,7 @@ public enum TriggerType {
     PROJECTILE_HIT_PLAYER(ProjectileHitPlayerTrigger.class, PROJECTILE_HIT_ENTITY);
 
     private final Set<TriggerType> overriddenBy;
+    private TriggerListener instance = null;
     private Constructor<?> constructor;
 
     TriggerType(Class<?> triggerClass, TriggerType... overriddenBy) {
@@ -134,11 +137,6 @@ public enum TriggerType {
         tempSet.forEach(type -> type.addOverriddenBy(this.overriddenBy));
     }
 
-    public Constructor<?> getConstructor() {
-        return constructor;
-    }
-
-
     public Set<TriggerType> getOverriddenBy() {
         return overriddenBy;
     }
@@ -148,5 +146,18 @@ public enum TriggerType {
             type.addOverriddenBy(set);
             set.add(type);
         });
+    }
+
+    public Set<TriggerCondition> createInstance() {
+        try {
+            if (instance == null) {
+                instance = (TriggerListener) constructor.newInstance(this);
+                Util.registerListener(instance);
+            }
+            return instance.getConditions();
+        } catch (Exception ignored) {
+            Util.error("Trigger type: " + this + " could not be instanced! Please report this error!");
+            return Set.of();
+        }
     }
 }

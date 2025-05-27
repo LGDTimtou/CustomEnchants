@@ -1,5 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers;
 
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+
 public record ConditionKey(TriggerConditionType type, String prefix) {
 
 

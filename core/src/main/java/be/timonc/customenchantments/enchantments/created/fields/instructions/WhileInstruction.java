@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
+import be.timonc.customenchantments.enchantments.created.fields.Instruction;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.entity.Player;
 
@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.function.Supplier;
 
-public class WhileInstruction extends CustomEnchantInstruction {
+public class WhileInstruction extends Instruction {
 
     private String conditionString;
     private String loopParameterName;
-    private Queue<CustomEnchantInstruction> instructions;
+    private Queue<Instruction> instructions;
 
 
     @Override
@@ -24,7 +24,7 @@ public class WhileInstruction extends CustomEnchantInstruction {
             Map<String, Object> castedValue = (Map<String, Object>) value;
             conditionString = String.valueOf(castedValue.get("condition"));
             loopParameterName = String.valueOf(castedValue.getOrDefault("loop_parameter", "k"));
-            instructions = CustomEnchantInstruction.parseInstructions((List<?>) castedValue.get("instructions"));
+            instructions = Instruction.parseInstructions((List<?>) castedValue.get("instructions"));
         } catch (Exception e) {
             Util.error("Error while parsing 'while' instruction: " + value);
         }
@@ -41,7 +41,7 @@ public class WhileInstruction extends CustomEnchantInstruction {
         boolean condition = parseCondition(player, conditionString, parameters);
         if (condition) {
             parameters.put(loopParameterName, () -> String.valueOf(i));
-            CustomEnchantInstruction.executeInstructionQueue(
+            Instruction.executeInstructionQueue(
                     new ArrayDeque<>(instructions),
                     player,
                     customEnchant,

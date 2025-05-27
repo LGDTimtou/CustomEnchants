@@ -1,6 +1,6 @@
 package be.timonc.customenchantments.enchantments.defaultenchants.listeners;
 
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Location;
@@ -15,7 +15,7 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Telekinesis implements CustomEnchantListener {
+public class Telekinesis implements TriggerListener {
 
 
     @EventHandler

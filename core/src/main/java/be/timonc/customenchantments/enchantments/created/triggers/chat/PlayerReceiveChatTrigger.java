@@ -1,9 +1,9 @@
 package be.timonc.customenchantments.enchantments.created.triggers.chat;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +11,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.Map;
 
-public class PlayerReceiveChatTrigger implements CustomEnchantListener {
+public class PlayerReceiveChatTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 

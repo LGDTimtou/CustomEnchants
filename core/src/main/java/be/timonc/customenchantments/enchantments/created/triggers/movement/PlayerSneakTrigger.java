@@ -1,13 +1,13 @@
 package be.timonc.customenchantments.enchantments.created.triggers.movement;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.Map;
 
-public class PlayerSneakTrigger implements CustomEnchantListener {
+public class PlayerSneakTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 

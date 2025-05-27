@@ -22,6 +22,46 @@
 #       ...                                                                                                                                #
 ############################################################################################################################################
 
+test:
+  version: 1.21.5
+  enabled: true
+  depends: [ ]
+  definition:
+    needs_permission: false
+    max_level: 1
+    anvil_cost: 10
+    conflicts_with: [ ]
+    targets: [ ]
+    tags:
+      in_enchanting_table: true
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+    enchanting_table:
+      weight: 50
+      min_cost_base: 2
+      min_cost_incr: 10
+      max_cost_base: 8
+      max_cost_incr: 15
+  custom_locations: [ ]
+  triggers:
+    armor_de_equip:
+      conditions:
+        item^new_armor:
+          - leather_helmet
+          - turtle_helmet
+        leggings:
+          - iron_helmet
+      levels:
+        1:
+          cancel_event: false
+          cooldown: 60
+          cooldown_message: ""
+          chance: 100
+          instructions: [ ]
+
+
+
+
 sneak:
   version: 1.21.5
   enabled: true
@@ -207,7 +247,7 @@ head_hunter:
     destroy_item_chance: 0
     remove_enchantment_chance: 0
     enchanting_table:
-      weight: 50
+      weight: 20
       min_cost_base: 2
       min_cost_incr: 10
       max_cost_base: 8

@@ -1,6 +1,6 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
+import be.timonc.customenchantments.enchantments.created.fields.Instruction;
 import be.timonc.customenchantments.other.CustomEnchantLogFilter;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Bukkit;
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class CommandInstruction extends CustomEnchantInstruction {
+public class CommandInstruction extends Instruction {
 
     private String command;
 

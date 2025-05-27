@@ -2,9 +2,9 @@ package be.timonc.customenchantments.enchantments.created.triggers.armor;
 
 import be.timonc.customenchantments.customevents.armor_equip.ArmorEquipEvent;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Map;
 import java.util.Set;
 
-public class ArmorEquipTrigger implements CustomEnchantListener {
+public class ArmorEquipTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 

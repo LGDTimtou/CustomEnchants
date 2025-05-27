@@ -1,16 +1,16 @@
 package be.timonc.customenchantments.enchantments.created.triggers.click;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.Map;
 
-public class RightClickBlockTrigger implements CustomEnchantListener {
+public class RightClickBlockTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 

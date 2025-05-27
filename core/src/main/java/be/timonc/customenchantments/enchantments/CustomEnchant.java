@@ -2,7 +2,7 @@ package be.timonc.customenchantments.enchantments;
 
 import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.enchantments.created.builders.CustomEnchantBuilder;
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantedItemLocation;
+import be.timonc.customenchantments.enchantments.created.fields.ItemLocation;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import be.timonc.customenchantments.other.File;
 import be.timonc.customenchantments.other.Message;
@@ -25,17 +25,17 @@ public class CustomEnchant extends CustomEnchantRecord {
     private static final Map<String, CustomEnchant> enchantments = new HashMap<>();
 
     private final boolean defaultEnchantment;
-    private final List<CustomEnchantedItemLocation> customEnchantedItemLocations;
+    private final List<ItemLocation> itemLocations;
     private Enchantment enchantment;
 
     private boolean newlyRegistered = false;
 
 
-    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<CustomEnchantedItemLocation> customEnchantedItemLocations) {
+    public CustomEnchant(String name, boolean defaultEnchantment, CustomEnchantDefinition definition, List<ItemLocation> itemLocations) {
         super(Util.getPrettyName(name), definition);
 
         this.defaultEnchantment = defaultEnchantment;
-        this.customEnchantedItemLocations = customEnchantedItemLocations;
+        this.itemLocations = itemLocations;
 
         this.enchantment = Util.getEnchantmentByName(this.getNamespacedName());
         if (Main.isFirstBoot() || this.enchantment == null) {
@@ -125,17 +125,17 @@ public class CustomEnchant extends CustomEnchantRecord {
         }
 
         // Handle manually selected item locations
-        if (!customEnchantedItemLocations.isEmpty()) {
-            List<ItemStack> customSelectedItems = customEnchantedItemLocations.stream()
-                                                                              .flatMap(loc -> loc.getCustomEnchantedItems(
-                                                                                      player).stream())
-                                                                              .filter(Objects::nonNull)
-                                                                              .filter(item -> item.containsEnchantment(
-                                                                                      this.enchantment))
-                                                                              .toList();
+        if (!itemLocations.isEmpty()) {
+            List<ItemStack> customSelectedItems = itemLocations.stream()
+                                                               .flatMap(loc -> loc.getCustomEnchantedItems(
+                                                                       player).stream())
+                                                               .filter(Objects::nonNull)
+                                                               .filter(item -> item.containsEnchantment(
+                                                                       this.enchantment))
+                                                               .toList();
 
             if (!customSelectedItems.isEmpty()) {
-                Util.debug("Custom Enchanted Items found in " + customEnchantedItemLocations + ": " + customSelectedItems);
+                Util.debug("Custom Enchanted Items found in " + itemLocations + ": " + customSelectedItems);
                 return customSelectedItems.getFirst();
             }
 

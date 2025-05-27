@@ -2,9 +2,9 @@ package be.timonc.customenchantments.enchantments.created.triggers.movement;
 
 import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.other.File;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlayerIdleTrigger implements CustomEnchantListener {
+public class PlayerIdleTrigger implements TriggerListener {
 
     private static final Map<Player, Long> lastMoveTime = new HashMap<>();
     private final TriggerInvoker triggerInvoker;

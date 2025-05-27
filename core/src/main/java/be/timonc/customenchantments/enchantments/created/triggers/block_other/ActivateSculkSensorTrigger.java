@@ -1,14 +1,14 @@
 package be.timonc.customenchantments.enchantments.created.triggers.block_other;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockReceiveGameEvent;
 
 import java.util.Map;
 
-public class ActivateSculkSensorTrigger implements CustomEnchantListener {
+public class ActivateSculkSensorTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 

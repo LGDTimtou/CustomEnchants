@@ -1,12 +1,12 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
+import be.timonc.customenchantments.enchantments.created.fields.Instruction;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class DummyInstruction extends CustomEnchantInstruction {
+public class DummyInstruction extends Instruction {
 
     @Override
     protected void setValue(Object value) {

@@ -2,7 +2,7 @@ package be.timonc.customenchantments.enchantments.defaultenchants.listeners;
 
 
 import be.timonc.customenchantments.Main;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Bukkit;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public class Replenish implements CustomEnchantListener {
+public class Replenish implements TriggerListener {
 
     private static final Map<Material, Material> crops = Map.of(
             Material.WHEAT, Material.WHEAT_SEEDS,

@@ -1,10 +1,10 @@
 package be.timonc.customenchantments.enchantments.created.triggers.armor;
 
 import be.timonc.customenchantments.customevents.armor_equip.ArmorEquipEvent;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
@@ -12,9 +12,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Map;
 import java.util.Set;
 
-public class ArmorDeEquipTrigger implements CustomEnchantListener {
+public class ArmorDeEquipTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
+    private final TriggerCondition newArmorCondition = new TriggerCondition(TriggerConditionType.ITEM, "new_armor");
+    private final TriggerCondition oldArmorCondition = new TriggerCondition(TriggerConditionType.ITEM, "old_armor");
 
     public ArmorDeEquipTrigger(TriggerInvoker type) {
         this.triggerInvoker = type;
@@ -29,9 +31,9 @@ public class ArmorDeEquipTrigger implements CustomEnchantListener {
                 e.getPlayer(),
                 Set.of(e.getOldArmorPiece()),
                 Map.of(
-                        new ConditionKey(TriggerConditionType.ITEM, "new_armor"),
+                        newArmorCondition,
                         e.getNewArmorPiece() == null ? new ItemStack(Material.AIR) : e.getNewArmorPiece(),
-                        new ConditionKey(TriggerConditionType.ITEM, "old_armor"),
+                        oldArmorCondition,
                         e.getOldArmorPiece()
                 ),
                 Map.of()

@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public enum CustomEnchantedItemLocation {
+public enum ItemLocation {
 
     MAIN_HAND(player -> new ArrayList<>(List.of(player.getInventory().getItemInMainHand()))),
     OFF_HAND(player -> new ArrayList<>(List.of(player.getInventory().getItemInOffHand()))),
@@ -26,7 +26,7 @@ public enum CustomEnchantedItemLocation {
 
     private final Function<Player, List<ItemStack>> getItems;
 
-    CustomEnchantedItemLocation(Function<Player, List<ItemStack>> getItems) {
+    ItemLocation(Function<Player, List<ItemStack>> getItems) {
         this.getItems = getItems;
     }
 

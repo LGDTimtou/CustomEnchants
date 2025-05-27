@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
+import be.timonc.customenchantments.enchantments.created.fields.Instruction;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.entity.Player;
 
@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.function.Supplier;
 
-public class RepeatInstruction extends CustomEnchantInstruction {
+public class RepeatInstruction extends Instruction {
 
     private String loopParameterName;
     private String amount;
-    private Queue<CustomEnchantInstruction> instructions;
+    private Queue<Instruction> instructions;
 
     @Override
     protected void setValue(Object value) {
@@ -23,7 +23,7 @@ public class RepeatInstruction extends CustomEnchantInstruction {
             Map<String, Object> castedValue = (Map<String, Object>) value;
             amount = String.valueOf(castedValue.getOrDefault("amount", 5));
             loopParameterName = String.valueOf(castedValue.getOrDefault("loop_parameter", "k"));
-            instructions = CustomEnchantInstruction.parseInstructions((List<?>) castedValue.get("instructions"));
+            instructions = Instruction.parseInstructions((List<?>) castedValue.get("instructions"));
         } catch (Exception e) {
             Util.error("Error while parsing 'repeat' instruction: " + value);
         }
@@ -41,7 +41,7 @@ public class RepeatInstruction extends CustomEnchantInstruction {
         String iteration = String.valueOf(i);
         if (i < max) {
             parameters.put(loopParameterName, () -> iteration);
-            CustomEnchantInstruction.executeInstructionQueue(
+            Instruction.executeInstructionQueue(
                     new ArrayDeque<>(instructions),
                     player,
                     customEnchant,

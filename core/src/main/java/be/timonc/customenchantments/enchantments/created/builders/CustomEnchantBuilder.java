@@ -2,8 +2,8 @@ package be.timonc.customenchantments.enchantments.created.builders;
 
 import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.CustomEnchantDefinition;
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantTrigger;
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantedItemLocation;
+import be.timonc.customenchantments.enchantments.created.fields.ItemLocation;
+import be.timonc.customenchantments.enchantments.created.fields.Trigger;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 public class CustomEnchantBuilder {
 
     private final String namespacedName;
-    private final List<CustomEnchantTrigger> triggers = new ArrayList<>();
-    private final List<CustomEnchantedItemLocation> customEnchantedItemLocations = new ArrayList<>();
+    private final List<Trigger> triggers = new ArrayList<>();
+    private final List<ItemLocation> itemLocations = new ArrayList<>();
     private int maxLvl;
     private boolean error;
     private boolean enabled;
@@ -70,9 +70,9 @@ public class CustomEnchantBuilder {
         List<String> locations = config.getStringList(namespacedName + ".custom_locations");
         for (String location : locations) {
             try {
-                customEnchantedItemLocations.add(CustomEnchantedItemLocation.valueOf(location.trim().toUpperCase()));
+                itemLocations.add(ItemLocation.valueOf(location.trim().toUpperCase()));
             } catch (IllegalArgumentException e) {
-                String closest = Util.findClosestMatch(location, CustomEnchantedItemLocation.class);
+                String closest = Util.findClosestMatch(location, ItemLocation.class);
                 String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
                 Util.warn(namespacedName + ": " + location.toUpperCase() + " is not a valid custom enchanted item location" + closest_message + " Skipping...");
             }
@@ -121,7 +121,7 @@ public class CustomEnchantBuilder {
         if (triggerSection == null) return;
         for (String triggerName : triggerSection.getKeys(false)) {
             ConfigurationSection triggerConfigSection = triggerSection.getConfigurationSection(triggerName);
-            CustomEnchantTrigger trigger = new CustomEnchantTriggerBuilder(
+            Trigger trigger = new CustomEnchantTriggerBuilder(
                     namespacedName,
                     maxLvl,
                     triggerName,
@@ -135,7 +135,7 @@ public class CustomEnchantBuilder {
     }
 
     private void removeOverriddenTriggers() {
-        Iterator<CustomEnchantTrigger> it = this.triggers.iterator();
+        Iterator<Trigger> it = this.triggers.iterator();
         while (it.hasNext()) {
             TriggerInvoker triggerInvoker = it.next().getInvoker();
             // Loop through all types that can override this one
@@ -158,7 +158,7 @@ public class CustomEnchantBuilder {
                     namespacedName,
                     defaultEnchantment,
                     definition,
-                    customEnchantedItemLocations
+                    itemLocations
             );
             triggers.forEach(trigger -> trigger.setCustomEnchant(customEnchant));
         }

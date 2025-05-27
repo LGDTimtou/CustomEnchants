@@ -2,14 +2,14 @@ package be.timonc.customenchantments.enchantments.created.triggers.health;
 
 import be.timonc.customenchantments.customevents.health_change.PlayerHealthDecreaseEvent;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 
 import java.util.Map;
 
-public class PlayerHealthDecreaseTrigger implements CustomEnchantListener {
+public class PlayerHealthDecreaseTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 

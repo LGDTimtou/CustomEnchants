@@ -3,10 +3,10 @@ package be.timonc.customenchantments.enchantments.created.fields;
 import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.api.CustomEnchantTriggerEvent;
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionValue;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,19 +18,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class CustomEnchantTrigger {
+public class Trigger {
 
     private static final Map<Player, Map<CooldownKey, Long>> pendingCooldown = new HashMap<>();
     private static final Map<Player, Set<CooldownKey>> pendingCooldownMessages = new HashMap<>();
     private final TriggerInvoker triggerInvoker;
-    private final Map<ConditionKey, Set<String>> triggerConditions;
-    private final List<CustomEnchantLevel> levels;
+    private final Map<TriggerCondition, Set<TriggerConditionValue>> conditions;
+    private final List<Level> levels;
     private CustomEnchant customEnchant;
 
 
-    public CustomEnchantTrigger(TriggerInvoker triggerInvoker, Map<ConditionKey, Set<String>> triggerConditions, List<CustomEnchantLevel> levels) {
+    public Trigger(TriggerInvoker triggerInvoker, Map<TriggerCondition, Set<TriggerConditionValue>> conditions, List<Level> levels) {
         this.triggerInvoker = triggerInvoker;
-        this.triggerConditions = triggerConditions;
+        this.conditions = conditions;
         this.levels = levels;
     }
 
@@ -43,21 +43,18 @@ public class CustomEnchantTrigger {
     }
 
 
-    public void executeInstructions(Event event, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionValues, Map<String, Supplier<String>> parameters, Runnable onComplete) {
+    public void executeInstructions(Event event, Player player, Set<ItemStack> priorityItems, Map<String, Supplier<String>> parameters, Map<TriggerCondition, Object> availableTriggerConditions, Runnable onComplete) {
         if (this.customEnchant == null) {
             Util.error("Custom Enchant not set in trigger: " + this.triggerInvoker);
             return;
         }
 
-        // Add all global conditions
-        triggerConditionValues.putAll(TriggerConditionType.getGlobalConditionMap(player));
-
-        Queue<CustomEnchantInstruction> instructions = loadInstructions(
+        Queue<Instruction> instructions = loadInstructions(
                 event,
                 player,
                 priorityItems,
                 parameters,
-                triggerConditionValues
+                availableTriggerConditions
         );
 
         if (instructions == null) {
@@ -75,7 +72,7 @@ public class CustomEnchantTrigger {
                       parameters
               ));
 
-        CustomEnchantInstruction.executeInstructionQueue(
+        Instruction.executeInstructionQueue(
                 new ArrayDeque<>(instructions),
                 player,
                 customEnchant,
@@ -85,7 +82,7 @@ public class CustomEnchantTrigger {
     }
 
 
-    private Queue<CustomEnchantInstruction> loadInstructions(@NotNull Event event, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<String, Supplier<String>> parameters, @NotNull Map<ConditionKey, Object> triggerConditionValues) {
+    private Queue<Instruction> loadInstructions(@NotNull Event event, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<String, Supplier<String>> parameters, @NotNull Map<TriggerCondition, Object> availableTriggerConditions) {
         // Check if the player has permission to trigger this enchantment
         if (!customEnchant.hasPermission(player))
             return null;
@@ -101,10 +98,10 @@ public class CustomEnchantTrigger {
             Util.error("Level of " + customEnchant.getName() + " cannot be " + levelValue);
             return null;
         }
-        CustomEnchantLevel level = levels.get(levelValue - 1);
+        Level level = levels.get(levelValue - 1);
 
         Map<String, Supplier<String>> globalParameters = getGlobalParameters(player, levelValue);
-        populateParameters(parameters, globalParameters, triggerConditionValues);
+        parameters.putAll(globalParameters);
 
         //Check if this enchantment is still in cooldown for the player
         CooldownKey cooldownKey = new CooldownKey(customEnchant, triggerInvoker.getTriggerType());
@@ -127,9 +124,13 @@ public class CustomEnchantTrigger {
             return null;
         }
 
-        //Check if the trigger conditions are met
-        if (!checkTriggerConditions(triggerConditionValues))
-            return null;
+        //Check trigger conditions
+        for (Map.Entry<TriggerCondition, Set<TriggerConditionValue>> entry : conditions.entrySet()) {
+            Object object = availableTriggerConditions.get(entry.getKey());
+            for (TriggerConditionValue triggerConditionValue : entry.getValue())
+                if (!triggerConditionValue.check(object))
+                    return null;
+        }
 
         //Return if chance didn't trigger
         double randomNumberEnchantment = Math.random() * 100;
@@ -170,40 +171,6 @@ public class CustomEnchantTrigger {
 
         // Return instructions
         return level.instructions();
-    }
-
-    private void populateParameters(Map<String, Supplier<String>> parameters, Map<String, Supplier<String>> globalParameters, Map<ConditionKey, Object> triggerConditionValues) {
-        // Add global parameters
-        parameters.putAll(globalParameters);
-
-        // Add condition type parameters
-        triggerConditionValues.forEach((conditionKey, obj) -> parameters.putAll(conditionKey.type()
-                                                                                            .getConditionParameters(
-                                                                                                    conditionKey.prefix(),
-                                                                                                    obj
-                                                                                            )));
-    }
-
-
-    private boolean checkTriggerConditions(Map<ConditionKey, Object> triggerConditionValues) {
-        triggerConditions.forEach((conditionKey, strings) -> {
-            if (!triggerConditionValues.containsKey(conditionKey))
-                Util.warn(customEnchant.getNamespacedName() + ": " + conditionKey.toString()
-                                                                                 .toUpperCase() + " is not a valid condition for " + triggerInvoker);
-        });
-
-        for (Map.Entry<ConditionKey, Object> entry : triggerConditionValues.entrySet()) {
-            ConditionKey conditionKey = entry.getKey();
-            Object triggerObject = entry.getValue();
-            Set<String> conditions = triggerConditions.get(conditionKey);
-            if (conditions != null)
-                for (String condition : conditions)
-                    if (!conditionKey.type().checkCondition(triggerObject, condition)) {
-                        Util.debug(conditionKey + ":" + triggerObject + ", did not match any of the following " + conditions);
-                        return false;
-                    }
-        }
-        return true;
     }
 
     private Map<String, Supplier<String>> getGlobalParameters(Player player, int levelValue) {

@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
 import be.timonc.customenchantments.Main;
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
+import be.timonc.customenchantments.enchantments.created.fields.Instruction;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class DelayInstruction extends CustomEnchantInstruction {
+public class DelayInstruction extends Instruction {
 
     private String delayTime;
 

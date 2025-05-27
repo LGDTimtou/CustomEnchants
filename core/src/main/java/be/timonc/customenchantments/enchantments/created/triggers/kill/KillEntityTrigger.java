@@ -1,9 +1,9 @@
 package be.timonc.customenchantments.enchantments.created.triggers.kill;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import java.util.Map;
 import java.util.UUID;
 
-public class KillEntityTrigger implements CustomEnchantListener {
+public class KillEntityTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 

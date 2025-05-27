@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.builders;
 
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantInstruction;
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantLevel;
+import be.timonc.customenchantments.enchantments.created.fields.Instruction;
+import be.timonc.customenchantments.enchantments.created.fields.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -14,11 +14,11 @@ public class CustomEnchantLevelBuilder {
 
     private final double cooldown;
     private final boolean cancelEvent;
-    private final Queue<CustomEnchantInstruction> instructions;
+    private final Queue<Instruction> instructions;
     private double chance;
     private String cooldownMessage;
 
-    public CustomEnchantLevelBuilder(ConfigurationSection section, CustomEnchantLevel previous) {
+    public CustomEnchantLevelBuilder(ConfigurationSection section, Level previous) {
         if (section == null) {
             cooldown = previous.cooldown();
             chance = previous.chance();
@@ -40,7 +40,7 @@ public class CustomEnchantLevelBuilder {
             List<?> unparsedInstructions = section.getList("instructions");
             this.instructions = unparsedInstructions == null || unparsedInstructions.isEmpty() ?
                     previous.instructions() :
-                    CustomEnchantInstruction.parseInstructions(unparsedInstructions);
+                    Instruction.parseInstructions(unparsedInstructions);
         }
     }
 
@@ -52,7 +52,7 @@ public class CustomEnchantLevelBuilder {
         this.instructions = new ArrayDeque<>();
     }
 
-    public CustomEnchantLevel build() {
-        return new CustomEnchantLevel(cooldown, cooldownMessage, chance, cancelEvent, instructions);
+    public Level build() {
+        return new Level(cooldown, cooldownMessage, chance, cancelEvent, instructions);
     }
 }

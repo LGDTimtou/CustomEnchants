@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers;
 
-import be.timonc.customenchantments.enchantments.created.fields.CustomEnchantTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
-import be.timonc.customenchantments.other.Util;
+import be.timonc.customenchantments.enchantments.created.fields.Trigger;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -13,60 +13,70 @@ import java.util.function.Supplier;
 public class TriggerInvoker {
 
 
-    private final Set<CustomEnchantTrigger> subscribers = new HashSet<>();
+    private final Set<Trigger> subscribers = new HashSet<>();
     private final TriggerType triggerType;
-    private CustomEnchantListener instance;
+    private final Set<TriggerCondition> triggerConditions;
 
 
     public TriggerInvoker(TriggerType triggerType) {
         this.triggerType = triggerType;
+        triggerConditions = triggerType.createInstance();
+    }
+
+    public TriggerCondition getCondition(TriggerConditionType type, String prefix) {
+        return triggerConditions.stream()
+                                .filter(triggerCondition -> triggerCondition.getType() == type && triggerCondition.getPrefix()
+                                                                                                                  .equals(prefix))
+                                .findFirst()
+                                .orElse(null);
     }
 
     public Set<TriggerType> getOverriddenBy() {
         return triggerType.getOverriddenBy();
     }
 
-    public void trigger(Event event, Player player, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters) {
+    public void trigger(Event event, Player player, Map<TriggerCondition, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters) {
         trigger(event, player, Collections.emptySet(), triggerConditionMap, localParameters);
     }
 
-    public void trigger(Event event, Player player, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
+    public void trigger(Event event, Player player, Map<TriggerCondition, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
         trigger(event, player, Collections.emptySet(), triggerConditionMap, localParameters, onComplete);
     }
 
-    public void trigger(Event event, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters) {
+    public void trigger(Event event, Player player, Set<ItemStack> priorityItems, Map<TriggerCondition, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters) {
         trigger(event, player, priorityItems, triggerConditionMap, localParameters, () -> {});
     }
 
-    public void trigger(Event event, Player player, Set<ItemStack> priorityItems, Map<ConditionKey, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
-        subscribers.forEach(customEnchantTrigger -> customEnchantTrigger.executeInstructions(
+    public void trigger(Event event, Player player, Set<ItemStack> priorityItems, Map<TriggerCondition, Object> triggerConditionMap, Map<String, Supplier<String>> localParameters, Runnable onComplete) {
+        //Adding all global trigger conditions and its value to the trigger condition map
+        Map<TriggerCondition, Object> mutableTriggerConditionMap = new HashMap<>(triggerConditionMap);
+        TriggerCondition.getGlobalTriggerConditions()
+                        .forEach(condition -> mutableTriggerConditionMap.put(
+                                condition,
+                                condition.getGlobalValue(player)
+                        ));
+
+        //Adding all trigger condition parameters to the parameter map
+        Map<String, Supplier<String>> parameters = new HashMap<>(localParameters);
+        mutableTriggerConditionMap.forEach((triggerCondition, obj) ->
+                parameters.putAll(triggerCondition.getParameters(obj))
+        );
+
+        subscribers.forEach(trigger -> trigger.executeInstructions(
                 event,
                 player,
                 priorityItems,
-                new HashMap<>(triggerConditionMap),
-                new HashMap<>(localParameters),
+                parameters,
+                mutableTriggerConditionMap,
                 onComplete
         ));
     }
 
-    public void subscribe(CustomEnchantTrigger customEnchantTrigger) {
-        createInstance();
-        subscribers.add(customEnchantTrigger);
+    public void subscribe(Trigger trigger) {
+        subscribers.add(trigger);
     }
 
     public TriggerType getTriggerType() {
         return triggerType;
-    }
-
-    private void createInstance() {
-        try {
-            if (this.instance == null) {
-                this.instance = (CustomEnchantListener) triggerType.getConstructor().newInstance(this);
-                Util.registerListener(this.instance);
-            }
-        } catch (Exception ignored) {
-            Util.error("Trigger type: " + this + " could not be instanced! Please report this error!");
-            this.instance = null;
-        }
     }
 }

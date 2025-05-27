@@ -1,9 +1,9 @@
 package be.timonc.customenchantments.enchantments.created.triggers.damage;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerConditionType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.triggers.CustomEnchantListener;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -14,7 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.Map;
 import java.util.UUID;
 
-public class DamageAnimalTrigger implements CustomEnchantListener {
+public class DamageAnimalTrigger implements TriggerListener {
 
     private final TriggerInvoker triggerInvoker;
 
