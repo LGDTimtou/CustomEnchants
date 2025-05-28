@@ -1,20 +1,23 @@
 package be.timonc.customenchantments.enchantments.created.triggers.block;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockFertilizeEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class BlockFertilizeTrigger implements TriggerListener {
+public class BlockFertilizeTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup fertilizedBlockConditions = new TriggerConditionGroup(
+            "fertilized", TriggerConditionGroupType.BLOCK
+    );
 
-    public BlockFertilizeTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public BlockFertilizeTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
 
 
@@ -23,8 +26,12 @@ public class BlockFertilizeTrigger implements TriggerListener {
         triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
-                Map.of(new ConditionKey(TriggerConditionType.BLOCK, ""), e.getBlock()),
-                Map.of()
+                Map.of(fertilizedBlockConditions, e.getBlock())
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(fertilizedBlockConditions);
     }
 }

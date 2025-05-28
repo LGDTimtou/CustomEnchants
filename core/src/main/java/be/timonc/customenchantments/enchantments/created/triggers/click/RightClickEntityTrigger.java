@@ -1,27 +1,33 @@
 package be.timonc.customenchantments.enchantments.created.triggers.click;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class RightClickEntityTrigger implements TriggerListener {
+public class RightClickEntityTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup clickedEntityConditions = new TriggerConditionGroup(
+            "clicked", TriggerConditionGroupType.ENTITY
+    );
 
-    public RightClickEntityTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public RightClickEntityTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
 
 
     @EventHandler
     public void onPlayerRightClickEntity(PlayerInteractEntityEvent event) {
-        triggerInvoker.trigger(event, event.getPlayer(), Map.of(
-                new ConditionKey(TriggerConditionType.ENTITY, "clicked"), event.getRightClicked()
-        ), Map.of());
+        triggerInvoker.trigger(event, event.getPlayer(), Map.of(clickedEntityConditions, event.getRightClicked()));
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(clickedEntityConditions);
     }
 }

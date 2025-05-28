@@ -2,10 +2,9 @@ package be.timonc.customenchantments.enchantments.created.builders;
 
 import be.timonc.customenchantments.enchantments.created.fields.Level;
 import be.timonc.customenchantments.enchantments.created.fields.Trigger;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionValue;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,7 +18,7 @@ public class CustomEnchantTriggerBuilder {
     private final ConfigurationSection config;
     private final Map<TriggerCondition, Set<TriggerConditionValue>> conditions = new HashMap<>();
     private final List<Level> levels = new ArrayList<>();
-    private TriggerInvoker triggerInvoker;
+    private TriggerType triggerType;
     private boolean error = false;
 
 
@@ -33,8 +32,8 @@ public class CustomEnchantTriggerBuilder {
         }
 
         try {
-            TriggerType triggerType = TriggerType.valueOf(triggerKey.toUpperCase());
-            triggerInvoker = new TriggerInvoker(triggerType);
+            triggerType = TriggerType.valueOf(triggerKey.toUpperCase());
+            triggerType.getOrCreateInstance();
         } catch (IllegalArgumentException e) {
             String closest = Util.findClosestMatch(triggerKey, TriggerType.class);
             String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
@@ -54,7 +53,7 @@ public class CustomEnchantTriggerBuilder {
     public Trigger build() {
         if (!error) {
             return new Trigger(
-                    triggerInvoker,
+                    triggerType,
                     conditions,
                     levels
             );
@@ -66,27 +65,35 @@ public class CustomEnchantTriggerBuilder {
     private void parseTriggerConditions() {
         List<Map<?, ?>> conditionList = config.getMapList("conditions");
 
-        for (Map<?, ?> conditionEntry : conditionList) {
-            for (Map.Entry<?, ?> conditionTypeEntry : conditionEntry.entrySet()) {
-                String conditionType = (String) conditionTypeEntry.getKey();
-                TriggerConditionType triggerConditionType;
-                try {
-                    triggerConditionType = TriggerConditionType.valueOf(conditionType.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    String closest = Util.findClosestMatch(conditionType, TriggerConditionType.class);
-                    String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
-                    Util.warn(namespacedName + ": " + conditionType.toUpperCase() + " is not a valid trigger condition type" + closest_message + " Skipping...");
-                    return;
-                }
+        for (Map<?, ?> _entry : conditionList) {
+            Map<String, Object> entry = (Map<String, Object>) _entry;
+            String group = (String) entry.get("group");
+            String prefix = (String) entry.getOrDefault("prefix", "");
+            String suffix = (String) entry.getOrDefault("suffix", "");
 
-                Map<?, ?> conditionData = (Map<?, ?>) conditionTypeEntry.getValue();
-                String prefix = (String) conditionData.get("prefix");
-                List<Map<?, ?>> unparsedValues = (List<Map<?, ?>>) conditionData.get("values");
-
-                TriggerCondition triggerCondition = triggerInvoker.getCondition(triggerConditionType, prefix);
-                Set<TriggerConditionValue> triggerConditionValues = parseTriggerConditionValues(unparsedValues);
-                conditions.put(triggerCondition, triggerConditionValues);
+            TriggerConditionGroupType triggerConditionGroupType;
+            try {
+                triggerConditionGroupType = TriggerConditionGroupType.valueOf(group.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                String closest = Util.findClosestMatch(group, TriggerConditionGroupType.class);
+                String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
+                Util.warn(namespacedName + ": " + group.toUpperCase() + " is not a valid trigger condition group" + closest_message + " Skipping...");
+                continue;
             }
+
+            String name = Util.getCombinedString("_", prefix, triggerConditionGroupType.name().toLowerCase(), suffix);
+            TriggerCondition triggerCondition = triggerType.getTriggerCondition(
+                    triggerConditionGroupType,
+                    name
+            );
+            if (triggerCondition == null) {
+                Util.error(namespacedName + ": " + name + " is not a valid trigger condition");
+                continue;
+            }
+
+            List<Map<?, ?>> unparsedValues = (List<Map<?, ?>>) entry.get("values");
+            Set<TriggerConditionValue> triggerConditionValues = parseTriggerConditionValues(unparsedValues);
+            conditions.put(triggerCondition, triggerConditionValues);
         }
     }
 
@@ -94,22 +101,20 @@ public class CustomEnchantTriggerBuilder {
         Set<TriggerConditionValue> triggerConditionValues = new HashSet<>();
 
         for (Map<?, ?> valueMap : unparsedTriggerConditionValues) {
-            for (Map.Entry<?, ?> valueEntry : valueMap.entrySet()) {
-                String operatorString = (String) valueEntry.getKey();
-                String value = (String) valueEntry.getValue();
+            String operatorString = valueMap.get("operator").toString();
+            String value = valueMap.get("value").toString();
 
-                TriggerConditionValue.Operator operator;
-                try {
-                    operator = TriggerConditionValue.Operator.valueOf(operatorString.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    String closest = Util.findClosestMatch(operatorString, TriggerConditionValue.Operator.class);
-                    String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
-                    Util.warn(namespacedName + ": " + operatorString.toUpperCase() + " is not a valid operator" + closest_message + " Skipping...");
-                    continue;
-                }
-
-                triggerConditionValues.add(new TriggerConditionValue(operator, value));
+            TriggerConditionValue.Operator operator;
+            try {
+                operator = TriggerConditionValue.Operator.valueOf(operatorString.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                String closest = Util.findClosestMatch(operatorString, TriggerConditionValue.Operator.class);
+                String closest_message = closest == null ? "." : ", did you mean " + closest + "?";
+                Util.warn(namespacedName + ": " + operatorString.toUpperCase() + " is not a valid operator" + closest_message + " Skipping...");
+                continue;
             }
+
+            triggerConditionValues.add(new TriggerConditionValue(operator, value));
         }
 
         return triggerConditionValues;
@@ -118,7 +123,7 @@ public class CustomEnchantTriggerBuilder {
     private void parseLevels() {
         ConfigurationSection levelSection = config.getConfigurationSection("levels");
         if (levelSection == null) {
-            Util.error(namespacedName + ": No levels specified for trigger: " + triggerInvoker.getTriggerType());
+            Util.error(namespacedName + ": No levels specified for trigger: " + triggerType);
             error = true;
         }
 

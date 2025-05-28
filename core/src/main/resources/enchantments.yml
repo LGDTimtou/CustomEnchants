@@ -22,44 +22,6 @@
 #       ...                                                                                                                                #
 ############################################################################################################################################
 
-test:
-  version: 1.21.5
-  enabled: true
-  depends: [ ]
-  definition:
-    needs_permission: false
-    max_level: 1
-    anvil_cost: 10
-    conflicts_with: [ ]
-    targets: [ ]
-    tags:
-      in_enchanting_table: true
-    destroy_item_chance: 0
-    remove_enchantment_chance: 0
-    enchanting_table:
-      weight: 50
-      min_cost_base: 2
-      min_cost_incr: 10
-      max_cost_base: 8
-      max_cost_incr: 15
-  custom_locations: [ ]
-  triggers:
-    armor_de_equip:
-      conditions:
-        item^new_armor:
-          - leather_helmet
-          - turtle_helmet
-        leggings:
-          - iron_helmet
-      levels:
-        1:
-          cancel_event: false
-          cooldown: 60
-          cooldown_message: ""
-          chance: 100
-          instructions: [ ]
-
-
 
 
 sneak:
@@ -84,204 +46,228 @@ sneak:
     remove_enchantment_chance: 0
   custom_locations: [ ]
   triggers:
-    player_sneak:
-      conditions: { }
+    player_sneak_down:
+      conditions:
+        - group: biome
+          values:
+            - operator: not_equals
+              value: plains
+
+        - group: item
+          prefix: main_hand
+          suffix: type
+          values:
+            - operator: equals
+              value: grass_block
       levels:
         1:
           cancel_event: false
           cooldown: 90
           chance: 100
           instructions:
-            - command: effect give %player% minecraft:invisibility 5 1
+            - command: effect give %player% minecraft:invisibility 10 1
             - command: particle minecraft:smoke %player_x% $[%player_y% + 1] %player_z% 0.5 1 0.5 0.0 50 force
         2:
           cancel_event: false
           cooldown: 60
           chance: 100
           instructions:
-            - command: effect give %player% minecraft:invisibility 8 1
+            - command: effect give %player% minecraft:invisibility 20 1
             - command: particle minecraft:smoke %player_x% $[%player_y% + 1] %player_z% 0.5 1 0.5 0.0 50 force
         3:
           cancel_event: false
-          cooldown: 10
+          cooldown: 0
           chance: 100
           instructions:
-            - command: effect give %player% minecraft:invisibility 10 1
+            - command: effect give %player% minecraft:invisibility 30 1
             - command: particle minecraft:smoke %player_x% $[%player_y% + 1] %player_z% 0.5 1 0.5 0.0 50 force
 
-saving_grace:
-  version: 1.21.5
-  enabled: true
-  depends:
-    - PlaceholderAPI
-  definition:
-    needs_permission: false
-    max_level: 1
-    anvil_cost: 20
-    conflicts_with:
-      - sharpness
-    targets:
-      - weapon
-    tags:
-      tradeable: true
-      treasure: true
-      in_enchanting_table: true
-    destroy_item_chance: 0
-    remove_enchantment_chance: 0
-    enchanting_table:
-      weight: 20
-      min_cost_base: 2
-      min_cost_incr: 10
-      max_cost_base: 10
-      max_cost_incr: 15
-  custom_locations: [ ]
-  triggers:
-    left_click:
+    player_sneak_up:
       conditions: { }
       levels:
         1:
           cancel_event: false
           cooldown: 0
-          cooldown_message: ""
           chance: 100
           instructions:
-            - save:
-                context: player
-                identifier: previous_x
-                value: "%player_x%"
-            - save:
-                context: player
-                identifier: previous_y
-                value: "%player_y%"
-            - save:
-                context: player
-                identifier: previous_z
-                value: "%player_z%"
-            - command: tellraw %player% {"text":"Your location has been saved!","color":"green"}
-    right_click:
-      conditions: { }
-      levels:
-        1:
-          cancel_event: false
-          cooldown: 30
-          cooldown_message: "&eWait %time_left% before your sword is charged again!"
-          chance: 100
-          instructions:
-            - load:
-                context: player
-                identifier: previous_x
-                default_value: "%player_x%"
-            - load:
-                context: player
-                identifier: previous_y
-                default_value: "%player_y%"
-            - load:
-                context: player
-                identifier: previous_z
-                default_value: "%player_z%"
-            - command: effect give %player% levitation 1 10 true
-            - delay: 1
-            - command: tp %player% %previous_x% %previous_y% %previous_z%
-            - command: playsound minecraft:item.totem.use player %player% %previous_x% %previous_y% %previous_z%
-            - command: tellraw %player% {"text":"You have been saved!","color":"green"}
+            - command: effect clear %player% minecraft:invisibility
 
 
-aura:
-  version: 1.21.5
-  enabled: true
-  depends: [ ]
-  definition:
-    needs_permission: false
-    max_level: 1
-    anvil_cost: 10
-    conflicts_with: [ ]
-    targets:
-      - armor_torso
-    tags:
-      in_enchanting_table: true
-    destroy_item_chance: 0
-    remove_enchantment_chance: 0
-    enchanting_table:
-      weight: 50
-      min_cost_base: 2
-      min_cost_incr: 10
-      max_cost_base: 8
-      max_cost_incr: 15
-  custom_locations: [ ]
-  triggers:
-    player_idle:
-      conditions: { }
-      levels:
-        '1':
-          cancel_event: false
-          cooldown: 6.3
-          cooldown_message: ''
-          chance: 100
-          instructions:
-            - repeat:
-                amount: 63
-                loop_parameter: k
-                instructions:
-                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + %k% * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
-                  - delay: '0.05'
-            - repeat:
-                amount: 63
-                loop_parameter: k
-                instructions:
-                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + (63 - %k%) * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
-                  - delay: '0.05'
 
-head_hunter:
-  version: 1.21.5
-  enabled: true
-  depends: [ ]
-  definition:
-    needs_permission: false
-    max_level: 3
-    anvil_cost: 10
-    conflicts_with: [ ]
-    targets:
-      - weapon
-    tags:
-      in_enchanting_table: true
-    destroy_item_chance: 0
-    remove_enchantment_chance: 0
-    enchanting_table:
-      weight: 20
-      min_cost_base: 2
-      min_cost_incr: 10
-      max_cost_base: 8
-      max_cost_incr: 15
-  custom_locations: [ ]
-  triggers:
-    kill_player:
-      conditions: { }
-      levels:
-        '1':
-          cancel_event: false
-          cooldown: 0
-          cooldown_message: ''
-          chance: 5
-          instructions:
-            - command:
-                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
-        '2':
-          cancel_event: false
-          cooldown: 0
-          cooldown_message: ''
-          chance: 10
-          instructions:
-            - command:
-                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
-        '3':
-          cancel_event: false
-          cooldown: 0
-          cooldown_message: ''
-          chance: 25
-          instructions:
-            - command:
-                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
 
+#saving_grace:
+#  version: 1.21.5
+#  enabled: true
+#  depends:
+#    - PlaceholderAPI
+#  definition:
+#    needs_permission: false
+#    max_level: 1
+#    anvil_cost: 20
+#    conflicts_with:
+#      - sharpness
+#    targets:
+#      - weapon
+#    tags:
+#      tradeable: true
+#      treasure: true
+#      in_enchanting_table: true
+#    destroy_item_chance: 0
+#    remove_enchantment_chance: 0
+#    enchanting_table:
+#      weight: 20
+#      min_cost_base: 2
+#      min_cost_incr: 10
+#      max_cost_base: 10
+#      max_cost_incr: 15
+#  custom_locations: [ ]
+#  triggers:
+#    left_click:
+#      conditions: { }
+#      levels:
+#        1:
+#          cancel_event: false
+#          cooldown: 0
+#          cooldown_message: ""
+#          chance: 100
+#          instructions:
+#            - save:
+#                context: player
+#                identifier: previous_x
+#                value: "%player_x%"
+#            - save:
+#                context: player
+#                identifier: previous_y
+#                value: "%player_y%"
+#            - save:
+#                context: player
+#                identifier: previous_z
+#                value: "%player_z%"
+#            - command: tellraw %player% {"text":"Your location has been saved!","color":"green"}
+#    right_click:
+#      conditions: { }
+#      levels:
+#        1:
+#          cancel_event: false
+#          cooldown: 30
+#          cooldown_message: "&eWait %time_left% before your sword is charged again!"
+#          chance: 100
+#          instructions:
+#            - load:
+#                context: player
+#                identifier: previous_x
+#                default_value: "%player_x%"
+#            - load:
+#                context: player
+#                identifier: previous_y
+#                default_value: "%player_y%"
+#            - load:
+#                context: player
+#                identifier: previous_z
+#                default_value: "%player_z%"
+#            - command: effect give %player% levitation 1 10 true
+#            - delay: 1
+#            - command: tp %player% %previous_x% %previous_y% %previous_z%
+#            - command: playsound minecraft:item.totem.use player %player% %previous_x% %previous_y% %previous_z%
+#            - command: tellraw %player% {"text":"You have been saved!","color":"green"}
+#
+#
+#aura:
+#  version: 1.21.5
+#  enabled: true
+#  depends: [ ]
+#  definition:
+#    needs_permission: false
+#    max_level: 1
+#    anvil_cost: 10
+#    conflicts_with: [ ]
+#    targets:
+#      - armor_torso
+#    tags:
+#      in_enchanting_table: true
+#    destroy_item_chance: 0
+#    remove_enchantment_chance: 0
+#    enchanting_table:
+#      weight: 50
+#      min_cost_base: 2
+#      min_cost_incr: 10
+#      max_cost_base: 8
+#      max_cost_incr: 15
+#  custom_locations: [ ]
+#  triggers:
+#    player_idle:
+#      conditions: { }
+#      levels:
+#        '1':
+#          cancel_event: false
+#          cooldown: 6.3
+#          cooldown_message: ''
+#          chance: 100
+#          instructions:
+#            - repeat:
+#                amount: 63
+#                loop_parameter: k
+#                instructions:
+#                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + %k% * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
+#                  - delay: '0.05'
+#            - repeat:
+#                amount: 63
+#                loop_parameter: k
+#                instructions:
+#                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + (63 - %k%) * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
+#                  - delay: '0.05'
+#
+#head_hunter:
+#  version: 1.21.5
+#  enabled: true
+#  depends: [ ]
+#  definition:
+#    needs_permission: false
+#    max_level: 3
+#    anvil_cost: 10
+#    conflicts_with: [ ]
+#    targets:
+#      - weapon
+#    tags:
+#      in_enchanting_table: true
+#    destroy_item_chance: 0
+#    remove_enchantment_chance: 0
+#    enchanting_table:
+#      weight: 20
+#      min_cost_base: 2
+#      min_cost_incr: 10
+#      max_cost_base: 8
+#      max_cost_incr: 15
+#  custom_locations: [ ]
+#  triggers:
+#    kill_player:
+#      conditions: { }
+#      levels:
+#        '1':
+#          cancel_event: false
+#          cooldown: 0
+#          cooldown_message: ''
+#          chance: 5
+#          instructions:
+#            - command:
+#                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
+#        '2':
+#          cancel_event: false
+#          cooldown: 0
+#          cooldown_message: ''
+#          chance: 10
+#          instructions:
+#            - command:
+#                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
+#        '3':
+#          cancel_event: false
+#          cooldown: 0
+#          cooldown_message: ''
+#          chance: 25
+#          instructions:
+#            - command:
+#                value: give %player% minecraft:player_head{SkullOwner:"%killed%"}
+#
 #wolf_summoner:
 #  enabled: true
 #  definition:

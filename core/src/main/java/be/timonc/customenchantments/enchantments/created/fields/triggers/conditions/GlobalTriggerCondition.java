@@ -1,89 +1,126 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers.conditions;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public enum GlobalTriggerCondition {
 
     // Global
     DIMENSION(
-            TriggerConditionType.DIMENSION,
+            TriggerConditionGroupType.DIMENSION,
+            "",
             player -> player.getWorld().getEnvironment()
     ),
     BIOME(
-            TriggerConditionType.BIOME,
+            TriggerConditionGroupType.BIOME,
+            "",
             player -> player.getLocation().getBlock().getBiome()
     ),
     TIME(
-            TriggerConditionType.NUMBER,
-            player -> player.getWorld().getTime()
+            TriggerConditionGroupType.NUMBER,
+            "time",
+            player -> (double) player.getWorld().getTime()
     ),
     BLOCK_FEET(
-            TriggerConditionType.BLOCK,
+            TriggerConditionGroupType.BLOCK,
+            "feet",
             player -> player.getLocation().getBlock()
     ),
-    BLOCK_UNDER(
-            TriggerConditionType.BLOCK,
+    BLOCK_UNDER_FEET(
+            TriggerConditionGroupType.BLOCK,
+            "under_feet",
             player -> player.getLocation().add(0, -1, 0).getBlock()
     ),
     BLOCK_HEAD(
-            TriggerConditionType.BLOCK,
+            TriggerConditionGroupType.BLOCK,
+            "head",
             player -> player.getLocation().add(0, 1, 0).getBlock()
     ),
-    BLOCK_ABOVE(
-            TriggerConditionType.BLOCK,
+    BLOCK_ABOVE_HEAD(
+            TriggerConditionGroupType.BLOCK,
+            "above_head",
             player -> player.getLocation().add(0, 2, 0).getBlock()
     ),
     BOOTS(
-            TriggerConditionType.ITEM,
+            TriggerConditionGroupType.ITEM,
+            "boots",
             player -> player.getInventory().getBoots() != null ?
                     player.getInventory().getBoots() : new ItemStack(Material.AIR)
     ),
     LEGGINGS(
-            TriggerConditionType.ITEM,
+            TriggerConditionGroupType.ITEM,
+            "leggings",
             player -> player.getInventory().getLeggings() != null ?
                     player.getInventory().getLeggings() : new ItemStack(Material.AIR)
     ),
     CHESTPLATE(
-            TriggerConditionType.ITEM,
+            TriggerConditionGroupType.ITEM,
+            "chestplate",
             player -> player.getInventory().getChestplate() != null ?
                     player.getInventory().getChestplate() : new ItemStack(Material.AIR)
     ),
     HELMET(
-            TriggerConditionType.ITEM,
+            TriggerConditionGroupType.ITEM,
+            "helmet",
             player -> player.getInventory().getHelmet() != null ?
                     player.getInventory().getHelmet() : new ItemStack(Material.AIR)
     ),
-    HAND(
-            TriggerConditionType.ITEM,
+    MAIN_HAND(
+            TriggerConditionGroupType.ITEM,
+            "main_hand",
             player -> player.getInventory().getItemInMainHand()
     ),
     OFF_HAND(
-            TriggerConditionType.ITEM,
+            TriggerConditionGroupType.ITEM,
+            "off_hand",
             player -> player.getInventory().getItemInOffHand()
     ),
-    PLAYER_HEALTH(
-            TriggerConditionType.NUMBER,
-            Damageable::getHealth
+    PLAYER(
+            TriggerConditionGroupType.PLAYER,
+            "",
+            player -> player
     );
 
-    private final TriggerConditionType type;
+    private static final Map<TriggerConditionGroup, Function<Player, Object>> globalConditionMap =
+            Arrays.stream(values()).collect(Collectors.toMap(
+                    TriggerConditionGroup::new,
+                    globalTriggerCondition -> globalTriggerCondition.getValue
+            ));
+
+
+    private final TriggerConditionGroupType groupType;
+    private final String prefix;
     private final Function<Player, Object> getValue;
 
-    <T> GlobalTriggerCondition(TriggerConditionType type, Function<Player, T> getValue) {
-        this.type = type;
+    <T> GlobalTriggerCondition(TriggerConditionGroupType groupType, String prefix, Function<Player, T> getValue) {
+        this.groupType = groupType;
+        this.prefix = prefix;
         this.getValue = getValue::apply;
     }
 
-    public TriggerConditionType getType() {
-        return type;
+    public static Set<TriggerConditionGroup> get() {
+        return globalConditionMap.keySet();
     }
 
-    public Object getValue(Player player) {
-        return getValue.apply(player);
+    public static Map<TriggerConditionGroup, Object> getMap(Player player) {
+        return globalConditionMap.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().apply(player)
+        ));
+    }
+
+    public TriggerConditionGroupType getGroupType() {
+        return groupType;
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 }

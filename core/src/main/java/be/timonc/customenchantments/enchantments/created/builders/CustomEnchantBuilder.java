@@ -4,7 +4,6 @@ import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.CustomEnchantDefinition;
 import be.timonc.customenchantments.enchantments.created.fields.ItemLocation;
 import be.timonc.customenchantments.enchantments.created.fields.Trigger;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import be.timonc.customenchantments.other.File;
@@ -131,19 +130,19 @@ public class CustomEnchantBuilder {
         }
 
         removeOverriddenTriggers();
-        triggers.forEach(trigger -> trigger.getInvoker().subscribe(trigger));
+        triggers.forEach(trigger -> trigger.getTriggerType().getInvoker().subscribe(trigger));
     }
 
     private void removeOverriddenTriggers() {
         Iterator<Trigger> it = this.triggers.iterator();
         while (it.hasNext()) {
-            TriggerInvoker triggerInvoker = it.next().getInvoker();
+            TriggerType triggerType = it.next().getTriggerType();
             // Loop through all types that can override this one
-            for (TriggerType overriddenByType : triggerInvoker.getOverriddenBy()) {
-                if (triggers.stream().anyMatch(trigger -> trigger.getInvoker().getTriggerType() == overriddenByType)) {
+            for (TriggerType overriddenByType : triggerType.getOverriddenBy()) {
+                if (triggers.stream().anyMatch(trigger -> trigger.getTriggerType() == overriddenByType)) {
                     // Remove the overridden trigger from the map
                     it.remove();
-                    Util.warn(namespacedName + ": the '" + triggerInvoker + "' trigger was overridden by '" + overriddenByType + "', so it has been removed");
+                    Util.warn(namespacedName + ": the '" + triggerType + "' trigger was overridden by '" + overriddenByType + "', so it has been removed");
                 }
             }
         }

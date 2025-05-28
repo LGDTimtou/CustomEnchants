@@ -1,21 +1,24 @@
 package be.timonc.customenchantments.enchantments.created.triggers.click;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class RightClickBlockTrigger implements TriggerListener {
+public class RightClickBlockTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup clickedBlockConditions = new TriggerConditionGroup(
+            "clicked", TriggerConditionGroupType.BLOCK
+    );
 
-    public RightClickBlockTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public RightClickBlockTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
 
 
@@ -23,8 +26,11 @@ public class RightClickBlockTrigger implements TriggerListener {
     public void onPlayerRightClickBlock(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) return;
 
-        triggerInvoker.trigger(event, event.getPlayer(), Map.of(
-                new ConditionKey(TriggerConditionType.BLOCK, ""), event.getClickedBlock()
-        ), Map.of());
+        triggerInvoker.trigger(event, event.getPlayer(), Map.of(clickedBlockConditions, event.getClickedBlock()));
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(clickedBlockConditions);
     }
 }

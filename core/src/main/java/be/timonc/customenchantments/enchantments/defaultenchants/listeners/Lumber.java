@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.defaultenchants.listeners;
 
 import be.timonc.customenchantments.Main;
-import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
+import be.timonc.customenchantments.enchantments.defaultenchants.DefaultTriggerListener;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Lumber implements TriggerListener {
+public class Lumber extends DefaultTriggerListener {
 
 
     private static final int MAX_BROKEN_LOGS = 20;

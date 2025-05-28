@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.defaultenchants.listeners;
 
-import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
+import be.timonc.customenchantments.enchantments.defaultenchants.DefaultTriggerListener;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,7 +13,7 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Excavator implements TriggerListener {
+public class Excavator extends DefaultTriggerListener {
 
     private final Set<Player> antiRecursion = new HashSet<>();
 

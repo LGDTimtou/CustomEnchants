@@ -1,22 +1,32 @@
 package be.timonc.customenchantments.enchantments.created.triggers.take_damage;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class TakeDamageFromPlayerTrigger implements TriggerListener {
+public class TakeDamageFromPlayerTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup attackerPlayerConditions = new TriggerConditionGroup(
+            "attacker", TriggerConditionGroupType.PLAYER
+    );
+    private final TriggerConditionGroup damageConditions = new TriggerConditionGroup(
+            "damage", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup damageCauseConditions = new TriggerConditionGroup(
+            "damage", TriggerConditionGroupType.CAUSE
+    );
 
-    public TakeDamageFromPlayerTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public TakeDamageFromPlayerTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onTakeDamageFromPlayer(EntityDamageByEntityEvent e) {
@@ -25,8 +35,14 @@ public class TakeDamageFromPlayerTrigger implements TriggerListener {
         if (!(e.getDamager() instanceof Player damager))
             return;
         triggerInvoker.trigger(e, player, Map.of(
-                new ConditionKey(TriggerConditionType.PLAYER, "damager"), damager,
-                new ConditionKey(TriggerConditionType.CAUSE, "damage"), e.getCause()
+                attackerPlayerConditions, damager,
+                damageConditions, e.getDamage(),
+                damageCauseConditions, e.getCause()
         ), Map.of());
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(attackerPlayerConditions, damageConditions, damageCauseConditions);
     }
 }

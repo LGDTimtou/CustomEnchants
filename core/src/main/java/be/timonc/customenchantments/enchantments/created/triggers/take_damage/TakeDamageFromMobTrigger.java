@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.created.triggers.take_damage;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -10,15 +10,25 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class TakeDamageFromMobTrigger implements TriggerListener {
+public class TakeDamageFromMobTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup attackerEntityConditions = new TriggerConditionGroup(
+            "attacker", TriggerConditionGroupType.ENTITY
+    );
+    private final TriggerConditionGroup damageConditions = new TriggerConditionGroup(
+            "damage", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup damageCauseConditions = new TriggerConditionGroup(
+            "damage", TriggerConditionGroupType.CAUSE
+    );
 
-    public TakeDamageFromMobTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public TakeDamageFromMobTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onTakeDamageFromMob(EntityDamageByEntityEvent e) {
@@ -32,11 +42,17 @@ public class TakeDamageFromMobTrigger implements TriggerListener {
 
         triggerInvoker.trigger(e, player,
                 Map.of(
-                        new ConditionKey(TriggerConditionType.ENTITY, "mob"), monster,
-                        new ConditionKey(TriggerConditionType.CAUSE, "damage"), e.getCause()
+                        attackerEntityConditions, monster,
+                        damageConditions, e.getDamage(),
+                        damageCauseConditions, e.getCause()
                 ),
                 Map.of("mob_tag", () -> uniqueTag),
                 () -> monster.removeScoreboardTag(uniqueTag)
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(attackerEntityConditions, damageConditions, damageCauseConditions);
     }
 }

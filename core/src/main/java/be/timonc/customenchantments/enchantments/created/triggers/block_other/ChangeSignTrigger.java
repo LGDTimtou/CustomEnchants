@@ -1,22 +1,26 @@
 package be.timonc.customenchantments.enchantments.created.triggers.block_other;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.SignChangeEvent;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
-public class ChangeSignTrigger implements TriggerListener {
+public class ChangeSignTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup linesConditions = new TriggerConditionGroup(
+            "lines", TriggerConditionGroupType.STRING
+    );
 
-    public ChangeSignTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public ChangeSignTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onSignChance(SignChangeEvent e) {
@@ -24,8 +28,12 @@ public class ChangeSignTrigger implements TriggerListener {
         triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
-                Map.of(new ConditionKey(TriggerConditionType.STRING, "lines"), lines),
-                Map.of()
+                Map.of(linesConditions, lines)
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(linesConditions);
     }
 }

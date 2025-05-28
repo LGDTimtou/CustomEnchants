@@ -1,22 +1,26 @@
 package be.timonc.customenchantments.enchantments.created.triggers.fishing_rod;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class FishingRodCaughtTrigger implements TriggerListener {
+public class FishingRodCaughtTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup caughtItemConditions = new TriggerConditionGroup(
+            "caught", TriggerConditionGroupType.ITEM
+    );
 
-    public FishingRodCaughtTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public FishingRodCaughtTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onFish(PlayerFishEvent e) {
@@ -26,8 +30,15 @@ public class FishingRodCaughtTrigger implements TriggerListener {
         triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
-                Map.of(new ConditionKey(TriggerConditionType.ITEM, "caught"), ((Item) e.getCaught()).getItemStack()),
-                Map.of()
+                Map.of(
+                        caughtItemConditions,
+                        ((Item) e.getCaught()).getItemStack()
+                )
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(caughtItemConditions);
     }
 }

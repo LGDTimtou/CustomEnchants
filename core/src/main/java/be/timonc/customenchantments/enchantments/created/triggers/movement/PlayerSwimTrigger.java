@@ -1,37 +1,46 @@
 package be.timonc.customenchantments.enchantments.created.triggers.movement;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class PlayerSwimTrigger implements TriggerListener {
+public class PlayerSwimTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup fromXConditions = new TriggerConditionGroup(
+            "from_x", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup fromYConditions = new TriggerConditionGroup(
+            "from_y", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup fromZConditions = new TriggerConditionGroup(
+            "from_z", TriggerConditionGroupType.NUMBER
+    );
 
-    public PlayerSwimTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public PlayerSwimTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onSwimEvent(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         if (!player.isSwimming()) return;
         triggerInvoker.trigger(e, e.getPlayer(), Map.of(
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "from_x"), e.getFrom().getX(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "from_x"), e.getFrom().getX(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "from_x"), e.getFrom().getX(),
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "from_y"), e.getFrom().getY(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "from_y"), e.getFrom().getY(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "from_y"), e.getFrom().getY(),
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "from_z"), e.getFrom().getZ(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "from_z"), e.getFrom().getZ(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "from_z"), e.getFrom().getZ()
-        ), Map.of());
+                fromXConditions, e.getFrom().getX(),
+                fromYConditions, e.getFrom().getY(),
+                fromZConditions, e.getFrom().getZ()
+        ));
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(fromXConditions, fromYConditions, fromZConditions);
     }
 }

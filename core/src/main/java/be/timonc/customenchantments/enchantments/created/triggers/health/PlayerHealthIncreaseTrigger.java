@@ -1,46 +1,49 @@
 package be.timonc.customenchantments.enchantments.created.triggers.health;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class PlayerHealthIncreaseTrigger implements TriggerListener {
+public class PlayerHealthIncreaseTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup healthConditions = new TriggerConditionGroup(
+            "health", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup previousHealthConditions = new TriggerConditionGroup(
+            "previous_health", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup increaseAmountConditions = new TriggerConditionGroup(
+            "increase_amount", TriggerConditionGroupType.NUMBER
+    );
 
-    public PlayerHealthIncreaseTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public PlayerHealthIncreaseTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onHealthIncrease(EntityRegainHealthEvent e) {
         if (!(e.getEntity() instanceof Player player)) return;
 
         triggerInvoker.trigger(e, player, Map.of(
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "health"),
+                healthConditions,
                 player.getHealth() + e.getAmount(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "health"),
-                player.getHealth() + e.getAmount(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "health"),
-                player.getHealth() + e.getAmount(),
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "previous_health"),
+                previousHealthConditions,
                 player.getHealth(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "previous_health"),
-                player.getHealth(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "previous_health"),
-                player.getHealth(),
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "health_change"),
-                e.getAmount(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "health_change"),
-                e.getAmount(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "health_change"),
+                increaseAmountConditions,
                 e.getAmount()
-        ), Map.of());
+        ));
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(healthConditions, previousHealthConditions, increaseAmountConditions);
     }
 }

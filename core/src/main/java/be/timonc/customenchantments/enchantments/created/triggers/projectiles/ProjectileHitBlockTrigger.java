@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.created.triggers.projectiles;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -10,15 +10,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class ProjectileHitBlockTrigger implements TriggerListener {
+public class ProjectileHitBlockTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup hitBlockConditions = new TriggerConditionGroup(
+            "hit", TriggerConditionGroupType.BLOCK
+    );
+    private final TriggerConditionGroup projectileConditions = new TriggerConditionGroup(
+            "projectile", TriggerConditionGroupType.ENTITY
+    );
 
-    public ProjectileHitBlockTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public ProjectileHitBlockTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onProjectileHitBlock(ProjectileHitEvent e) {
@@ -35,13 +42,16 @@ public class ProjectileHitBlockTrigger implements TriggerListener {
                 e,
                 player,
                 Map.of(
-                        new ConditionKey(TriggerConditionType.BLOCK, ""),
-                        e.getHitBlock(),
-                        new ConditionKey(TriggerConditionType.ENTITY, "projectile"),
-                        entity
+                        hitBlockConditions, e.getHitBlock(),
+                        projectileConditions, entity
                 ),
                 Map.of("projectile_tag", () -> projectileUniqueTag),
                 () -> entity.removeScoreboardTag(projectileUniqueTag)
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(hitBlockConditions, projectileConditions);
     }
 }

@@ -1,29 +1,37 @@
 package be.timonc.customenchantments.enchantments.created.triggers.kill;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class KillPlayerTrigger implements TriggerListener {
+public class KillPlayerTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup killedPlayerConditions = new TriggerConditionGroup(
+            "killed", TriggerConditionGroupType.PLAYER
+    );
 
-    public KillPlayerTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public KillPlayerTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onKill(EntityDeathEvent e) {
         if (!(e.getEntity().getKiller() instanceof Player killer)) return;
         if (!(e.getEntity() instanceof Player killed)) return;
-        triggerInvoker.trigger(e, killer, Map.of(
-                new ConditionKey(TriggerConditionType.PLAYER, "killed"), killed
-        ), Map.of());
+
+        triggerInvoker.trigger(e, killer, Map.of(killedPlayerConditions, killed));
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(killedPlayerConditions);
     }
 }

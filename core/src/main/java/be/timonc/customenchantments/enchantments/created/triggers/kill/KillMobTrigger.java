@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.created.triggers.kill;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
@@ -11,14 +11,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class KillMobTrigger implements TriggerListener {
+public class KillMobTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup killedMobConditions = new TriggerConditionGroup(
+            "killed", TriggerConditionGroupType.ENTITY
+    );
 
-    public KillMobTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public KillMobTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
 
 
@@ -34,9 +37,14 @@ public class KillMobTrigger implements TriggerListener {
         triggerInvoker.trigger(
                 e,
                 killer,
-                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "mob"), entity),
+                Map.of(killedMobConditions, entity),
                 Map.of("mob_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(killedMobConditions);
     }
 }

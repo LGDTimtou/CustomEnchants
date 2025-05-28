@@ -1,43 +1,46 @@
 package be.timonc.customenchantments.enchantments.created.triggers.health;
 
 import be.timonc.customenchantments.customevents.health_change.PlayerHealthChangeEvent;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
 
 import java.util.Map;
+import java.util.Set;
 
-public class PlayerHealthChangeTrigger implements TriggerListener {
+public class PlayerHealthChangeTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup healthConditions = new TriggerConditionGroup(
+            "health", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup previousHealthConditions = new TriggerConditionGroup(
+            "previous_health", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup healthChangeConditions = new TriggerConditionGroup(
+            "change_amount", TriggerConditionGroupType.NUMBER
+    );
 
-    public PlayerHealthChangeTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public PlayerHealthChangeTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onHealthChange(PlayerHealthChangeEvent e) {
         triggerInvoker.trigger(e, e.getPlayer(), Map.of(
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "health"),
+                healthConditions,
                 e.getHealth(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "health"),
-                e.getHealth(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "health"),
-                e.getHealth(),
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "previous_health"),
+                previousHealthConditions,
                 e.getPrevious_health(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "previous_health"),
-                e.getPrevious_health(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "previous_health"),
-                e.getPrevious_health(),
-                new ConditionKey(TriggerConditionType.DOUBLE_EQUALS, "health_change"),
-                e.getHealthChange(),
-                new ConditionKey(TriggerConditionType.DOUBLE_GREATER_THAN, "health_change"),
-                e.getHealthChange(),
-                new ConditionKey(TriggerConditionType.DOUBLE_LESS_THAN, "health_change"),
+                healthChangeConditions,
                 e.getHealthChange()
-        ), Map.of());
+        ));
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(healthConditions, previousHealthConditions, healthChangeConditions);
     }
 }

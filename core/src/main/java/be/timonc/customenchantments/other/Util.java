@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.other;
 
-import com.google.common.collect.Sets;
 import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.enchantments.CustomEnchant;
+import com.google.common.collect.Sets;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.bukkit.Bukkit;
@@ -77,6 +77,7 @@ public final class Util {
                      .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
                      .collect(Collectors.joining(" "));
     }
+
 
     public static <E extends Enum<E>> String findClosestMatch(String input, Class<E> enumClass) {
         LevenshteinDistance distance = new LevenshteinDistance();
@@ -181,6 +182,12 @@ public final class Util {
             }
         }
         return null;
+    }
+
+    public static String getCombinedString(String delimiter, String... strings) {
+        return Arrays.stream(strings)
+                     .filter(s -> s != null && !s.isEmpty())
+                     .collect(Collectors.joining(delimiter));
     }
 
     private static Set<Material> targetToMats(EnchantmentTarget target) {

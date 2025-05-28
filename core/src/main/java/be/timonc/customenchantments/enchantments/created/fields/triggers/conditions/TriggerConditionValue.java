@@ -25,7 +25,8 @@ public class TriggerConditionValue {
                 Util.error("Could not parse trigger condition value " + value + " to a number!");
                 return true;
             }
-        } else if (toCompare instanceof String toCompareString) {
+        } else {
+            String toCompareString = toCompare.toString();
             if (operator == Operator.EQUALS || operator == Operator.NOT_EQUALS) {
                 boolean result = Pattern.compile(toCompareString.toLowerCase().replace("*", ".*"))
                                         .matcher(value.toLowerCase())
@@ -35,9 +36,6 @@ public class TriggerConditionValue {
             } else {
                 return operator.checkResult(toCompareString.compareTo(value));
             }
-        } else {
-            Util.error("Comparable object shouldn't be of class: " + toCompare.getClass());
-            return true;
         }
     }
 

@@ -1,22 +1,26 @@
 package be.timonc.customenchantments.enchantments.created.triggers.block_other;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.TNTPrimeEvent;
 
 import java.util.Map;
+import java.util.Set;
 
-public class PrimeTNTTrigger implements TriggerListener {
+public class PrimeTNTTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup primeCauseConditions = new TriggerConditionGroup(
+            "prime", TriggerConditionGroupType.CAUSE
+    );
 
-    public PrimeTNTTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public PrimeTNTTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onPrimeTNT(TNTPrimeEvent e) {
@@ -25,8 +29,12 @@ public class PrimeTNTTrigger implements TriggerListener {
         triggerInvoker.trigger(
                 e,
                 player,
-                Map.of(new ConditionKey(TriggerConditionType.CAUSE, "prime"), e.getCause()),
-                Map.of()
+                Map.of(primeCauseConditions, e.getCause())
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(primeCauseConditions);
     }
 }

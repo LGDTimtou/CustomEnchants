@@ -1,6 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.created.triggers.armor.ArmorDeEquipTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.armor.ArmorEquipTrigger;
@@ -27,10 +28,7 @@ import be.timonc.customenchantments.enchantments.created.triggers.kill.KillAnima
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillEntityTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillMobTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillPlayerTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.movement.PlayerIdleTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.movement.PlayerMoveTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.movement.PlayerSneakTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.movement.PlayerSwimTrigger;
+import be.timonc.customenchantments.enchantments.created.triggers.movement.*;
 import be.timonc.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitBlockTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitEntityTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitPlayerTrigger;
@@ -109,10 +107,12 @@ public enum TriggerType {
 
     //Movement
     PLAYER_IDLE(PlayerIdleTrigger.class),
-    PLAYER_SNEAK(PlayerSneakTrigger.class),
     PLAYER_MOVE(PlayerMoveTrigger.class),
     PLAYER_SWIM(PlayerSwimTrigger.class, PLAYER_MOVE),
 
+    PLAYER_SNEAK_TOGGLE(PlayerSneakToggleTrigger.class),
+    PLAYER_SNEAK_DOWN(PlayerSneakDownTrigger.class, PLAYER_SNEAK_TOGGLE),
+    PLAYER_SNEAK_UP(PlayerSneakUpTrigger.class, PLAYER_SNEAK_TOGGLE),
 
     //Projectiles
     PROJECTILE_LAND(ProjectileLandTrigger.class),
@@ -121,7 +121,8 @@ public enum TriggerType {
     PROJECTILE_HIT_PLAYER(ProjectileHitPlayerTrigger.class, PROJECTILE_HIT_ENTITY);
 
     private final Set<TriggerType> overriddenBy;
-    private TriggerListener instance = null;
+    private TriggerListener instance;
+    private TriggerInvoker invoker;
     private Constructor<?> constructor;
 
     TriggerType(Class<?> triggerClass, TriggerType... overriddenBy) {
@@ -148,16 +149,29 @@ public enum TriggerType {
         });
     }
 
-    public Set<TriggerCondition> createInstance() {
+    public TriggerInvoker getInvoker() {
+        if (invoker == null)
+            invoker = new TriggerInvoker();
+        return invoker;
+    }
+
+    public TriggerListener getOrCreateInstance() {
         try {
             if (instance == null) {
-                instance = (TriggerListener) constructor.newInstance(this);
+                instance = (TriggerListener) constructor.newInstance(getInvoker());
                 Util.registerListener(instance);
             }
-            return instance.getConditions();
         } catch (Exception ignored) {
             Util.error("Trigger type: " + this + " could not be instanced! Please report this error!");
-            return Set.of();
         }
+        return instance;
+    }
+
+    public TriggerCondition getTriggerCondition(TriggerConditionGroupType type, String name) {
+        return getOrCreateInstance().getConditions().stream()
+                                    .filter(triggerCondition -> triggerCondition.group() == type && triggerCondition.name()
+                                                                                                                    .equals(name))
+                                    .findFirst()
+                                    .orElse(null);
     }
 }

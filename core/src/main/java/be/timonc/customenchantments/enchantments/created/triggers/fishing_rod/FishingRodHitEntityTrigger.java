@@ -1,23 +1,27 @@
 package be.timonc.customenchantments.enchantments.created.triggers.fishing_rod;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class FishingRodHitEntityTrigger implements TriggerListener {
+public class FishingRodHitEntityTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup hitEntityConditions = new TriggerConditionGroup(
+            "hit", TriggerConditionGroupType.ENTITY
+    );
 
-    public FishingRodHitEntityTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public FishingRodHitEntityTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onPlayerHit(PlayerFishEvent e) {
@@ -31,9 +35,14 @@ public class FishingRodHitEntityTrigger implements TriggerListener {
         triggerInvoker.trigger(
                 e,
                 e.getPlayer(),
-                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "hit"), entity),
+                Map.of(hitEntityConditions, entity),
                 Map.of("hit_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(hitEntityConditions);
     }
 }

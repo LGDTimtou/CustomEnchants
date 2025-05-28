@@ -3,7 +3,6 @@ package be.timonc.customenchantments.enchantments.created.fields;
 import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.api.CustomEnchantTriggerEvent;
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionValue;
@@ -22,20 +21,20 @@ public class Trigger {
 
     private static final Map<Player, Map<CooldownKey, Long>> pendingCooldown = new HashMap<>();
     private static final Map<Player, Set<CooldownKey>> pendingCooldownMessages = new HashMap<>();
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerType triggerType;
     private final Map<TriggerCondition, Set<TriggerConditionValue>> conditions;
     private final List<Level> levels;
     private CustomEnchant customEnchant;
 
 
-    public Trigger(TriggerInvoker triggerInvoker, Map<TriggerCondition, Set<TriggerConditionValue>> conditions, List<Level> levels) {
-        this.triggerInvoker = triggerInvoker;
+    public Trigger(TriggerType triggerType, Map<TriggerCondition, Set<TriggerConditionValue>> conditions, List<Level> levels) {
+        this.triggerType = triggerType;
         this.conditions = conditions;
         this.levels = levels;
     }
 
-    public TriggerInvoker getInvoker() {
-        return triggerInvoker;
+    public TriggerType getTriggerType() {
+        return triggerType;
     }
 
     public void setCustomEnchant(CustomEnchant customEnchant) {
@@ -45,7 +44,7 @@ public class Trigger {
 
     public void executeInstructions(Event event, Player player, Set<ItemStack> priorityItems, Map<String, Supplier<String>> parameters, Map<TriggerCondition, Object> availableTriggerConditions, Runnable onComplete) {
         if (this.customEnchant == null) {
-            Util.error("Custom Enchant not set in trigger: " + this.triggerInvoker);
+            Util.error("Custom Enchant not set in trigger: " + this.triggerType);
             return;
         }
 
@@ -67,7 +66,7 @@ public class Trigger {
               .callEvent(new CustomEnchantTriggerEvent(
                       event,
                       player,
-                      triggerInvoker.getTriggerType(),
+                      triggerType,
                       customEnchant.getEnchantment(),
                       parameters
               ));
@@ -99,12 +98,10 @@ public class Trigger {
             return null;
         }
         Level level = levels.get(levelValue - 1);
-
-        Map<String, Supplier<String>> globalParameters = getGlobalParameters(player, levelValue);
-        parameters.putAll(globalParameters);
+        parameters.putAll(getEnchantmentParameters(levelValue));
 
         //Check if this enchantment is still in cooldown for the player
-        CooldownKey cooldownKey = new CooldownKey(customEnchant, triggerInvoker.getTriggerType());
+        CooldownKey cooldownKey = new CooldownKey(customEnchant, triggerType);
         pendingCooldown.computeIfAbsent(player, v -> new HashMap<>());
         if (pendingCooldown.get(player).containsKey(cooldownKey)) {
             if (level.cooldownMessage() != null && !level.cooldownMessage()
@@ -114,9 +111,10 @@ public class Trigger {
             ).contains(cooldownKey)) {
                 Long startTime = pendingCooldown.get(player).get(cooldownKey);
                 int timeLeftSeconds = (int) (level.cooldown() - (double) (System.currentTimeMillis() - startTime) / 1000);
-                globalParameters.put("time_left", () -> Util.secondsToString(timeLeftSeconds, false));
-                globalParameters.put("time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true));
-                player.sendMessage(Util.replaceParameters(player, level.cooldownMessage(), globalParameters));
+                Map<String, Supplier<String>> cooldownParameters = new HashMap<>(parameters);
+                cooldownParameters.put("time_left", () -> Util.secondsToString(timeLeftSeconds, false));
+                cooldownParameters.put("time_left_full_out", () -> Util.secondsToString(timeLeftSeconds, true));
+                player.sendMessage(Util.replaceParameters(player, level.cooldownMessage(), cooldownParameters));
                 pendingCooldownMessages.computeIfAbsent(player, v -> new HashSet<>()).add(cooldownKey);
                 Bukkit.getScheduler()
                       .runTaskLater(Main.getMain(), () -> pendingCooldownMessages.get(player).remove(cooldownKey), 5L);
@@ -173,13 +171,8 @@ public class Trigger {
         return level.instructions();
     }
 
-    private Map<String, Supplier<String>> getGlobalParameters(Player player, int levelValue) {
+    private Map<String, Supplier<String>> getEnchantmentParameters(int levelValue) {
         return new HashMap<>(Map.of(
-                "player", player::getDisplayName,
-                "player_x", () -> String.valueOf(player.getLocation().getX()),
-                "player_y", () -> String.valueOf(player.getLocation().getY()),
-                "player_z", () -> String.valueOf(player.getLocation().getZ()),
-                "player_health", () -> String.valueOf(player.getHealth()),
                 "enchantment", () -> customEnchant.getNamespacedName(),
                 "enchantment_lore", () -> customEnchant.getName(),
                 "enchantment_level", () -> String.valueOf(levelValue),

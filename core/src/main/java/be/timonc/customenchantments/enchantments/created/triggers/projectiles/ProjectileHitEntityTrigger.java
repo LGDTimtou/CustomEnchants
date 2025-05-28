@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.created.triggers.projectiles;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -11,15 +11,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class ProjectileHitEntityTrigger implements TriggerListener {
+public class ProjectileHitEntityTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup hitEntityConditions = new TriggerConditionGroup(
+            "hit", TriggerConditionGroupType.ENTITY
+    );
+    private final TriggerConditionGroup projectileConditions = new TriggerConditionGroup(
+            "projectile", TriggerConditionGroupType.ENTITY
+    );
 
-    public ProjectileHitEntityTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public ProjectileHitEntityTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onProjectileHitEntity(EntityDamageByEntityEvent e) {
@@ -40,8 +47,8 @@ public class ProjectileHitEntityTrigger implements TriggerListener {
                 e,
                 player,
                 Map.of(
-                        new ConditionKey(TriggerConditionType.ENTITY, "entity"), entity,
-                        new ConditionKey(TriggerConditionType.ENTITY, "projectile"), usedProjectile
+                        hitEntityConditions, entity,
+                        projectileConditions, usedProjectile
                 ),
                 Map.of("entity_tag", () -> entityUniqueTag, "projectile_tag", () -> projectileUniqueTag),
                 () -> {
@@ -49,5 +56,10 @@ public class ProjectileHitEntityTrigger implements TriggerListener {
                     entity.removeScoreboardTag(entityUniqueTag);
                 }
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(hitEntityConditions, projectileConditions);
     }
 }

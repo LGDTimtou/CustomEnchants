@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.created.triggers.kill;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -10,15 +10,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class KillEntityTrigger implements TriggerListener {
+public class KillEntityTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup killedEntityConditions = new TriggerConditionGroup(
+            "killed", TriggerConditionGroupType.ENTITY
+    );
 
-    public KillEntityTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public KillEntityTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onEntityKill(EntityDeathEvent e) {
@@ -29,9 +33,14 @@ public class KillEntityTrigger implements TriggerListener {
         triggerInvoker.trigger(
                 e,
                 killer,
-                Map.of(new ConditionKey(TriggerConditionType.ENTITY, "entity"), entity),
+                Map.of(killedEntityConditions, entity),
                 Map.of("entity_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(killedEntityConditions);
     }
 }

@@ -1,27 +1,27 @@
-package be.timonc.customenchantments.enchantments.created.triggers.click;
+package be.timonc.customenchantments.enchantments.created.triggers.movement;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.Set;
 
-public class RightClickAirTrigger extends TriggerListener {
+public class PlayerSneakUpTrigger extends TriggerListener {
 
 
-    public RightClickAirTrigger(TriggerInvoker triggerInvoker) {
+    public PlayerSneakUpTrigger(TriggerInvoker triggerInvoker) {
         super(triggerInvoker);
     }
 
     @EventHandler
-    public void onPlayerRightClickAir(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
+    public void onPlayerSneakUp(PlayerToggleSneakEvent event) {
+        if (event.isSneaking()) return;
 
         triggerInvoker.trigger(event, event.getPlayer());
     }
+
 
     @Override
     protected Set<TriggerConditionGroup> getConditionGroups() {

@@ -1,9 +1,9 @@
 package be.timonc.customenchantments.enchantments.created.triggers.armor;
 
 import be.timonc.customenchantments.customevents.armor_equip.ArmorEquipEvent;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -12,13 +12,19 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Map;
 import java.util.Set;
 
-public class ArmorEquipTrigger implements TriggerListener {
+public class ArmorEquipTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup newArmorConditions = new TriggerConditionGroup(
+            "new_armor", TriggerConditionGroupType.ITEM
+    );
+    private final TriggerConditionGroup oldArmorConditions = new TriggerConditionGroup(
+            "old_armor", TriggerConditionGroupType.ITEM
+    );
 
-    public ArmorEquipTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public ArmorEquipTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
+
 
     @EventHandler
     public void onArmorEquip(ArmorEquipEvent e) {
@@ -28,12 +34,17 @@ public class ArmorEquipTrigger implements TriggerListener {
                 e.getPlayer(),
                 Set.of(e.getNewArmorPiece()),
                 Map.of(
-                        new ConditionKey(TriggerConditionType.ITEM, "new_armor"),
+                        newArmorConditions,
                         e.getNewArmorPiece(),
-                        new ConditionKey(TriggerConditionType.ITEM, "old_armor"),
+                        oldArmorConditions,
                         e.getOldArmorPiece() == null ? new ItemStack(Material.AIR) : e.getOldArmorPiece()
                 ),
                 Map.of()
         );
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(newArmorConditions, oldArmorConditions);
     }
 }

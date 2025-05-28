@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments.created.triggers.projectiles;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.ConditionKey;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -12,14 +12,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class ProjectileLandTrigger implements TriggerListener {
+public class ProjectileLandTrigger extends TriggerListener {
 
-    private final TriggerInvoker triggerInvoker;
+    private final TriggerConditionGroup projectileConditions = new TriggerConditionGroup(
+            "projectile", TriggerConditionGroupType.ENTITY
+    );
 
-    public ProjectileLandTrigger(TriggerInvoker type) {
-        this.triggerInvoker = type;
+    public ProjectileLandTrigger(TriggerInvoker triggerInvoker) {
+        super(triggerInvoker);
     }
 
 
@@ -44,9 +47,14 @@ public class ProjectileLandTrigger implements TriggerListener {
         usedProjectile.addScoreboardTag(projectileUniqueTag);
 
         triggerInvoker.trigger(e, player, Map.of(
-                new ConditionKey(TriggerConditionType.ENTITY, "projectile"), usedProjectile
+                projectileConditions, usedProjectile
         ), Map.of(
                 "projectile_tag", () -> projectileUniqueTag
         ), () -> usedProjectile.removeScoreboardTag(projectileUniqueTag));
+    }
+
+    @Override
+    protected Set<TriggerConditionGroup> getConditionGroups() {
+        return Set.of(projectileConditions);
     }
 }
