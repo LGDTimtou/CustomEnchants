@@ -104,11 +104,8 @@ public class Trigger {
         CooldownKey cooldownKey = new CooldownKey(customEnchant, triggerType);
         pendingCooldown.computeIfAbsent(player, v -> new HashMap<>());
         if (pendingCooldown.get(player).containsKey(cooldownKey)) {
-            if (level.cooldownMessage() != null && !level.cooldownMessage()
-                                                         .isBlank() && !pendingCooldownMessages.getOrDefault(
-                    player,
-                    Set.of()
-            ).contains(cooldownKey)) {
+            if (level.cooldownMessage() != null && !level.cooldownMessage().isBlank()
+                    && !pendingCooldownMessages.getOrDefault(player, Set.of()).contains(cooldownKey)) {
                 Long startTime = pendingCooldown.get(player).get(cooldownKey);
                 int timeLeftSeconds = (int) (level.cooldown() - (double) (System.currentTimeMillis() - startTime) / 1000);
                 Map<String, Supplier<String>> cooldownParameters = new HashMap<>(parameters);
