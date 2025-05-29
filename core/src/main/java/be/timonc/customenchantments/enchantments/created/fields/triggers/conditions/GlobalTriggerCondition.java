@@ -1,6 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers.conditions;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,10 +14,10 @@ import java.util.stream.Collectors;
 public enum GlobalTriggerCondition {
 
     // Global
-    DIMENSION(
-            TriggerConditionGroupType.DIMENSION,
+    WORLD(
+            TriggerConditionGroupType.WORLD,
             "",
-            player -> player.getWorld().getEnvironment()
+            Entity::getWorld
     ),
     BIOME(
             TriggerConditionGroupType.BIOME,

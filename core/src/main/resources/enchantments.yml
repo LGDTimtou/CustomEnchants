@@ -93,6 +93,51 @@ sneak:
             - command: effect clear %player% minecraft:invisibility
 
 
+test:
+  version: 1.21.5
+  enabled: true
+  depends: [ ]
+  definition:
+    needs_permission: false
+    max_level: 1
+    anvil_cost: 10
+    conflicts_with: [ ]
+    targets: [ ]
+    tags:
+      in_enchanting_table: true
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+    enchanting_table:
+      weight: 10
+      min_cost_base: 2
+      min_cost_incr: 10
+      max_cost_base: 8
+      max_cost_incr: 15
+  custom_locations: [ ]
+  triggers:
+    take_damage_from_non_entity:
+      conditions:
+        - group: cause
+          prefix: damage
+          suffix: ""
+          values:
+            - operator: equals
+              value: fall
+        - group: player
+          prefix: ""
+          suffix: health
+          values:
+            - operator: equals
+              value: 1
+      levels:
+        1:
+          cancel_event: true
+          cooldown: 5
+          cooldown_message: ""
+          chance: 100
+          instructions: [ ]
+
+
 
 
 #saving_grace:

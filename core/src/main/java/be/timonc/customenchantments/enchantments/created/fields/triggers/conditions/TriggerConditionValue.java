@@ -28,8 +28,8 @@ public class TriggerConditionValue {
         } else {
             String toCompareString = toCompare.toString();
             if (operator == Operator.EQUALS || operator == Operator.NOT_EQUALS) {
-                boolean result = Pattern.compile(toCompareString.toLowerCase().replace("*", ".*"))
-                                        .matcher(value.toLowerCase())
+                boolean result = Pattern.compile(toCompareString.toLowerCase())
+                                        .matcher(value)
                                         .matches();
 
                 return (operator == Operator.EQUALS) == result;
@@ -37,6 +37,11 @@ public class TriggerConditionValue {
                 return operator.checkResult(toCompareString.compareTo(value));
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "TriggerConditionValue [operator=" + operator + ", value=" + value + "]";
     }
 
 

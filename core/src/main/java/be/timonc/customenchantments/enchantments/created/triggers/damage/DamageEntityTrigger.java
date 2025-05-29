@@ -21,6 +21,9 @@ public class DamageEntityTrigger extends TriggerListener {
     private final TriggerConditionGroup damageConditions = new TriggerConditionGroup(
             "damage", TriggerConditionGroupType.NUMBER
     );
+    private final TriggerConditionGroup damageCauseConditions = new TriggerConditionGroup(
+            "damage", TriggerConditionGroupType.CAUSE
+    );
 
     public DamageEntityTrigger(TriggerInvoker triggerInvoker) {
         super(triggerInvoker);
@@ -40,7 +43,8 @@ public class DamageEntityTrigger extends TriggerListener {
                 player,
                 Map.of(
                         damagedEntityConditions, entity,
-                        damageConditions, e.getDamage()
+                        damageConditions, e.getDamage(),
+                        damageCauseConditions, e.getCause()
                 ),
                 Map.of("entity_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
@@ -49,7 +53,7 @@ public class DamageEntityTrigger extends TriggerListener {
 
     @Override
     protected Set<TriggerConditionGroup> getConditionGroups() {
-        return Set.of(damagedEntityConditions, damageConditions);
+        return Set.of(damagedEntityConditions, damageConditions, damageCauseConditions);
     }
 }
 

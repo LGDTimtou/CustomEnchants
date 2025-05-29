@@ -19,6 +19,9 @@ public class DamagePlayerTrigger extends TriggerListener {
     private final TriggerConditionGroup damageConditions = new TriggerConditionGroup(
             "damage", TriggerConditionGroupType.NUMBER
     );
+    private final TriggerConditionGroup damageCauseConditions = new TriggerConditionGroup(
+            "damage", TriggerConditionGroupType.CAUSE
+    );
 
     public DamagePlayerTrigger(TriggerInvoker triggerInvoker) {
         super(triggerInvoker);
@@ -32,12 +35,13 @@ public class DamagePlayerTrigger extends TriggerListener {
 
         triggerInvoker.trigger(e, player, Map.of(
                 damagedPlayerConditions, damaged,
-                damageConditions, e.getDamage()
+                damageConditions, e.getDamage(),
+                damageCauseConditions, e.getCause()
         ));
     }
 
     @Override
     protected Set<TriggerConditionGroup> getConditionGroups() {
-        return Set.of(damagedPlayerConditions, damageConditions);
+        return Set.of(damagedPlayerConditions, damageConditions, damageCauseConditions);
     }
 }

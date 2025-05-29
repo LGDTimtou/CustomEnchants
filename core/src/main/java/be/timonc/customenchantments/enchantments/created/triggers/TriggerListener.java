@@ -13,7 +13,7 @@ public abstract class TriggerListener implements Listener {
     protected TriggerInvoker triggerInvoker;
     protected Set<TriggerCondition> conditions;
 
-    protected TriggerListener(TriggerInvoker triggerInvoker) {
+    public TriggerListener(TriggerInvoker triggerInvoker) {
         this.triggerInvoker = triggerInvoker;
     }
 

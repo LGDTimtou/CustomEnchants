@@ -20,9 +20,7 @@ import be.timonc.customenchantments.enchantments.created.triggers.damage.DamageP
 import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.FishingRodCaughtTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.FishingRodHitEntityTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.FishingRodHitPlayerTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.health.PlayerHealthChangeTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.health.PlayerHealthDecreaseTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.health.PlayerHealthIncreaseTrigger;
+import be.timonc.customenchantments.enchantments.created.triggers.health_change.*;
 import be.timonc.customenchantments.enchantments.created.triggers.inventory.InventoryCloseTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillAnimalTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillEntityTrigger;
@@ -33,10 +31,6 @@ import be.timonc.customenchantments.enchantments.created.triggers.projectiles.Pr
 import be.timonc.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitEntityTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.projectiles.ProjectileHitPlayerTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.projectiles.ProjectileLandTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.take_damage.TakeDamageFromEntityTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.take_damage.TakeDamageFromMobTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.take_damage.TakeDamageFromNonEntityTrigger;
-import be.timonc.customenchantments.enchantments.created.triggers.take_damage.TakeDamageFromPlayerTrigger;
 import be.timonc.customenchantments.other.Util;
 
 import java.lang.reflect.Constructor;
@@ -80,9 +74,12 @@ public enum TriggerType {
     DAMAGE_ANIMAL(DamageAnimalTrigger.class, DAMAGE_ENTITY),
     DAMAGE_PLAYER(DamagePlayerTrigger.class, DAMAGE_ENTITY),
 
-    //Take damage
-    TAKE_DAMAGE_FROM_NONENTITY(TakeDamageFromNonEntityTrigger.class),
-    TAKE_DAMAGE_FROM_ENTITY(TakeDamageFromEntityTrigger.class),
+    //Health Change
+    HEALTH_CHANGE(HealthChangeTrigger.class),
+    REGAIN_HEALTH(RegainHealthTrigger.class, HEALTH_CHANGE),
+    TAKE_DAMAGE(TakeDamageTrigger.class, HEALTH_CHANGE),
+    TAKE_DAMAGE_FROM_NON_ENTITY(TakeDamageFromNonEntityTrigger.class, TAKE_DAMAGE),
+    TAKE_DAMAGE_FROM_ENTITY(TakeDamageFromEntityTrigger.class, TAKE_DAMAGE),
     TAKE_DAMAGE_FROM_MOB(TakeDamageFromMobTrigger.class, TAKE_DAMAGE_FROM_ENTITY),
     TAKE_DAMAGE_FROM_PLAYER(TakeDamageFromPlayerTrigger.class, TAKE_DAMAGE_FROM_ENTITY),
 
@@ -90,11 +87,6 @@ public enum TriggerType {
     FISHING_ROD_CAUGHT(FishingRodCaughtTrigger.class),
     FISHING_ROD_HIT_ENTITY(FishingRodHitEntityTrigger.class),
     FISHING_ROD_HIT_PLAYER(FishingRodHitPlayerTrigger.class, FISHING_ROD_HIT_ENTITY),
-
-    //Health
-    HEALTH_CHANGE(PlayerHealthChangeTrigger.class),
-    HEALTH_INCREASE(PlayerHealthIncreaseTrigger.class, HEALTH_CHANGE),
-    HEALTH_DECREASE(PlayerHealthDecreaseTrigger.class, HEALTH_CHANGE),
 
     //Click
     LEFT_CLICK(LeftClickTrigger.class),

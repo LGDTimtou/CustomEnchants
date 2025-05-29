@@ -1,4 +1,4 @@
-package be.timonc.customenchantments.enchantments.created.triggers.take_damage;
+package be.timonc.customenchantments.enchantments.created.triggers.health_change;
 
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerInvoker;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
@@ -18,7 +18,13 @@ public class TakeDamageFromEntityTrigger extends TriggerListener {
     private final TriggerConditionGroup attackerEntityConditions = new TriggerConditionGroup(
             "attacker", TriggerConditionGroupType.ENTITY
     );
-    private final TriggerConditionGroup damageConditions = new TriggerConditionGroup(
+    private final TriggerConditionGroup newHealthConditions = new TriggerConditionGroup(
+            "new_health", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup previousHealthConditions = new TriggerConditionGroup(
+            "previous_health", TriggerConditionGroupType.NUMBER
+    );
+    private final TriggerConditionGroup damageAmountConditions = new TriggerConditionGroup(
             "damage", TriggerConditionGroupType.NUMBER
     );
     private final TriggerConditionGroup damageCauseConditions = new TriggerConditionGroup(
@@ -31,19 +37,21 @@ public class TakeDamageFromEntityTrigger extends TriggerListener {
 
 
     @EventHandler
-    public void onDamageFromEntity(EntityDamageByEntityEvent e) {
-        if (!(e.getEntity() instanceof Player player))
+    public void onDamageFromEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player player))
             return;
 
-        Entity entity = e.getDamager();
+        Entity entity = event.getDamager();
         String uniqueTag = "entity_" + UUID.randomUUID().toString().substring(0, 8);
-        e.getDamager().addScoreboardTag(uniqueTag);
+        event.getDamager().addScoreboardTag(uniqueTag);
 
-        triggerInvoker.trigger(e, player,
+        triggerInvoker.trigger(event, player,
                 Map.of(
                         attackerEntityConditions, entity,
-                        damageConditions, e.getDamage(),
-                        damageCauseConditions, e.getCause()
+                        newHealthConditions, player.getHealth() - event.getFinalDamage(),
+                        previousHealthConditions, player.getHealth(),
+                        damageAmountConditions, event.getFinalDamage(),
+                        damageCauseConditions, event.getCause()
                 ),
                 Map.of("entity_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
@@ -52,6 +60,12 @@ public class TakeDamageFromEntityTrigger extends TriggerListener {
 
     @Override
     protected Set<TriggerConditionGroup> getConditionGroups() {
-        return Set.of(attackerEntityConditions, damageConditions, damageCauseConditions);
+        return Set.of(
+                attackerEntityConditions,
+                newHealthConditions,
+                previousHealthConditions,
+                damageAmountConditions,
+                damageCauseConditions
+        );
     }
 }

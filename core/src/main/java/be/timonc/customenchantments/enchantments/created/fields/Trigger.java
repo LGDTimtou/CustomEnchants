@@ -123,8 +123,10 @@ public class Trigger {
         for (Map.Entry<TriggerCondition, Set<TriggerConditionValue>> entry : conditions.entrySet()) {
             Object object = availableTriggerConditions.get(entry.getKey());
             for (TriggerConditionValue triggerConditionValue : entry.getValue())
-                if (!triggerConditionValue.check(object))
+                if (!triggerConditionValue.check(object)) {
+                    Util.debug("Trigger condition did not pass: " + triggerConditionValue + ", object: " + object);
                     return null;
+                }
         }
 
         //Return if chance didn't trigger

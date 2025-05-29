@@ -22,6 +22,9 @@ public class DamageAnimalTrigger extends TriggerListener {
     private final TriggerConditionGroup damageConditions = new TriggerConditionGroup(
             "damage", TriggerConditionGroupType.NUMBER
     );
+    private final TriggerConditionGroup damageCauseConditions = new TriggerConditionGroup(
+            "damage", TriggerConditionGroupType.CAUSE
+    );
 
     public DamageAnimalTrigger(TriggerInvoker triggerInvoker) {
         super(triggerInvoker);
@@ -42,7 +45,8 @@ public class DamageAnimalTrigger extends TriggerListener {
                 player,
                 Map.of(
                         damagedAnimalConditions, entity,
-                        damageConditions, e.getDamage()
+                        damageConditions, e.getDamage(),
+                        damageCauseConditions, e.getCause()
                 ),
                 Map.of("animal_tag", () -> uniqueTag),
                 () -> entity.removeScoreboardTag(uniqueTag)
@@ -51,7 +55,7 @@ public class DamageAnimalTrigger extends TriggerListener {
 
     @Override
     protected Set<TriggerConditionGroup> getConditionGroups() {
-        return Set.of(damagedAnimalConditions, damageConditions);
+        return Set.of(damagedAnimalConditions, damageConditions, damageCauseConditions);
     }
 }
 

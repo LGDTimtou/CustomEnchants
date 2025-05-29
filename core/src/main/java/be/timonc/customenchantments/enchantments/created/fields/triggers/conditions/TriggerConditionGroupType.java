@@ -67,7 +67,7 @@ public enum TriggerConditionGroupType {
             ItemStack::getAmount
     )),
     CAUSE(Enum.class, Map.of(
-            "cause",
+            "",
             Enum::name
     )),
     INVENTORY(Inventory.class, Map.of(
@@ -82,10 +82,14 @@ public enum TriggerConditionGroupType {
             "",
             String::valueOf
     )),
-    DIMENSION(
-            World.Environment.class, Map.of(
+    WORLD(
+        World.class, Map.of(
             "",
-            World.Environment::name
+            World::getName,
+            "seed",
+            World::getSeed,
+            "dimension",
+            World::getEnvironment
     )),
     BIOME(Biome.class, Map.of(
             "",
