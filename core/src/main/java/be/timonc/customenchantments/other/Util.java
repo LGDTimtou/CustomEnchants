@@ -42,6 +42,7 @@ public final class Util {
             EquipmentSlot.HEAD
     );
     private static final Pattern placeholderPattern = Pattern.compile("%[a-z_]+%");
+    private static final Pattern PARAM_PATTERN = Pattern.compile("%([a-zA-Z0-9_]+)%");
 
     public static boolean hasPermission(Permissible permissible, String permission) {
         return permissible.hasPermission("customenchantments." + permission) || permissible.hasPermission("ce." + permission);
@@ -77,7 +78,6 @@ public final class Util {
                      .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
                      .collect(Collectors.joining(" "));
     }
-
 
     public static <E extends Enum<E>> String findClosestMatch(String input, Class<E> enumClass) {
         LevenshteinDistance distance = new LevenshteinDistance();
@@ -118,16 +118,24 @@ public final class Util {
     }
 
     public static String replaceParameters(Player player, String value, Map<String, Supplier<String>> parameters) {
-        String result = value;
-        for (Map.Entry<String, Supplier<String>> mapEntry : parameters.entrySet())
-            result = result.replaceAll("%" + mapEntry.getKey() + "%", mapEntry.getValue().get());
+        Matcher paramMatcher = PARAM_PATTERN.matcher(value);
+        StringBuilder resultBuffer = new StringBuilder();
+
+        while (paramMatcher.find()) {
+            String paramName = paramMatcher.group(1);
+            String replacement = parameters.getOrDefault(paramName, () -> paramMatcher.group(0)).get();
+            replacement = Matcher.quoteReplacement(replacement);
+            paramMatcher.appendReplacement(resultBuffer, replacement);
+        }
+        paramMatcher.appendTail(resultBuffer);
+        String result = resultBuffer.toString();
 
         if (Main.isPAPISupport())
             result = PlaceholderAPI.setPlaceholders(player, result);
 
         // Check for unresolved parameters
-        Matcher matcher = placeholderPattern.matcher(result);
-        if (matcher.find())
+        Matcher finalMatcher = placeholderPattern.matcher(result);
+        if (finalMatcher.find())
             Util.warn("Unresolved placeholders found in text: " + result);
 
         return result;
