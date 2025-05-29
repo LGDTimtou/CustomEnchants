@@ -106,6 +106,10 @@ public enum TriggerType {
     PLAYER_SNEAK_DOWN(PlayerSneakDownTrigger.class, PLAYER_SNEAK_TOGGLE),
     PLAYER_SNEAK_UP(PlayerSneakUpTrigger.class, PLAYER_SNEAK_TOGGLE),
 
+    PLAYER_FLY_TOGGLE(PlayerFlyToggleTrigger.class),
+    PLAYER_FLY_START(PlayerFlyStartTrigger.class, PLAYER_FLY_TOGGLE),
+    PLAYER_FLY_STOP(PlayerFlyStopTrigger.class, PLAYER_FLY_TOGGLE),
+
     //Projectiles
     PROJECTILE_LAND(ProjectileLandTrigger.class),
     PROJECTILE_HIT_BLOCK(ProjectileHitBlockTrigger.class, PROJECTILE_LAND),
