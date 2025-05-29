@@ -22,6 +22,7 @@ import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.Fi
 import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.FishingRodHitPlayerTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.health_change.*;
 import be.timonc.customenchantments.enchantments.created.triggers.inventory.InventoryCloseTrigger;
+import be.timonc.customenchantments.enchantments.created.triggers.inventory.InventoryOpenTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillAnimalTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillEntityTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.kill.KillMobTrigger;
@@ -49,6 +50,10 @@ public enum TriggerType {
     CHANGE_SIGN(ChangeSignTrigger.class),
     BELL_RUNG(BellRungTrigger.class),
     ACTIVATE_SCULK_SENSOR(ActivateSculkSensorTrigger.class),
+
+
+    //Inventory
+    INVENTORY_OPEN(InventoryOpenTrigger.class),
     INVENTORY_CLOSE(InventoryCloseTrigger.class),
 
     //Blocks
