@@ -1,7 +1,6 @@
 package be.timonc.customenchantments.customevents;
 
 import be.timonc.customenchantments.customevents.armor_equip.ArmorListener;
-import be.timonc.customenchantments.customevents.health_change.PlayerHealthChangeListeners;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -21,7 +20,6 @@ public class CustomEvent extends PlayerEvent {
     }
 
     public static void register() {
-        Util.registerListener(new PlayerHealthChangeListeners());
         Util.registerListener(new ArmorListener(Collections.emptyList()));
     }
 

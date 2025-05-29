@@ -29,13 +29,14 @@ public class LoadInstruction extends Instruction {
 
     @Override
     protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+        String parsedIdentifier = parseNestedExpression(identifier, player, parameters);
         String value = context.load(
                 player,
                 customEnchant,
-                parseNestedExpression(identifier, player, parameters),
+                parsedIdentifier,
                 parseNestedExpression(defaultValue, player, parameters)
         );
-        parameters.put(identifier, () -> value);
+        parameters.put(parsedIdentifier, () -> value);
         executeNextInstruction.run();
     }
 }

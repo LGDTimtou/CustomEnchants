@@ -33,6 +33,7 @@ public class SaveInstruction extends Instruction {
         String parsedIdentifier = parseNestedExpression(identifier, player, parameters);
         String parsedValue = parseNestedExpression(value, player, parameters);
         this.context.save(player, customEnchant, parsedIdentifier, parsedValue);
+        parameters.put(parsedIdentifier, () -> value);
         executeNextInstruction.run();
     }
 }
