@@ -87,10 +87,11 @@ public abstract class Instruction {
         Matcher matcher = pattern.matcher(substitutedValue);
         while (matcher.find()) {
             String expressionString = matcher.group();
+            String expressionStringContent = expressionString.substring(2, expressionString.length() - 1);
             String result = parseExpression(
-                    expressionString.substring(2, expressionString.length() - 1),
+                    expressionStringContent,
                     EvaluationValue::getStringValue,
-                    "error"
+                    expressionStringContent
             );
             substitutedValue = substitutedValue.replace(expressionString, result);
             matcher = pattern.matcher(substitutedValue);
