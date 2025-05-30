@@ -3,6 +3,7 @@ package be.timonc.customenchantments.enchantments.created.builders;
 import be.timonc.customenchantments.enchantments.created.fields.Level;
 import be.timonc.customenchantments.enchantments.created.fields.Trigger;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.CustomTriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroupType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionValue;
@@ -17,6 +18,7 @@ public class CustomEnchantTriggerBuilder {
     private final int maxLvl;
     private final ConfigurationSection config;
     private final Map<TriggerCondition, Set<TriggerConditionValue>> conditions = new HashMap<>();
+    private final Set<CustomTriggerCondition> customConditions = new HashSet<>();
     private final List<Level> levels = new ArrayList<>();
     private TriggerType triggerType;
     private boolean error = false;
@@ -44,6 +46,7 @@ public class CustomEnchantTriggerBuilder {
 
         //Parse the trigger condition parameters
         parseTriggerConditions();
+        parseCustomTriggerConditions();
 
         //Parse the trigger specific levels
         parseLevels();
@@ -55,10 +58,16 @@ public class CustomEnchantTriggerBuilder {
             return new Trigger(
                     triggerType,
                     conditions,
+                    customConditions,
                     levels
             );
         }
         return null;
+    }
+
+    private void parseCustomTriggerConditions() {
+        List<String> conditionList = config.getStringList("custom_conditions");
+        conditionList.forEach(customCondition -> customConditions.add(new CustomTriggerCondition(customCondition)));
     }
 
 

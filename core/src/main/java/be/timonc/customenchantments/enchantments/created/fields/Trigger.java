@@ -4,6 +4,7 @@ import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.api.CustomEnchantTriggerEvent;
 import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.CustomTriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionValue;
 import be.timonc.customenchantments.other.Util;
@@ -23,13 +24,15 @@ public class Trigger {
     private static final Map<Player, Set<CooldownKey>> pendingCooldownMessages = new HashMap<>();
     private final TriggerType triggerType;
     private final Map<TriggerCondition, Set<TriggerConditionValue>> conditions;
+    private final Set<CustomTriggerCondition> customConditions;
     private final List<Level> levels;
     private CustomEnchant customEnchant;
 
 
-    public Trigger(TriggerType triggerType, Map<TriggerCondition, Set<TriggerConditionValue>> conditions, List<Level> levels) {
+    public Trigger(TriggerType triggerType, Map<TriggerCondition, Set<TriggerConditionValue>> conditions, Set<CustomTriggerCondition> customConditions, List<Level> levels) {
         this.triggerType = triggerType;
         this.conditions = conditions;
+        this.customConditions = customConditions;
         this.levels = levels;
     }
 
@@ -127,6 +130,14 @@ public class Trigger {
                     Util.debug("Trigger condition did not pass: " + triggerConditionValue + ", object: " + object);
                     return null;
                 }
+        }
+
+        //Check custom conditions
+        for (CustomTriggerCondition customTriggerCondition : customConditions) {
+            if (!customTriggerCondition.check(player, parameters)) {
+                Util.debug("Custom trigger condition did not pass: " + customTriggerCondition.getCondition());
+                return null;
+            }
         }
 
         //Return if chance didn't trigger

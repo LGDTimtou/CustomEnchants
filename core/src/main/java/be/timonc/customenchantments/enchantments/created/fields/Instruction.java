@@ -81,7 +81,7 @@ public abstract class Instruction {
         );
     }
 
-    public String parseNestedExpression(String value, Player player, Map<String, Supplier<String>> parameters) {
+    public static String parseNestedExpression(String value, Player player, Map<String, Supplier<String>> parameters) {
         String substitutedValue = Util.replaceParameters(player, value, parameters);
 
         Matcher matcher = pattern.matcher(substitutedValue);
@@ -99,7 +99,7 @@ public abstract class Instruction {
         return substitutedValue;
     }
 
-    private <T> T parseExpression(String expressionString, Function<EvaluationValue, T> getValue, T defaultValue) {
+    private static <T> T parseExpression(String expressionString, Function<EvaluationValue, T> getValue, T defaultValue) {
         Expression expression = new Expression(expressionString);
 
         T result = defaultValue;
@@ -112,6 +112,16 @@ public abstract class Instruction {
         return result;
     }
 
+    public static boolean parseCondition(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String substitutedValue = parseNestedExpression(value, player, parameters);
+        return parseExpression(substitutedValue, EvaluationValue::getBooleanValue, true);
+    }
+
+    protected static Double parseDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
+        String substitutedValue = parseNestedExpression(value, player, parameters);
+        return parseExpression(substitutedValue, EvaluationValue::getNumberValue, 0).doubleValue();
+    }
+
     protected abstract void setValue(Object value);
 
     protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
@@ -119,17 +129,6 @@ public abstract class Instruction {
     }
 
     protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-    }
-
-    protected boolean parseCondition(Player player, String value, Map<String, Supplier<String>> parameters) {
-        String substitutedValue = parseNestedExpression(value, player, parameters);
-
-        return parseExpression(substitutedValue, EvaluationValue::getBooleanValue, false);
-    }
-
-    protected Double parseDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
-        String substitutedValue = parseNestedExpression(value, player, parameters);
-        return parseExpression(substitutedValue, EvaluationValue::getNumberValue, 0).doubleValue();
     }
 }
 
