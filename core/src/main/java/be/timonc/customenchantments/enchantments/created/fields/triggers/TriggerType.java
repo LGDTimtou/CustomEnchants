@@ -17,6 +17,10 @@ import be.timonc.customenchantments.enchantments.created.triggers.damage.DamageA
 import be.timonc.customenchantments.enchantments.created.triggers.damage.DamageEntityTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.damage.DamageMobTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.damage.DamagePlayerTrigger;
+import be.timonc.customenchantments.enchantments.created.triggers.death.AnimalDeathTrigger;
+import be.timonc.customenchantments.enchantments.created.triggers.death.EntityDeathTrigger;
+import be.timonc.customenchantments.enchantments.created.triggers.death.MobDeathTrigger;
+import be.timonc.customenchantments.enchantments.created.triggers.death.PlayerDeathTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.FishingRodCaughtTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.FishingRodHitEntityTrigger;
 import be.timonc.customenchantments.enchantments.created.triggers.fishing_rod.FishingRodHitPlayerTrigger;
@@ -78,6 +82,12 @@ public enum TriggerType {
     DAMAGE_MOB(DamageMobTrigger.class, DAMAGE_ENTITY),
     DAMAGE_ANIMAL(DamageAnimalTrigger.class, DAMAGE_ENTITY),
     DAMAGE_PLAYER(DamagePlayerTrigger.class, DAMAGE_ENTITY),
+
+    //Death
+    ENTITY_DEATH(EntityDeathTrigger.class),
+    MOB_DEATH(MobDeathTrigger.class, ENTITY_DEATH),
+    ANIMAL_DEATH(AnimalDeathTrigger.class, ENTITY_DEATH),
+    PLAYER_DEATH(PlayerDeathTrigger.class, ENTITY_DEATH),
 
     //Health Change
     HEALTH_CHANGE(HealthChangeTrigger.class),
