@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 
 public enum TriggerConditionGroupType {
 
-    PLAYER(Player.class, Map.of(
+    PLAYER(
+            Player.class, Map.of(
             "",
             Player::getName,
             "uuid",
@@ -35,8 +36,10 @@ public enum TriggerConditionGroupType {
             player -> player.getLocation().getPitch(),
             "yaw",
             player -> player.getLocation().getYaw()
-    )),
-    BLOCK(Block.class, Map.of(
+    )
+    ),
+    BLOCK(
+            Block.class, Map.of(
             "",
             Block::getType,
             "x",
@@ -45,8 +48,10 @@ public enum TriggerConditionGroupType {
             Block::getY,
             "z",
             Block::getZ
-    )),
-    ENTITY(Entity.class, Map.of(
+    )
+    ),
+    ENTITY(
+            Entity.class, Map.of(
             "",
             Entity::getType,
             "x",
@@ -57,44 +62,58 @@ public enum TriggerConditionGroupType {
             (entity) -> entity.getLocation().getZ(),
             "health",
             (entity) -> entity instanceof Damageable damageable ? damageable.getHealth() : 0
-    )),
-    ITEM(ItemStack.class, Map.of(
+    )
+    ),
+    ITEM(
+            ItemStack.class, Map.of(
             "type",
             ItemStack::getType,
             "name",
             (item) -> item.getItemMeta() == null ? "" : item.getItemMeta().getDisplayName(),
             "amount",
             ItemStack::getAmount
-    )),
-    CAUSE(Enum.class, Map.of(
+    )
+    ),
+    CAUSE(
+            Enum.class, Map.of(
             "",
             Enum::name
-    )),
-    INVENTORY(Inventory.class, Map.of(
+    )
+    ),
+    INVENTORY(
+            Inventory.class, Map.of(
             "type",
             (inv) -> inv.getType().name()
-    )),
-    STRING(String.class, Map.of(
+    )
+    ),
+    STRING(
+            String.class, Map.of(
             "",
             (str) -> str
-    )),
-    NUMBER(Double.class, Map.of(
+    )
+    ),
+    NUMBER(
+            Double.class, Map.of(
             "",
-            String::valueOf
-    )),
+            number -> number
+    )
+    ),
     WORLD(
-        World.class, Map.of(
+            World.class, Map.of(
             "",
             World::getName,
             "seed",
             World::getSeed,
             "dimension",
             World::getEnvironment
-    )),
-    BIOME(Biome.class, Map.of(
+    )
+    ),
+    BIOME(
+            Biome.class, Map.of(
             "",
             Object::toString
-    ));
+    )
+    );
 
 
     private final Function<String, Set<TriggerCondition>> conditionSupplier;
