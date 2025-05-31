@@ -1,15 +1,13 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
-import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.created.fields.Instruction;
+import be.timonc.customenchantments.enchantments.created.fields.InstructionCall;
 import be.timonc.customenchantments.other.Util;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.function.Supplier;
 
 public class ConditionalInstruction extends Instruction {
 
@@ -34,14 +32,11 @@ public class ConditionalInstruction extends Instruction {
 
 
     @Override
-    protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        executeInstructionQueue(
-                parseCondition(player, condition, parameters) ?
+    protected void execute(InstructionCall instructionCall, Runnable executeNextInstruction) {
+        instructionCall.executeInstructionQueue(
+                parseCondition(condition, instructionCall.getPlayer(), instructionCall.getParameters()) ?
                         new ArrayDeque<>(if_instructions) :
                         new ArrayDeque<>(else_instructions),
-                player,
-                customEnchant,
-                parameters,
                 executeNextInstruction
         );
     }

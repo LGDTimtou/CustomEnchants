@@ -41,26 +41,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-to-release-folder</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <copy file="${project.build.directory}/${final.name}.jar"
-                                      todir=""/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -117,31 +97,31 @@
     <dependencies>
         <dependency>
             <groupId>be.timonc</groupId>
-            <artifactId>custom-enchantments-core</artifactId>
+            <artifactId>core</artifactId>
             <version>${customenchants.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>be.timonc</groupId>
-            <artifactId>custom-enchantments-spigot-1.21.1</artifactId>
+            <artifactId>spigot-1.21.1</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>be.timonc</groupId>
-            <artifactId>custom-enchantments-spigot-1.21.3</artifactId>
+            <artifactId>spigot-1.21.3</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>be.timonc</groupId>
-            <artifactId>custom-enchantments-spigot-1.21.4</artifactId>
+            <artifactId>spigot-1.21.4</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>be.timonc</groupId>
-            <artifactId>custom-enchantments-spigot-1.21.5</artifactId>
+            <artifactId>spigot-1.21.5</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
-import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.created.fields.Instruction;
+import be.timonc.customenchantments.enchantments.created.fields.InstructionCall;
 import be.timonc.customenchantments.enchantments.created.fields.instructions.data.SaveContext;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.entity.Player;
@@ -29,10 +29,12 @@ public class SaveInstruction extends Instruction {
     }
 
     @Override
-    protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+    protected void execute(InstructionCall instructionCall, Runnable executeNextInstruction) {
+        Player player = instructionCall.getPlayer();
+        Map<String, Supplier<String>> parameters = instructionCall.getParameters();
         String parsedIdentifier = parseNestedExpression(identifier, player, parameters);
         String parsedValue = parseNestedExpression(value, player, parameters);
-        this.context.save(player, customEnchant, parsedIdentifier, parsedValue);
+        this.context.save(player, instructionCall.getCustomEnchant(), parsedIdentifier, parsedValue);
         parameters.put(parsedIdentifier, () -> parsedValue);
         executeNextInstruction.run();
     }

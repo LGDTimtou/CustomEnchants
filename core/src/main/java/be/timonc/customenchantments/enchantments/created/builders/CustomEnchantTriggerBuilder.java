@@ -77,6 +77,11 @@ public class CustomEnchantTriggerBuilder {
         for (Map<?, ?> _entry : conditionList) {
             Map<String, Object> entry = (Map<String, Object>) _entry;
             String group = (String) entry.get("group");
+            if (group == null) {
+                Util.error(namespacedName + ": missing 'group' in trigger condition");
+                continue;
+            }
+
             String prefix = (String) entry.getOrDefault("prefix", "");
             String suffix = (String) entry.getOrDefault("suffix", "");
 
@@ -110,6 +115,11 @@ public class CustomEnchantTriggerBuilder {
         Set<TriggerConditionValue> triggerConditionValues = new HashSet<>();
 
         for (Map<?, ?> valueMap : unparsedTriggerConditionValues) {
+            if (valueMap.get("operator") == null || valueMap.get("value") == null) {
+                Util.error(namespacedName + ": Every trigger condition value should have an 'operator' and 'value' field");
+                continue;
+            }
+
             String operatorString = valueMap.get("operator").toString();
             String value = valueMap.get("value").toString();
 

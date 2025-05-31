@@ -1,6 +1,5 @@
 package be.timonc.customenchantments.enchantments.created.fields;
 
-import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.created.fields.instructions.*;
 import be.timonc.customenchantments.other.Util;
 import com.ezylang.evalex.EvaluationException;
@@ -27,7 +26,8 @@ public abstract class Instruction {
             "save", SaveInstruction.class,
             "load", LoadInstruction.class,
             "conditional", ConditionalInstruction.class,
-            "while", WhileInstruction.class
+            "while", WhileInstruction.class,
+            "cancel", CancelInstruction.class
     );
     private static final Pattern pattern = Pattern.compile("(\\$\\[(?:(?!\\$\\[).)*?\\])");
 
@@ -67,20 +67,6 @@ public abstract class Instruction {
         return instructionQueue;
     }
 
-    public static void executeInstructionQueue(Queue<Instruction> instructionQueue, Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable oncomplete) {
-        Instruction instruction = instructionQueue.poll();
-        if (instruction == null) {
-            oncomplete.run();
-            return;
-        }
-        instruction.execute(
-                player,
-                customEnchant,
-                parameters,
-                () -> executeInstructionQueue(instructionQueue, player, customEnchant, parameters, oncomplete)
-        );
-    }
-
     public static String parseNestedExpression(String value, Player player, Map<String, Supplier<String>> parameters) {
         String substitutedValue = Util.replaceParameters(player, value, parameters);
 
@@ -112,24 +98,19 @@ public abstract class Instruction {
         return result;
     }
 
-    public static boolean parseCondition(Player player, String value, Map<String, Supplier<String>> parameters) {
+    public static boolean parseCondition(String value, Player player, Map<String, Supplier<String>> parameters) {
         String substitutedValue = parseNestedExpression(value, player, parameters);
         return parseExpression(substitutedValue, EvaluationValue::getBooleanValue, true);
     }
 
-    protected static Double parseDouble(Player player, String value, Map<String, Supplier<String>> parameters) {
+    protected static Double parseDouble(String value, Player player, Map<String, Supplier<String>> parameters) {
         String substitutedValue = parseNestedExpression(value, player, parameters);
         return parseExpression(substitutedValue, EvaluationValue::getNumberValue, 0).doubleValue();
     }
 
     protected abstract void setValue(Object value);
 
-    protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        execute(player, parameters, executeNextInstruction);
-    }
-
-    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-    }
+    protected abstract void execute(InstructionCall instructionCall, Runnable executeNextInstruction);
 }
 
 

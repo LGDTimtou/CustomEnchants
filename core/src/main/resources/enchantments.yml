@@ -93,8 +93,7 @@ sneak:
             - command: effect clear %player% minecraft:invisibility
 
 
-
-test:
+aura:
   version: 1.21.5
   enabled: true
   depends: [ ]
@@ -103,41 +102,57 @@ test:
     max_level: 1
     anvil_cost: 10
     conflicts_with: [ ]
-    targets: [ ]
+    targets:
+      - armor_torso
     tags:
       in_enchanting_table: true
     destroy_item_chance: 0
     remove_enchantment_chance: 0
     enchanting_table:
-      weight: 10
+      weight: 50
       min_cost_base: 2
       min_cost_incr: 10
       max_cost_base: 8
       max_cost_incr: 15
   custom_locations: [ ]
   triggers:
-    take_damage_from_non_entity:
+    player_idle:
       conditions:
-        - group: cause
-          prefix: damage
-          suffix: ''
-          values:
-            - operator: equals
-              value: fall
         - group: number
-          prefix: new_health
-          suffix: ''
+          prefix: idle_time
           values:
-            - operator: equals
-              value: 1
-
+            - operator: greater_than
+              value: 5
       levels:
         '1':
-          cancel_event: true
-          cooldown: 0
-          cooldown_message: hallo
+          cancel_event: false
+          cooldown: 6.3
+          cooldown_message: ''
           chance: 100
-          instructions: [ ]
+          instructions:
+            - repeat:
+                amount: 63
+                loop_parameter: k
+                instructions:
+                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + %k% * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
+                  - delay: '0.05'
+            - repeat:
+                amount: 63
+                loop_parameter: k
+                instructions:
+                  - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + (63 - %k%) * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
+                  - delay: '0.05'
+
+    # player_move:
+    #   conditions: { }
+    #   levels:
+    #     '1':
+    #       cancel_event: false
+    #       cooldown: 0
+    #       cooldown_message: ''
+    #       chance: 100
+    #       instructions:
+    #         - cancel: player_idle
 
 ganda:
   version: 1.21.5
@@ -166,23 +181,23 @@ ganda:
       conditions:
         - group: block
           prefix: under_feet
-          suffix: ''
+          suffix: ""
           values:
             - operator: equals
               value: air
       levels:
-        '1':
+        1:
           cancel_event: false
           cooldown: 0
-          cooldown_message: ''
+          cooldown_message: ""
           chance: 100
           instructions:
             - load:
                 context: player
                 identifier: ganda_state
-                default_value: 'TRUE'
+                default_value: "TRUE"
             - conditional:
-                condition: '%ganda_state%'
+                condition: "%ganda_state%"
                 if:
                   - command: setblock %under_feet_block_x% %under_feet_block_y% %under_feet_block_z%
                       minecraft:bedrock
@@ -192,23 +207,24 @@ ganda:
                 else: [ ]
     player_sneak_down:
       conditions: [ ]
+      custom_conditions: [ ]
       levels:
-        '1':
+        1:
           cancel_event: false
           cooldown: 0
-          cooldown_message: ''
+          cooldown_message: ""
           chance: 100
           instructions:
             - load:
                 context: player
                 identifier: ganda_state
-                default_value: 'TRUE'
+                default_value: "TRUE"
             - save:
                 context: player
                 identifier: ganda_state
                 value: $[!%ganda_state%]
             - conditional:
-                condition: '%ganda_state%'
+                condition: "%ganda_state%"
                 if:
                   - command: say Ganda has been enabled!
                 else:

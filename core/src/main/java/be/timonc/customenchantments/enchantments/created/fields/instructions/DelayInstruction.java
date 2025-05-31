@@ -2,13 +2,11 @@ package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
 import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.enchantments.created.fields.Instruction;
+import be.timonc.customenchantments.enchantments.created.fields.InstructionCall;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.function.Supplier;
 
 public class DelayInstruction extends Instruction {
 
@@ -22,8 +20,8 @@ public class DelayInstruction extends Instruction {
 
 
     @Override
-    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        double delay = parseDouble(player, delayTime, parameters);
+    protected void execute(InstructionCall instructionCall, Runnable executeNextInstruction) {
+        double delay = parseDouble(delayTime, instructionCall.getPlayer(), instructionCall.getParameters());
         DecimalFormat df = new DecimalFormat("#.00");
         Util.debug("Delaying for: " + df.format(delay) + " seconds");
         Bukkit.getScheduler()

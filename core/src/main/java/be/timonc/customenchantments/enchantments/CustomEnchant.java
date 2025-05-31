@@ -54,25 +54,26 @@ public class CustomEnchant extends CustomEnchantRecord {
     public static void register() {
         Main.getEnchantmentsManager().unFreezeRegistry();
 
-        try {
-            //Build CustomEnchantments from enchantments.yml
-            for (String enchant : File.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet())
+        //Build CustomEnchantments from enchantments.yml
+        for (String enchant : File.ENCHANTMENTS.getConfig().getConfigurationSection("").getValues(false).keySet()) {
+            try {
                 new CustomEnchantBuilder(enchant).build(false);
-
-            //Register the default custom enchantments
-            for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
-                new CustomEnchantBuilder(defaultCustomEnchant).build(true);
-
-            for (CustomEnchant customEnchant : getCustomEnchantSet())
-                if (customEnchant.isNewlyRegistered())
-                    Main.getEnchantmentsManager()
-                        .addExclusives(customEnchant.getNamespacedName(), customEnchant.getConflictingEnchantments());
-
-            for (CustomEnchant customEnchant : getCustomEnchantSet())
-                Main.getEnchantmentsManager().addTagsOnReload(customEnchant);
-        } catch (Exception e) {
-            Util.error("Error when registering enchantments: " + e.getMessage());
+            } catch (Exception e) {
+                Util.error("Error when registering '" + enchant + "': " + e.getMessage());
+            }
         }
+
+        //Register the default custom enchantments
+        for (DefaultCustomEnchant defaultCustomEnchant : DefaultCustomEnchant.values())
+            new CustomEnchantBuilder(defaultCustomEnchant).build(true);
+
+        for (CustomEnchant customEnchant : getCustomEnchantSet())
+            if (customEnchant.isNewlyRegistered())
+                Main.getEnchantmentsManager()
+                    .addExclusives(customEnchant.getNamespacedName(), customEnchant.getConflictingEnchantments());
+
+        for (CustomEnchant customEnchant : getCustomEnchantSet())
+            Main.getEnchantmentsManager().addTagsOnReload(customEnchant);
 
         Main.getEnchantmentsManager().freezeRegistry();
 

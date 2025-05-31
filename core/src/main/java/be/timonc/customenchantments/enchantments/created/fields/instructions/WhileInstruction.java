@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
-import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.created.fields.Instruction;
+import be.timonc.customenchantments.enchantments.created.fields.InstructionCall;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.entity.Player;
 
@@ -32,21 +32,20 @@ public class WhileInstruction extends Instruction {
 
 
     @Override
-    protected void execute(Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        callIteration(0, player, customEnchant, parameters, executeNextInstruction);
+    protected void execute(InstructionCall instructionCall, Runnable executeNextInstruction) {
+        callIteration(0, instructionCall, executeNextInstruction);
     }
 
 
-    private void callIteration(int i, Player player, CustomEnchant customEnchant, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
-        boolean condition = parseCondition(player, conditionString, parameters);
+    private void callIteration(int i, InstructionCall instructionCall, Runnable executeNextInstruction) {
+        Player player = instructionCall.getPlayer();
+        Map<String, Supplier<String>> parameters = instructionCall.getParameters();
+        boolean condition = parseCondition(conditionString, player, parameters);
         if (condition) {
             parameters.put(loopParameterName, () -> String.valueOf(i));
-            Instruction.executeInstructionQueue(
+            instructionCall.executeInstructionQueue(
                     new ArrayDeque<>(instructions),
-                    player,
-                    customEnchant,
-                    parameters,
-                    () -> callIteration(i + 1, player, customEnchant, parameters, executeNextInstruction)
+                    () -> callIteration(i + 1, instructionCall, executeNextInstruction)
             );
         } else {
             parameters.remove(loopParameterName);

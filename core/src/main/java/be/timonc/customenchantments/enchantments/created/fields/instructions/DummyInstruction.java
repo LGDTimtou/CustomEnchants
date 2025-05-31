@@ -1,10 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
 import be.timonc.customenchantments.enchantments.created.fields.Instruction;
-import org.bukkit.entity.Player;
-
-import java.util.Map;
-import java.util.function.Supplier;
+import be.timonc.customenchantments.enchantments.created.fields.InstructionCall;
 
 public class DummyInstruction extends Instruction {
 
@@ -13,7 +10,7 @@ public class DummyInstruction extends Instruction {
     }
 
     @Override
-    protected void execute(Player player, Map<String, Supplier<String>> parameters, Runnable executeNextInstruction) {
+    protected void execute(InstructionCall instructionCall, Runnable executeNextInstruction) {
         executeNextInstruction.run();
     }
 }

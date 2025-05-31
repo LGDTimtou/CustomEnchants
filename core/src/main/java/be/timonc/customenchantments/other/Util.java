@@ -233,10 +233,13 @@ public final class Util {
                     Material.TURTLE_HELMET,
                     Material.NETHERITE_HELMET
             );
-            case ARMOR -> Sets.union(Sets.union(
-                    targetToMats(EnchantmentTarget.ARMOR_FEET),
-                    targetToMats(EnchantmentTarget.ARMOR_LEGS)
-            ), Sets.union(targetToMats(EnchantmentTarget.ARMOR_TORSO), targetToMats(EnchantmentTarget.ARMOR_HEAD)));
+            case ARMOR -> Sets.union(
+                    Sets.union(
+                            targetToMats(EnchantmentTarget.ARMOR_FEET),
+                            targetToMats(EnchantmentTarget.ARMOR_LEGS)
+                    ),
+                    Sets.union(targetToMats(EnchantmentTarget.ARMOR_TORSO), targetToMats(EnchantmentTarget.ARMOR_HEAD))
+            );
             case TOOL -> Set.of(
                     Material.WOODEN_SHOVEL,
                     Material.STONE_SHOVEL,

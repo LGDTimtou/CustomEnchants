@@ -20,6 +20,6 @@ public class CustomTriggerCondition {
 
 
     public boolean check(Player player, Map<String, Supplier<String>> parameters) {
-        return Instruction.parseCondition(player, condition, parameters);
+        return Instruction.parseCondition(condition, player, parameters);
     }
 }

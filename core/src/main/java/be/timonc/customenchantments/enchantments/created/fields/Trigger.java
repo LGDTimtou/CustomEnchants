@@ -74,13 +74,7 @@ public class Trigger {
                       parameters
               ));
 
-        Instruction.executeInstructionQueue(
-                new ArrayDeque<>(instructions),
-                player,
-                customEnchant,
-                parameters,
-                onComplete
-        );
+        new InstructionCall(instructions, player, customEnchant, triggerType, parameters, onComplete);
     }
 
 
