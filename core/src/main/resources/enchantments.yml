@@ -93,6 +93,7 @@ sneak:
             - command: effect clear %player% minecraft:invisibility
 
 
+
 test:
   version: 1.21.5
   enabled: true
@@ -119,25 +120,99 @@ test:
       conditions:
         - group: cause
           prefix: damage
-          suffix: ""
+          suffix: ''
           values:
             - operator: equals
               value: fall
-        - group: player
-          prefix: ""
-          suffix: health
+        - group: number
+          prefix: new_health
+          suffix: ''
           values:
             - operator: equals
               value: 1
+
       levels:
-        1:
+        '1':
           cancel_event: true
-          cooldown: 5
-          cooldown_message: ""
+          cooldown: 0
+          cooldown_message: hallo
           chance: 100
           instructions: [ ]
 
-
+ganda:
+  version: 1.21.5
+  enabled: true
+  depends: [ ]
+  definition:
+    needs_permission: false
+    max_level: 1
+    anvil_cost: 10
+    conflicts_with: [ ]
+    targets:
+      - armor_feet
+    tags:
+      in_enchanting_table: true
+    destroy_item_chance: 0
+    remove_enchantment_chance: 0
+    enchanting_table:
+      weight: 10
+      min_cost_base: 2
+      min_cost_incr: 10
+      max_cost_base: 8
+      max_cost_incr: 15
+  custom_locations: [ ]
+  triggers:
+    player_move:
+      conditions:
+        - group: block
+          prefix: under_feet
+          suffix: ''
+          values:
+            - operator: equals
+              value: air
+      levels:
+        '1':
+          cancel_event: false
+          cooldown: 0
+          cooldown_message: ''
+          chance: 100
+          instructions:
+            - load:
+                context: player
+                identifier: ganda_state
+                default_value: 'TRUE'
+            - conditional:
+                condition: '%ganda_state%'
+                if:
+                  - command: setblock %under_feet_block_x% %under_feet_block_y% %under_feet_block_z%
+                      minecraft:bedrock
+                  - delay: 3
+                  - command: setblock %under_feet_block_x% %under_feet_block_y% %under_feet_block_z%
+                      minecraft:air
+                else: [ ]
+    player_sneak_down:
+      conditions: [ ]
+      levels:
+        '1':
+          cancel_event: false
+          cooldown: 0
+          cooldown_message: ''
+          chance: 100
+          instructions:
+            - load:
+                context: player
+                identifier: ganda_state
+                default_value: 'TRUE'
+            - save:
+                context: player
+                identifier: ganda_state
+                value: $[!%ganda_state%]
+            - conditional:
+                condition: '%ganda_state%'
+                if:
+                  - command: say Ganda has been enabled!
+                else:
+                  - command: say Ganda has been disabled!
 
 
 #saving_grace:
