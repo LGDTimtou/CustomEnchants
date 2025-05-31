@@ -2,4 +2,4 @@ jdk:
   - openjdk21
 
 install:
-  - mvn install -pl core -am -DskipTests
+  - mvnw install -pl core -am -DskipTests
