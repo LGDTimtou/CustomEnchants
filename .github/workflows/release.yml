@@ -1,0 +1,54 @@
+name: Release Plugin (Beta)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: beta
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build plugin
+        run: mvn clean install
+
+      - name: Generate Changelog from Commits + PRs
+        id: changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0)
+
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "### Additions" >> $GITHUB_OUTPUT
+          git log $LAST_TAG..HEAD --pretty=format:'%s' \
+            | grep '^Add: ' \
+            | sed 's/^Add: /- /' >> $GITHUB_OUTPUT
+
+          echo "" >> $GITHUB_OUTPUT
+          echo "### Fixes" >> $GITHUB_OUTPUT
+          git log $LAST_TAG..HEAD --pretty=format:'%s' \
+            | grep '^Fix: ' \
+            | sed 's/^Fix: /- /' >> $GITHUB_OUTPUT
+
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: |
+            dist/target/CustomEnchants*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
