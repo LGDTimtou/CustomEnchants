@@ -1,7 +1,5 @@
 jdk:
   - openjdk21
 
-build:
-  tool: maven
-  commands:
-    - mvn install -pl core -am -DskipTests
+install:
+  - mvn install -pl core -am -DskipTests
