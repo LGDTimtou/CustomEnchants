@@ -49,6 +49,11 @@ public final class Main extends JavaPlugin {
         webSocketConnection = null;
     }
 
+    private static void shutdownWebSocketConnection() {
+        if (webSocketConnection != null)
+            webSocketConnection.shutdown();
+    }
+
 
     private static void setPAPISupport() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
@@ -75,16 +80,17 @@ public final class Main extends JavaPlugin {
 
         CustomEnchant.register();
         CustomEvent.register();
+
         new EnchantCommand();
 
-        // Creating the WebSocketConnection (after everything else!)
+        // Creating the WebSocketConnection
         webSocketConnection = new WebSocketConnection();
     }
 
     @Override
     public void onDisable() {
         System.setProperty("RELOAD", "TRUE");
-        webSocketConnection.shutdown();
+        shutdownWebSocketConnection();
     }
 
     private String getMinecraftVersion() {

@@ -2,9 +2,10 @@ load: STARTUP
 name: CustomEnchants
 version: '${project.version}'
 main: be.timonc.customenchantments.Main
-api-version: 1.18
+api-version: 1.20
 authors: [ Timtou ]
-description: A MineCraft plugin that adds new handy and fun enchantments to your server!
+description: A plugin that allows you to add custom enchantments to your server!
+website: "www.timonc.be/custom_enchants"
 softdepend:
   - PlaceholderAPI
 
