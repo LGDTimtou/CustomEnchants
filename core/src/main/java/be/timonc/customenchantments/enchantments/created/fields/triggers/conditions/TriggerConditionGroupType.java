@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public enum TriggerConditionGroupType {
@@ -117,7 +118,7 @@ public enum TriggerConditionGroupType {
 
 
     private final Function<String, Set<TriggerCondition>> conditionSupplier;
-    private final Function<String, Function<Object, Map<TriggerCondition, Object>>> conditionsMapSupplier;
+    private final Function<String, Function<Object, Map<TriggerCondition, Supplier<Object>>>> conditionsMapSupplier;
 
 
     <T> TriggerConditionGroupType(Class<T> targetClass, Map<String, Function<T, Object>> conditionsMap) {
@@ -130,8 +131,8 @@ public enum TriggerConditionGroupType {
                         key
                 )
         )).collect(Collectors.toSet());
-        this.conditionsMapSupplier = prefix ->
-                obj -> conditionsMap.entrySet().stream().collect(Collectors.toMap(
+        this.conditionsMapSupplier = prefix -> parentObj ->
+                conditionsMap.entrySet().stream().collect(Collectors.toMap(
                         entry -> new TriggerCondition(
                                 this,
                                 Util.getCombinedString(
@@ -141,12 +142,12 @@ public enum TriggerConditionGroupType {
                                         entry.getKey()
                                 )
                         ),
-                        entry -> entry.getValue().apply(targetClass.cast(obj))
+                        entry -> () -> entry.getValue().apply(targetClass.cast(parentObj))
                 ));
     }
 
 
-    public Function<Object, Map<TriggerCondition, Object>> getConditionMapSupplier(String prefix) {
+    public Function<Object, Map<TriggerCondition, Supplier<Object>>> getConditionMapSupplier(String prefix) {
         return conditionsMapSupplier.apply(prefix);
     }
 

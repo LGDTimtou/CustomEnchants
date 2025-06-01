@@ -143,16 +143,18 @@ aura:
                   - command: 'particle minecraft:flame $[%player_x% + cosr(%k% * 0.2)] $[%player_y% + (63 - %k%) * 0.04] $[%player_z% + sinr(%k% * 0.2)] 0 0 0 0 1 force @a'
                   - delay: '0.05'
 
-    # player_move:
-    #   conditions: { }
-    #   levels:
-    #     '1':
-    #       cancel_event: false
-    #       cooldown: 0
-    #       cooldown_message: ''
-    #       chance: 100
-    #       instructions:
-    #         - cancel: player_idle
+    player_move:
+      conditions: { }
+      levels:
+        '1':
+          cancel_event: false
+          cooldown: 1
+          cooldown_message: ''
+          chance: 100
+          instructions:
+            - cancel: player_kak
+            - delay: 2
+            - command: say hallo
 
 ganda:
   version: 1.21.5

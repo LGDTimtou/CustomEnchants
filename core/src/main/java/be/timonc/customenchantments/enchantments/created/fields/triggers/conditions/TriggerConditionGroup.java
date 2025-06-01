@@ -10,7 +10,7 @@ public class TriggerConditionGroup {
 
     private final TriggerConditionGroupType type;
     private final Set<TriggerCondition> conditions;
-    private final Function<Object, Map<TriggerCondition, Object>> conditionObjectMapSupplier;
+    private final Function<Object, Map<TriggerCondition, Supplier<Object>>> conditionObjectMapSupplier;
 
     public TriggerConditionGroup(String prefix, TriggerConditionGroupType type) {
         this.type = type;
@@ -35,14 +35,16 @@ public class TriggerConditionGroup {
     }
 
     public Map<TriggerCondition, Object> getConditionMap(Object object) {
-        return conditionObjectMapSupplier.apply(object);
+        return conditionObjectMapSupplier.apply(object).entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().get()
+        ));
     }
 
-    public Map<String, Supplier<String>> getParameters(Map<TriggerCondition, Object> triggerConditionObjectMap) {
-        return triggerConditionObjectMap.entrySet().stream()
-                                        .collect(Collectors.toMap(
-                                                entry -> entry.getKey().name(),
-                                                entry -> () -> entry.getValue().toString()
-                                        ));
+    public Map<String, Supplier<String>> getParameters(Object object) {
+        return conditionObjectMapSupplier.apply(object).entrySet().stream().collect(Collectors.toMap(
+                entry -> entry.getKey().name(),
+                entry -> () -> entry.getValue().get().toString()
+        ));
     }
 }

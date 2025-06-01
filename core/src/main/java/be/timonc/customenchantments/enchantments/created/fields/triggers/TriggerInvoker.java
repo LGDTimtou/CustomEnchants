@@ -45,13 +45,12 @@ public class TriggerInvoker {
         Map<String, Supplier<String>> parameters = new HashMap<>(localParameters);
 
         mutableTriggerConditionGroupMap.forEach((triggerConditionGroup, object) -> {
-                    Map<TriggerCondition, Object> conditionsMap = triggerConditionGroup.getConditionMap(object);
-
                     //Adding all group trigger conditions to the trigger condition map
+                    Map<TriggerCondition, Object> conditionsMap = triggerConditionGroup.getConditionMap(object);
                     triggerConditionObjectMap.putAll(conditionsMap);
 
                     //Adding all trigger condition parameters to the parameter map
-                    parameters.putAll(triggerConditionGroup.getParameters(conditionsMap));
+                    parameters.putAll(triggerConditionGroup.getParameters(object));
                 }
         );
 
