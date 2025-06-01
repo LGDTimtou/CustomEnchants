@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.created.builders;
 
 import be.timonc.customenchantments.enchantments.created.fields.Level;
-import be.timonc.customenchantments.enchantments.created.fields.Trigger;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.Trigger;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.CustomTriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;

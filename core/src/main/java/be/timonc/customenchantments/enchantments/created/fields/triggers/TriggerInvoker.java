@@ -1,6 +1,5 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers;
 
-import be.timonc.customenchantments.enchantments.created.fields.Trigger;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.GlobalTriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;

@@ -1,6 +1,6 @@
 package be.timonc.customenchantments.enchantments.created.fields.triggers.conditions;
 
-import be.timonc.customenchantments.enchantments.created.fields.Instruction;
+import be.timonc.customenchantments.enchantments.created.fields.instructions.Instruction;
 import org.bukkit.entity.Player;
 
 import java.util.Map;

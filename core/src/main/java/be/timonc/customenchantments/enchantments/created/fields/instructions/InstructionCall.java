@@ -1,7 +1,10 @@
-package be.timonc.customenchantments.enchantments.created.fields;
+package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
 import be.timonc.customenchantments.enchantments.CustomEnchant;
+import be.timonc.customenchantments.enchantments.created.fields.Level;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import be.timonc.customenchantments.other.CustomEnchantLogFilter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -13,12 +16,14 @@ public class InstructionCall {
     private final Player player;
     private final CustomEnchant customEnchant;
     private final Map<String, Supplier<String>> parameters;
+    private final List<String> cleanupCommands;
     private boolean cancelled = false;
 
-    public InstructionCall(Queue<Instruction> instructions, Player player, CustomEnchant customEnchant, TriggerType triggerType, Map<String, Supplier<String>> parameters, Runnable onComplete) {
+    public InstructionCall(Player player, CustomEnchant customEnchant, Level level, TriggerType triggerType, Map<String, Supplier<String>> parameters, Runnable onComplete) {
         this.player = player;
         this.customEnchant = customEnchant;
         this.parameters = parameters;
+        this.cleanupCommands = level.cleanupCommands();
 
         Set<InstructionCall> instructionCallSet = instructionCalls.computeIfAbsent(
                 Key.of(player, customEnchant, triggerType),
@@ -27,12 +32,30 @@ public class InstructionCall {
         instructionCallSet.add(this);
 
         executeInstructionQueue(
-                new ArrayDeque<>(instructions),
+                new ArrayDeque<>(level.instructions()),
                 () -> {
                     instructionCallSet.remove(this);
                     onComplete.run();
                 }
         );
+    }
+
+    public static void callCleanupCommands() {
+        instructionCalls.values().forEach(set -> set.forEach(InstructionCall::cleanup));
+    }
+
+    private void cleanup() {
+        cancel();
+        CustomEnchantLogFilter.addFilter();
+        cleanupCommands.forEach(cleanupCommand -> {
+            String command = Instruction.parseNestedExpression(
+                    cleanupCommand,
+                    player,
+                    parameters
+            );
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        });
+        CustomEnchantLogFilter.removeFilter();
     }
 
     public Player getPlayer() {
@@ -55,6 +78,11 @@ public class InstructionCall {
         Key key = Key.of(player, customEnchant, triggerType);
         instructionCalls.getOrDefault(key, Set.of()).forEach(InstructionCall::cancel);
     }
+
+    private List<String> getCleanupCommands() {
+        return cleanupCommands;
+    }
+
 
     public void executeInstructionQueue(Queue<Instruction> instructionQueue, Runnable oncomplete) {
         Instruction instruction = instructionQueue.poll();

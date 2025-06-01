@@ -1,6 +1,6 @@
-package be.timonc.customenchantments.enchantments.created.fields;
+package be.timonc.customenchantments.enchantments.created.fields.instructions;
 
-import be.timonc.customenchantments.enchantments.created.fields.instructions.*;
+import be.timonc.customenchantments.enchantments.created.fields.instructions.types.*;
 import be.timonc.customenchantments.other.Util;
 import com.ezylang.evalex.EvaluationException;
 import com.ezylang.evalex.Expression;

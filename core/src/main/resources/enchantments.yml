@@ -205,6 +205,8 @@ ganda:
                   - command: setblock %under_feet_block_x% %under_feet_block_y% %under_feet_block_z%
                       minecraft:air
                 else: [ ]
+          cleanup_commands:
+            - setblock %under_feet_block_x% %under_feet_block_y% %under_feet_block_z% minecraft:air
     player_sneak_down:
       conditions: [ ]
       custom_conditions: [ ]

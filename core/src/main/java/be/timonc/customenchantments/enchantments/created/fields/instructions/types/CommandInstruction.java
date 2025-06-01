@@ -1,7 +1,7 @@
-package be.timonc.customenchantments.enchantments.created.fields.instructions;
+package be.timonc.customenchantments.enchantments.created.fields.instructions.types;
 
-import be.timonc.customenchantments.enchantments.created.fields.Instruction;
-import be.timonc.customenchantments.enchantments.created.fields.InstructionCall;
+import be.timonc.customenchantments.enchantments.created.fields.instructions.Instruction;
+import be.timonc.customenchantments.enchantments.created.fields.instructions.InstructionCall;
 import be.timonc.customenchantments.other.CustomEnchantLogFilter;
 import be.timonc.customenchantments.other.Util;
 import org.bukkit.Bukkit;
@@ -26,9 +26,7 @@ public class CommandInstruction extends Instruction {
         Util.debug("Running command: " + executableCommand);
 
         CustomEnchantLogFilter.addFilter();
-
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executableCommand);
-
         CustomEnchantLogFilter.removeFilter();
 
         executeNextInstruction.run();

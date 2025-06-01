@@ -3,7 +3,7 @@ package be.timonc.customenchantments.enchantments.created.builders;
 import be.timonc.customenchantments.enchantments.CustomEnchant;
 import be.timonc.customenchantments.enchantments.CustomEnchantDefinition;
 import be.timonc.customenchantments.enchantments.created.fields.ItemLocation;
-import be.timonc.customenchantments.enchantments.created.fields.Trigger;
+import be.timonc.customenchantments.enchantments.created.fields.triggers.Trigger;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import be.timonc.customenchantments.other.File;

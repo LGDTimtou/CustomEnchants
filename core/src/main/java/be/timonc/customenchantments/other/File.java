@@ -11,19 +11,23 @@ import java.util.function.Consumer;
 
 public enum File {
 
-    CONFIG("config.yml", (file) -> {
+    CONFIG(
+            "config.yml", (file) -> {
         Arrays.stream(ConfigValue.values()).forEach(ConfigValue::check);
         file.save();
-    }),
+    }
+    ),
     ENCHANTMENTS("enchantments.yml", (file) -> {}),
     DEFAULT_ENCHANTMENTS("default_enchantments.yml", (file) -> {}),
     WS(".ws.yml", (file) -> {}),
-    MESSAGES("messages.yml", (file) -> {
+    MESSAGES(
+            "messages.yml", (file) -> {
         for (Message message : Message.values())
             if (file.getConfig().get(message.getPath()) == null)
                 file.getConfig().set(message.getPath(), message.getDefault());
         file.save();
-    });
+    }
+    );
 
     private final String path;
     private final Consumer<File> initialization;

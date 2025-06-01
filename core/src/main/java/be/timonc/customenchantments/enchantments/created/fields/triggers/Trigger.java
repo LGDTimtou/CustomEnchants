@@ -1,9 +1,10 @@
-package be.timonc.customenchantments.enchantments.created.fields;
+package be.timonc.customenchantments.enchantments.created.fields.triggers;
 
 import be.timonc.customenchantments.Main;
 import be.timonc.customenchantments.api.CustomEnchantTriggerEvent;
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import be.timonc.customenchantments.enchantments.created.fields.Level;
+import be.timonc.customenchantments.enchantments.created.fields.instructions.InstructionCall;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.CustomTriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerCondition;
 import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionValue;
@@ -51,7 +52,7 @@ public class Trigger {
             return;
         }
 
-        Queue<Instruction> instructions = loadInstructions(
+        Level level = loadLevel(
                 event,
                 player,
                 priorityItems,
@@ -59,7 +60,7 @@ public class Trigger {
                 availableTriggerConditions
         );
 
-        if (instructions == null) {
+        if (level == null) {
             onComplete.run();
             return;
         }
@@ -74,11 +75,11 @@ public class Trigger {
                       parameters
               ));
 
-        new InstructionCall(instructions, player, customEnchant, triggerType, parameters, onComplete);
+        new InstructionCall(player, customEnchant, level, triggerType, parameters, onComplete);
     }
 
 
-    private Queue<Instruction> loadInstructions(@NotNull Event event, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<String, Supplier<String>> parameters, @NotNull Map<TriggerCondition, Object> availableTriggerConditions) {
+    private Level loadLevel(@NotNull Event event, @NotNull Player player, @NotNull Set<ItemStack> priorityItems, @NotNull Map<String, Supplier<String>> parameters, @NotNull Map<TriggerCondition, Object> availableTriggerConditions) {
         // Check if the player has permission to trigger this enchantment
         if (!customEnchant.hasPermission(player))
             return null;
@@ -171,8 +172,8 @@ public class Trigger {
         if (randomNumberDestroyItem < customEnchant.getDestroyItemChance())
             enchantedItem.setAmount(enchantedItem.getAmount() - 1);
 
-        // Return instructions
-        return level.instructions();
+        // Return level
+        return level;
     }
 
     private Map<String, Supplier<String>> getEnchantmentParameters(int levelValue) {
