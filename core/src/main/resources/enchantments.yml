@@ -152,9 +152,7 @@ aura:
           cooldown_message: ''
           chance: 100
           instructions:
-            - cancel: player_kak
-            - delay: 2
-            - command: say hallo
+            - cancel: player_idle
 
 ganda:
   version: 1.21.5
