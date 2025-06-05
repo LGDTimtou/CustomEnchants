@@ -18,36 +18,27 @@ jobs:
       - name: Generate Changelog from Commits + PRs
         id: changelog
         run: |
+
           LAST_TAG=$(git describe --tags --abbrev=0)
           
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           
           echo "### ✨ New Features" >> $GITHUB_OUTPUT
-          git log $LAST_TAG..HEAD --pretty=format:'%s' \
-            | grep '^Feat: ' \
-            | sed 's/^Feat: /- /' >> $GITHUB_OUTPUT || echo "- (none)" >> $GITHUB_OUTPUT
           
           echo "" >> $GITHUB_OUTPUT
           echo "### 📈 Improvements" >> $GITHUB_OUTPUT
-          git log $LAST_TAG..HEAD --pretty=format:'%s' \
-            | grep '^Imp: ' \
-            | sed 's/^Imp: /- /' >> $GITHUB_OUTPUT || echo "- (none)" >> $GITHUB_OUTPUT
           
           echo "" >> $GITHUB_OUTPUT
           echo "### 🐛 Fixes" >> $GITHUB_OUTPUT
-          git log $LAST_TAG..HEAD --pretty=format:'%s' \
-            | grep '^Fix: ' \
-            | sed 's/^Fix: /- /' >> $GITHUB_OUTPUT || echo "- (none)" >> $GITHUB_OUTPUT
           
           echo "" >> $GITHUB_OUTPUT
           echo "### 🛠 Technical Changes" >> $GITHUB_OUTPUT
-          git log $LAST_TAG..HEAD --pretty=format:'%s' \
-            | grep '^Tech: ' \
-            | sed 's/^Tech: /- /' >> $GITHUB_OUTPUT || echo "- (none)" >> $GITHUB_OUTPUT
           
           echo "" >> $GITHUB_OUTPUT
           echo "## 🔗 Check out the [website](https://timonc.be/custom_enchants) for more information" >> $GITHUB_OUTPUT
-
+          
+          git log $LAST_TAG..HEAD --pretty=format:'- %s' >> $GITHUB_OUTPUT
+          
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Check if tag is a prerelease
