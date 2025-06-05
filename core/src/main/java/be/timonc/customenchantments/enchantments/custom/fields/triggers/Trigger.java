@@ -65,16 +65,6 @@ public class Trigger {
             return;
         }
 
-        Bukkit.getServer()
-              .getPluginManager()
-              .callEvent(new CustomEnchantTriggerEvent(
-                      event,
-                      player,
-                      triggerType,
-                      customEnchant.getEnchantment(),
-                      parameters
-              ));
-
         new InstructionCall(player, customEnchant, level, triggerType, parameters, onComplete);
     }
 
@@ -171,6 +161,17 @@ public class Trigger {
         Util.debug("Random Number: " + randomNumberDestroyItem + ", Destroy Item Chance: " + customEnchant.getDestroyItemChance());
         if (randomNumberDestroyItem < customEnchant.getDestroyItemChance())
             enchantedItem.setAmount(enchantedItem.getAmount() - 1);
+
+        Bukkit.getServer()
+              .getPluginManager()
+              .callEvent(new CustomEnchantTriggerEvent(
+                      event,
+                      player,
+                      triggerType,
+                      customEnchant.getEnchantment(),
+                      enchantedItem,
+                      parameters
+              ));
 
         // Return level
         return level;

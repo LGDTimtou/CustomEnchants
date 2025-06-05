@@ -5,6 +5,7 @@ import be.timonc.customenchantments.enchantments.custom.fields.triggers.TriggerT
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,7 @@ public class CustomEnchantTriggerEvent extends CustomEvent {
     private final Event event;
     private final TriggerType triggerType;
     private final Enchantment enchantment;
+    private final ItemStack enchantedItem;
     private final Map<String, Supplier<String>> parameters;
 
     /**
@@ -37,11 +39,12 @@ public class CustomEnchantTriggerEvent extends CustomEvent {
      * @param enchantment The custom enchantment associated with this trigger.
      * @param parameters  A map of parameter names to suppliers that provide dynamic parameter values during execution.
      */
-    public CustomEnchantTriggerEvent(@Nullable Event event, @NotNull Player player, @NotNull TriggerType triggerType, @NotNull Enchantment enchantment, @NotNull Map<String, Supplier<String>> parameters) {
+    public CustomEnchantTriggerEvent(@Nullable Event event, @NotNull Player player, @NotNull TriggerType triggerType, @NotNull Enchantment enchantment, @NotNull ItemStack enchantedItem, @NotNull Map<String, Supplier<String>> parameters) {
         super(player);
         this.event = event;
         this.triggerType = triggerType;
         this.enchantment = enchantment;
+        this.enchantedItem = enchantedItem;
         this.parameters = parameters;
     }
 
@@ -73,6 +76,16 @@ public class CustomEnchantTriggerEvent extends CustomEvent {
     @NotNull
     public Enchantment getEnchantment() {
         return enchantment;
+    }
+
+    /**
+     * Gets the item that contains the enchantment that was triggered.
+     *
+     * @return The ItemStack
+     */
+    @NotNull
+    public ItemStack getEnchantedItem() {
+        return enchantedItem;
     }
 
 
