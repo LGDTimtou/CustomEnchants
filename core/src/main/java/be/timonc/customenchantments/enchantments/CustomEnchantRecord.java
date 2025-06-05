@@ -1,7 +1,6 @@
 package be.timonc.customenchantments.enchantments;
 
 import be.timonc.customenchantments.other.Util;
-import org.bukkit.enchantments.EnchantmentTarget;
 
 import java.util.Map;
 import java.util.Set;
@@ -25,10 +24,21 @@ public class CustomEnchantRecord {
         return namespacedName;
     }
 
+    public boolean needPermission() {
+        return customEnchantDefinition.needPermission();
+    }
+
+    public Set<String> getSupportedItems() {
+        return customEnchantDefinition.supportedItems();
+    }
+
+    public Set<String> getPrimaryItems() {
+        return customEnchantDefinition.primaryItems();
+    }
+
     public Map<String, Boolean> getTags() {
         return customEnchantDefinition.tags();
     }
-
 
     public int getEnchantmentTableWeight() {
         return customEnchantDefinition.enchantmentTableWeight();
@@ -50,13 +60,6 @@ public class CustomEnchantRecord {
         return customEnchantDefinition.anvilCost();
     }
 
-    public boolean needPermission() {
-        return customEnchantDefinition.needPermission();
-    }
-
-    public Set<EnchantmentTarget> getEnchantmentTargets() {
-        return customEnchantDefinition.enchantmentTargets();
-    }
 
     public Set<String> getConflictingEnchantments() {
         return customEnchantDefinition.conflictingEnchantments();

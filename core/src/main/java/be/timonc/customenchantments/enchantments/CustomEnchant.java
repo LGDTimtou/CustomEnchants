@@ -1,8 +1,8 @@
 package be.timonc.customenchantments.enchantments;
 
 import be.timonc.customenchantments.Main;
-import be.timonc.customenchantments.enchantments.created.builders.CustomEnchantBuilder;
-import be.timonc.customenchantments.enchantments.created.fields.ItemLocation;
+import be.timonc.customenchantments.enchantments.custom.builders.CustomEnchantBuilder;
+import be.timonc.customenchantments.enchantments.custom.fields.ItemLocation;
 import be.timonc.customenchantments.enchantments.defaultenchants.DefaultCustomEnchant;
 import be.timonc.customenchantments.other.File;
 import be.timonc.customenchantments.other.Message;

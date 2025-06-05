@@ -67,7 +67,7 @@
     <dependencies>
         <dependency>
             <groupId>be.timonc</groupId>
-            <artifactId>custom-enchantments-core</artifactId>
+            <artifactId>core</artifactId>
             <version>${customenchants.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -79,6 +79,20 @@
             <scope>provided</scope>
             <classifier>remapped-mojang</classifier>
         </dependency>
+
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.14.10</version>
+        </dependency>
+
+        <!-- ByteBuddy agent (required for runtime class redefinition) -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>1.14.10</version>
+        </dependency>
+
     </dependencies>
 
 </project>

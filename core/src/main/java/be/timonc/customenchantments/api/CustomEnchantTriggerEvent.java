@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.api;
 
 import be.timonc.customenchantments.customevents.CustomEvent;
-import be.timonc.customenchantments.enchantments.created.fields.triggers.TriggerType;
+import be.timonc.customenchantments.enchantments.custom.fields.triggers.TriggerType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

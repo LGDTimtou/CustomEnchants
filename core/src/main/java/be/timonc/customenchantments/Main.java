@@ -3,7 +3,7 @@ package be.timonc.customenchantments;
 import be.timonc.customenchantments.command.enchant.EnchantCommand;
 import be.timonc.customenchantments.customevents.CustomEvent;
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.fields.instructions.InstructionCleanupListeners;
+import be.timonc.customenchantments.enchantments.custom.fields.instructions.InstructionCleanupListeners;
 import be.timonc.customenchantments.nms.EnchantmentManager;
 import be.timonc.customenchantments.other.File;
 import be.timonc.customenchantments.other.Util;
@@ -84,7 +84,7 @@ public final class Main extends JavaPlugin {
 
         new EnchantCommand();
 
-        Util.registerListener(new InstructionCleanupListeners());
+        registerListeners();
 
         // Creating the WebSocketConnection
         webSocketConnection = new WebSocketConnection();
@@ -94,6 +94,10 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         System.setProperty("RELOAD", "TRUE");
         shutdownWebSocketConnection();
+    }
+
+    private void registerListeners() {
+        Util.registerListener(new InstructionCleanupListeners());
     }
 
     private String getMinecraftVersion() {

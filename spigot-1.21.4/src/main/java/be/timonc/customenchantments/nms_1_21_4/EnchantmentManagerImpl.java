@@ -12,6 +12,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -21,12 +22,11 @@ import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantable;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_21_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R3.util.CraftNamespacedKey;
-import org.bukkit.enchantments.EnchantmentTarget;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -40,8 +40,10 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
     private static final String REGISTRY_ALL_TAGS_FIELD = "k"; // allTags
     private static final String TAG_SET_UNBOUND_METHOD = "a"; // .unbound()
     private static final String TAG_SET_MAP_FIELD = usingMojangMappings() ? "val$map" : "a";
+    private static final String ITEM_COMPONENTS_MAP_FIELD = usingMojangMappings() ? "components" : "c";
     private final MappedRegistry<Enchantment> ENCHANTS;
     private final MappedRegistry<Item> ITEMS;
+    private final MappedRegistry<Block> BLOCKS;
     private final Map<String, TagKey<Enchantment>> enchantmentTags = new HashMap<>();
 
     public EnchantmentManagerImpl() {
@@ -49,6 +51,7 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         MinecraftServer SERVER = ((CraftServer) Bukkit.getServer()).getServer();
         ENCHANTS = (MappedRegistry<Enchantment>) SERVER.registryAccess().lookup(Registries.ENCHANTMENT).orElseThrow();
         ITEMS = (MappedRegistry<Item>) SERVER.registryAccess().lookup(Registries.ITEM).orElseThrow();
+        BLOCKS = (MappedRegistry<Block>) SERVER.registryAccess().lookup(Registries.BLOCK).orElseThrow();
 
         fillEnchantmentTags();
     }
@@ -153,15 +156,7 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         HolderSet<Enchantment> exclusiveSet = createExclusiveSet(customEnchant.getNamespacedName());
         DataComponentMap effects = DataComponentMap.builder().build();
 
-        Set<EnchantmentTarget> enchantmentTargets = customEnchant.getEnchantmentTargets();
-
-        EquipmentSlotGroup[] slots = getSlots(enchantmentTargets);
-
-        Enchantment.EnchantmentDefinition definition = getEnchantmentDefinition(
-                customEnchant,
-                Util.targetsToMats(enchantmentTargets),
-                slots
-        );
+        Enchantment.EnchantmentDefinition definition = getEnchantmentDefinition(customEnchant);
         Enchantment enchantment = new Enchantment(component, definition, exclusiveSet, effects);
         ENCHANTS.createIntrusiveHolder(enchantment);
         Registry.register(ENCHANTS, enchantId, enchantment);
@@ -169,7 +164,7 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         return Util.getEnchantmentByName(customEnchant.getNamespacedName());
     }
 
-    private Enchantment.EnchantmentDefinition getEnchantmentDefinition(CustomEnchantRecord customEnchant, Set<Material> targetItems, EquipmentSlotGroup[] slots) {
+    private Enchantment.EnchantmentDefinition getEnchantmentDefinition(CustomEnchantRecord customEnchant) {
         int weight = customEnchant.getEnchantmentTableWeight();
         int maxLevel = customEnchant.getMaxLevel();
         int anvilCost = customEnchant.getAnvilCost();
@@ -177,12 +172,14 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
         HolderSet.Named<Item> supportedItems = createItemSet(
                 "enchant_supported",
                 customEnchant.getNamespacedName(),
-                targetItems
+                customEnchant.getSupportedItems(),
+                false
         );
         HolderSet.Named<Item> primaryItems = createItemSet(
                 "enchant_primary",
                 customEnchant.getNamespacedName(),
-                targetItems
+                customEnchant.getPrimaryItems(),
+                true
         );
 
         CustomEnchantDefinition.CustomEnchantCost customMinCost = customEnchant.getMinCost();
@@ -198,41 +195,47 @@ public class EnchantmentManagerImpl implements EnchantmentManager {
                 minCost,
                 maxCost,
                 anvilCost,
-                slots
+                EquipmentSlotGroup.ANY
         );
     }
 
     @NotNull
-    private HolderSet.Named<Item> createItemSet(@NotNull String prefix, @NotNull String enchantId, @NotNull Set<Material> materials) {
+    private HolderSet.Named<Item> createItemSet(@NotNull String prefix, @NotNull String enchantId, @NotNull Set<String> tagKeys, boolean enchantingTable) {
         TagKey<Item> customKey = getTagKey(ITEMS, prefix + "/" + enchantId);
         List<Holder<Item>> holders = new ArrayList<>();
 
-        materials.forEach(material -> {
-            ResourceLocation location = CraftNamespacedKey.toMinecraft(material.getKey());
-            Holder.Reference<Item> holder = ITEMS.get(location).orElse(null);
-            if (holder == null) return;
+        for (String tagKeyString : tagKeys) {
+            TagKey<Item> itemTagKey = getTagKey(ITEMS, tagKeyString);
+            Iterable<Holder<Item>> itemHolders = ITEMS.getTagOrEmpty(itemTagKey);
 
-            holders.add(holder);
-        });
+            if (!itemHolders.iterator().hasNext()) {
+                ResourceLocation location = getTagKey(BLOCKS, tagKeyString).location();
+                Holder.Reference<Item> holder = ITEMS.get(location).orElse(null);
+                if (holder == null) continue;
+                holders.add(holder);
+            } else {
+                itemHolders.forEach(holders::add);
+            }
+        }
+
+        if (enchantingTable)
+            holders.forEach(holder -> makeEnchantable(holder.value()));
 
         ITEMS.bindTag(customKey, holders);
-
         return getFrozenTags(ITEMS).get(customKey);
     }
 
-    private EquipmentSlotGroup[] getSlots(Set<EnchantmentTarget> targets) {
-        for (EnchantmentTarget target : Set.of(
-                EnchantmentTarget.ARMOR,
-                EnchantmentTarget.ARMOR_FEET,
-                EnchantmentTarget.ARMOR_LEGS,
-                EnchantmentTarget.ARMOR_TORSO,
-                EnchantmentTarget.ARMOR_HEAD,
-                EnchantmentTarget.WEARABLE
-        ))
-            if (targets.contains(target))
-                return new EquipmentSlotGroup[]{EquipmentSlotGroup.ARMOR};
+    private void makeEnchantable(@NotNull Item item) {
+        DataComponentMap previousComponents = item.components();
+        if (previousComponents.has(DataComponents.ENCHANTABLE))
+            return;
 
-        return new EquipmentSlotGroup[]{EquipmentSlotGroup.HAND};
+        // Add enchantable data component to item
+        DataComponentMap.Builder builder = DataComponentMap.builder();
+        builder.addAll(previousComponents);
+        builder.set(DataComponents.ENCHANTABLE, new Enchantable(10));
+        DataComponentMap updatedMap = builder.build();
+        Reflex.setFieldValue(item, ITEM_COMPONENTS_MAP_FIELD, updatedMap);
     }
 
 

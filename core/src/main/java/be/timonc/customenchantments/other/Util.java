@@ -17,14 +17,15 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class Util {
 
@@ -105,17 +106,6 @@ public final class Util {
         return -1;
     }
 
-    public static <E extends Enum<E>, A> Collection<E> filterEnumNames(Stream<String> stream, Class<E> enumClass, Collector<E, A, Collection<E>> collector) {
-        return stream
-                .filter(tr -> Arrays.stream(enumClass.getEnumConstants())
-                                    .anyMatch(v -> v.name().equals(tr.toUpperCase())))
-                .map(tr -> E.valueOf(enumClass, tr.toUpperCase())).collect(collector);
-    }
-
-    public static Stream<String> yamlListToStream(String yamlList) {
-        if (yamlList == null) return Stream.empty();
-        return Arrays.stream(yamlList.replaceAll("^\\[", "").replaceAll("]$", "").split("[ ]*,[ ]*"));
-    }
 
     public static String replaceParameters(Player player, String value, Map<String, Supplier<String>> parameters) {
         Matcher paramMatcher = PARAM_PATTERN.matcher(value);
@@ -181,7 +171,13 @@ public final class Util {
     }
 
     public static ItemStack getEnchantedItem(Player player, CustomEnchant customEnchant) {
-        Set<EquipmentSlot> validEquipmentSlots = Util.targetsToSlots(customEnchant.getEnchantmentTargets());
+        Set<EquipmentSlot> validEquipmentSlots = Set.of(
+                EquipmentSlot.HAND,
+                EquipmentSlot.FEET,
+                EquipmentSlot.LEGS,
+                EquipmentSlot.CHEST,
+                EquipmentSlot.HEAD
+        );
         for (EquipmentSlot slot : validEquipmentSlots) {
             ItemStack item = player.getInventory().getItem(slot);
             if (item != null && item.containsEnchantment(customEnchant.getEnchantment())) {

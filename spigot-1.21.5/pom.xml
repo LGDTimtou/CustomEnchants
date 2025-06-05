@@ -67,7 +67,7 @@
     <dependencies>
         <dependency>
             <groupId>be.timonc</groupId>
-            <artifactId>custom-enchantments-core</artifactId>
+            <artifactId>core</artifactId>
             <version>${customenchants.version}</version>
             <scope>provided</scope>
         </dependency>

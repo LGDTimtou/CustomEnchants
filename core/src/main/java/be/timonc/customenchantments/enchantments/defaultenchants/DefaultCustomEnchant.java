@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.defaultenchants;
 
 import be.timonc.customenchantments.enchantments.CustomEnchant;
-import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
+import be.timonc.customenchantments.enchantments.custom.triggers.TriggerListener;
 import be.timonc.customenchantments.enchantments.defaultenchants.listeners.Excavator;
 import be.timonc.customenchantments.enchantments.defaultenchants.listeners.Lumber;
 import be.timonc.customenchantments.enchantments.defaultenchants.listeners.Replenish;

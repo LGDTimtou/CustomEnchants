@@ -32,8 +32,8 @@ sneak:
     anvil_cost: 20
     conflicts_with:
       - swift_sneak
-    targets:
-      - armor_feet
+    supported:
+      - foot_armor
     tags:
       in_enchanting_table: true
     enchanting_table:
@@ -47,18 +47,7 @@ sneak:
   custom_locations: [ ]
   triggers:
     player_sneak_down:
-      conditions:
-        - group: biome
-          values:
-            - operator: not_equals
-              value: plains
-
-        - group: item
-          prefix: main_hand
-          suffix: type
-          values:
-            - operator: equals
-              value: grass_block
+      conditions: { }
       levels:
         1:
           cancel_event: false
@@ -102,8 +91,9 @@ aura:
     max_level: 1
     anvil_cost: 10
     conflicts_with: [ ]
-    targets:
-      - armor_torso
+    supported:
+      - chest_armor
+      - gold_block
     tags:
       in_enchanting_table: true
     destroy_item_chance: 0
@@ -163,8 +153,8 @@ ganda:
     max_level: 1
     anvil_cost: 10
     conflicts_with: [ ]
-    targets:
-      - armor_feet
+    supported:
+      - foot_armor
     tags:
       in_enchanting_table: true
     destroy_item_chance: 0

@@ -1,7 +1,7 @@
 package be.timonc.customenchantments.enchantments.defaultenchants;
 
-import be.timonc.customenchantments.enchantments.created.fields.triggers.conditions.TriggerConditionGroup;
-import be.timonc.customenchantments.enchantments.created.triggers.TriggerListener;
+import be.timonc.customenchantments.enchantments.custom.fields.triggers.conditions.TriggerConditionGroup;
+import be.timonc.customenchantments.enchantments.custom.triggers.TriggerListener;
 
 import java.util.Set;
 
